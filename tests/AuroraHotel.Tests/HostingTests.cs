@@ -10,7 +10,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace AuroraHotel.Tests;
-
 public class HostingTests
 {
     [Fact]
@@ -18,15 +17,15 @@ public class HostingTests
     {
         var database = "AuroraHotel_HostingTests_" + Guid.NewGuid().ToString("N");
         var password = "Demo!" + Convert.ToHexString(RandomNumberGenerator.GetBytes(12)) + "a1";
-        await using var factory = new WebApplicationFactory<Program>().WithWebHostBuilder(builder => {
+        await using var factory = new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
+        {
             builder.UseEnvironment("Production");
-            builder.ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(new Dictionary<string, string?> {
-                ["ConnectionStrings:HotelDb"] = $"Server=(localdb)\\MSSQLLocalDB;Database={database};Trusted_Connection=True;TrustServerCertificate=True"
-            }));
+            builder.ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(new Dictionary<string, string?> { ["ConnectionStrings:HotelDb"] = $"Server=(localdb)\\MSSQLLocalDB;Database={database};Trusted_Connection=True;TrustServerCertificate=True" }));
         });
         await using var scope = factory.Services.CreateAsyncScope();
         var db = scope.ServiceProvider.GetRequiredService<HotelDbContext>();
-        try {
+        try
+        {
             // Constructing the Production host must not migrate or create any demo data.
             Assert.False(await db.Database.CanConnectAsync());
             var seed = scope.ServiceProvider.GetRequiredService<SeedData>();
@@ -54,7 +53,6 @@ public class HostingTests
             await Assert.ThrowsAsync<InvalidOperationException>(() => seed.InitializeHostedDemo(database, password + "Changed1!"));
             Assert.True(await users.CheckPasswordAsync(admin, password));
             Assert.Equal(4, await db.Users.CountAsync());
-
             using var client = factory.CreateClient(new WebApplicationFactoryClientOptions { BaseAddress = new Uri("https://localhost"), AllowAutoRedirect = false });
             Assert.Equal(HttpStatusCode.OK, (await client.GetAsync("/")).StatusCode);
             var login = await client.GetAsync("/Account/Login");
@@ -63,9 +61,12 @@ public class HostingTests
             var insecure = await client.GetAsync("http://localhost/");
             Assert.Equal(HttpStatusCode.TemporaryRedirect, insecure.StatusCode);
             Assert.Equal("https", insecure.Headers.Location!.Scheme);
-        } finally {
+        }
+        finally
+        {
             // This random name was created only for this test; never remove the user's database.
-            if (!database.StartsWith("AuroraHotel_HostingTests_", StringComparison.Ordinal)) throw new InvalidOperationException();
+            if (!database.StartsWith("AuroraHotel_HostingTests_", StringComparison.Ordinal))
+                throw new InvalidOperationException();
             await db.Database.EnsureDeletedAsync();
         }
     }

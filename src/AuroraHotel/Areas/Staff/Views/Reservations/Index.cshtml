@@ -1,5 +1,40 @@
 @model PageResult<Reservation>
 @{ ViewData["Title"] = "Quản lý đặt phòng"; }
-<div class="section-heading"><div><div class="eyebrow">RESERVATIONS</div><h1>Quản lý đặt phòng</h1><p class="page-subtitle">@Model.Total đơn đặt phòng theo tiêu chí hiện tại.</p></div><a class="btn btn-primary" asp-action="Create">＋ Tạo đặt phòng</a></div>
-<form method="get" class="toolbar"><div class="field"><label for="q">Tìm kiếm</label><input id="q" name="q" value="@Context.Request.Query["q"]" class="form-control" placeholder="Mã đơn, khách hoặc số phòng" /></div><div class="field"><label for="status">Trạng thái</label><select name="status" id="status" class="form-select"><option value="">Tất cả trạng thái</option>@foreach (var s in Enum.GetValues<ReservationStatus>()) { <option value="@s" selected="@(Context.Request.Query["status"] == s.ToString())">@s.Label()</option> }</select></div><div class="field"><label for="from">Ngày nhận từ</label><input id="from" type="date" name="from" value="@Context.Request.Query["from"]" class="form-control" /></div><div class="field"><label for="to">Ngày nhận đến</label><input id="to" type="date" name="to" value="@Context.Request.Query["to"]" class="form-control" /></div><button class="btn btn-primary">Lọc đơn</button><a asp-action="Index" class="btn btn-light">Đặt lại</a></form>
-<div class="panel table-panel"><partial name="_ReservationsTable" model="Model.Items" /></div><partial name="_Pager" model="@((Model.Page, Model.Pages))" />
+<div class="section-heading">
+    <div>
+        <div class="eyebrow">RESERVATIONS</div>
+        <h1>Quản lý đặt phòng</h1>
+        <p class="page-subtitle">@Model.Total đơn đặt phòng theo tiêu chí hiện tại.</p>
+    </div>
+    <a class="btn btn-primary" asp-action="Create">＋ Tạo đặt phòng</a>
+</div>
+<form method="get" class="toolbar">
+    <div class="field">
+        <label for="q">Tìm kiếm</label>
+        <input id="q" name="q" value="@Context.Request.Query["q"]" class="form-control" placeholder="Mã đơn, khách hoặc số phòng" />
+    </div>
+    <div class="field">
+        <label for="status">Trạng thái</label>
+        <select name="status" id="status" class="form-select">
+        <option value="">Tất cả trạng thái</option>
+@foreach (var s in Enum.GetValues<ReservationStatus>())
+{
+        <option value="@s" selected="@(Context.Request.Query["status"] == s.ToString())">@s.Label()</option>
+        }
+</select>
+    </div>
+    <div class="field">
+        <label for="from">Ngày nhận từ</label>
+        <input id="from" type="date" name="from" value="@Context.Request.Query["from"]" class="form-control" />
+    </div>
+    <div class="field">
+        <label for="to">Ngày nhận đến</label>
+        <input id="to" type="date" name="to" value="@Context.Request.Query["to"]" class="form-control" />
+    </div>
+    <button class="btn btn-primary">Lọc đơn</button>
+    <a asp-action="Index" class="btn btn-light">Đặt lại</a>
+</form>
+<div class="panel table-panel">
+    <partial name="_ReservationsTable" model="Model.Items" />
+</div>
+<partial name="_Pager" model="@((Model.Page, Model.Pages))" />

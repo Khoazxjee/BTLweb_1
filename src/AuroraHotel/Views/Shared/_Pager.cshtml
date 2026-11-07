@@ -1,7 +1,9 @@
 @model (int Page, int Pages)
-@if (Model.Pages > 1) {
+@if (Model.Pages > 1)
+{
 <nav class="pagination-wrap" aria-label="Phân trang">
-@for (var i = Math.Max(1, Model.Page - 2); i <= Math.Min(Model.Pages, Model.Page + 2); i++) {
+@for (var i = Math.Max(1, Model.Page - 2); i <= Math.Min(Model.Pages, Model.Page + 2); i++)
+{
     var query = Context.Request.Query.ToDictionary(x => x.Key, x => (string?)x.Value.ToString()); query["page"] = i.ToString();
     var link = Context.Request.Path + QueryString.Create(query).ToString();
     <a href="@link" class="page-link @(i == Model.Page ? "active" : "")" aria-current="@(i == Model.Page ? "page" : null)">@i</a>

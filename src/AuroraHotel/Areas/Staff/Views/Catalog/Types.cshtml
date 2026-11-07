@@ -1,3 +1,51 @@
 @model List<RoomType>
 @{ ViewData["Title"] = "Loại phòng"; }
-<div class="section-heading"><div><div class="eyebrow">ROOM TYPES</div><h1>Loại phòng</h1><p class="page-subtitle">Sức chứa và mô tả chung của từng loại phòng.</p></div><a class="btn btn-primary" asp-action="Type">＋ Thêm loại phòng</a></div><div class="panel table-panel"><div class="table-responsive"><table class="table align-middle"><thead><tr><th>Loại phòng</th><th>Sức chứa</th><th>Mô tả</th><th>Thao tác</th></tr></thead><tbody>@foreach (var type in Model) { <tr><td><strong>@type.Name</strong></td><td>@type.Capacity khách</td><td>@type.Description</td><td><div class="actions"><a class="btn btn-light btn-sm" asp-action="Type" asp-route-id="@type.Id">Sửa</a><form method="post" asp-action="DeleteType" asp-route-id="@type.Id" data-confirm="Xóa loại phòng? Chỉ xóa khi chưa có phòng tham chiếu."><button class="btn btn-outline-danger btn-sm">Xóa</button></form></div></td></tr> }</tbody></table></div>@if (!Model.Any()) { <div class="empty-state"><h2>Chưa có loại phòng</h2><p>Thêm loại phòng đầu tiên để bắt đầu.</p></div> }</div>
+<div class="section-heading">
+    <div>
+        <div class="eyebrow">ROOM TYPES</div>
+        <h1>Loại phòng</h1>
+        <p class="page-subtitle">Sức chứa và mô tả chung của từng loại phòng.</p>
+    </div>
+    <a class="btn btn-primary" asp-action="Type">＋ Thêm loại phòng</a>
+</div>
+<div class="panel table-panel">
+    <div class="table-responsive">
+        <table class="table align-middle">
+            <thead>
+                <tr>
+                    <th>Loại phòng</th>
+                    <th>Sức chứa</th>
+                    <th>Mô tả</th>
+                    <th>Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+@foreach (var type in Model)
+{
+                <tr>
+                    <td>
+                        <strong>@type.Name</strong>
+                    </td>
+                    <td>@type.Capacity khách</td>
+                    <td>@type.Description</td>
+                    <td>
+                        <div class="actions">
+                            <a class="btn btn-light btn-sm" asp-action="Type" asp-route-id="@type.Id">Sửa</a>
+                            <form method="post" asp-action="DeleteType" asp-route-id="@type.Id">
+                                <confirm-submit message="Xóa loại phòng? Chỉ xóa khi chưa có phòng tham chiếu." label="Xóa" button-class="btn btn-outline-danger btn-sm"></confirm-submit>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                }
+</tbody>
+        </table>
+    </div>
+@if (!Model.Any())
+{
+    <div class="empty-state">
+        <h2>Chưa có loại phòng</h2>
+        <p>Thêm loại phòng đầu tiên để bắt đầu.</p>
+    </div>
+    }
+</div>

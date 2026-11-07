@@ -1,4 +1,73 @@
 @model PageResult<ApplicationUser>
 @inject IHotelClock Clock
 @{ ViewData["Title"] = "Tài khoản & phân quyền"; var map = (Dictionary<string,string>)ViewBag.UserRoles; }
-<div class="section-heading"><div><div class="eyebrow">ACCESS MANAGEMENT</div><h1>Tài khoản & phân quyền</h1><p class="page-subtitle">Phân quyền Customer, Receptionist, Admin và kiểm soát truy cập.</p></div></div><form method="get" class="toolbar"><div class="field"><label for="q">Tìm tài khoản</label><input id="q" name="q" value="@Context.Request.Query["q"]" class="form-control" placeholder="Tên hoặc email đăng nhập" /></div><button class="btn btn-primary">Tìm kiếm</button></form><div class="panel table-panel"><div class="table-responsive"><table class="table align-middle"><thead><tr><th>Tài khoản</th><th>Quyền hiện tại</th><th>Trạng thái</th><th>Cập nhật</th></tr></thead><tbody>@foreach (var user in Model.Items) { var locked = user.LockoutEnd > Clock.Now; <tr><td><strong>@user.FullName</strong><small>@user.Email</small></td><td><span class="status">@map[user.Id]</span></td><td><span class="status @(locked ? "OutOfOrder" : "Active")">@(locked ? "Đã khóa" : "Hoạt động")</span></td><td>@if (user.UserName == User.Identity?.Name) { <small>Tài khoản đang sử dụng</small> } else { <form method="post" asp-action="Update" class="actions" data-confirm="Cập nhật quyền/trạng thái tài khoản? Phiên đăng nhập cũ của tài khoản sẽ hết hiệu lực."><input type="hidden" name="id" value="@user.Id" /><select name="role" class="form-select" style="width:140px" aria-label="Vai trò của @user.FullName">@foreach (var role in new[] { Roles.Customer, Roles.Receptionist, Roles.Admin }) { <option value="@role" selected="@(map[user.Id] == role)">@role</option> }</select><label class="small"><input type="checkbox" name="locked" value="true" checked="@locked" /> Khóa</label><button class="btn btn-light btn-sm">Lưu</button></form> }</td></tr> }</tbody></table></div>@if (Model.Total == 0) { <div class="empty-state"><h2>Không tìm thấy tài khoản</h2></div> }</div><partial name="_Pager" model="@((Model.Page, Model.Pages))" /><div class="notice">Hệ thống không cho phép tự khóa/đổi quyền tài khoản quản trị đang sử dụng hoặc vô hiệu hóa quản trị viên hoạt động cuối cùng.</div>
+<div class="section-heading">
+    <div>
+        <div class="eyebrow">ACCESS MANAGEMENT</div>
+        <h1>Tài khoản & phân quyền</h1>
+        <p class="page-subtitle">Phân quyền Customer, Receptionist, Admin và kiểm soát truy cập.</p>
+    </div>
+</div>
+<form method="get" class="toolbar">
+    <div class="field">
+        <label for="q">Tìm tài khoản</label>
+        <input id="q" name="q" value="@Context.Request.Query["q"]" class="form-control" placeholder="Tên hoặc email đăng nhập" />
+    </div>
+    <button class="btn btn-primary">Tìm kiếm</button>
+</form>
+<div class="panel table-panel">
+    <div class="table-responsive">
+        <table class="table align-middle">
+            <thead>
+                <tr>
+                    <th>Tài khoản</th>
+                    <th>Quyền hiện tại</th>
+                    <th>Trạng thái</th>
+                    <th>Cập nhật</th>
+                </tr>
+            </thead>
+            <tbody>
+@foreach (var user in Model.Items) { var locked = user.LockoutEnd > Clock.Now; <tr>
+                    <td>
+                        <strong>@user.FullName</strong>
+                        <small>@user.Email</small>
+                    </td>
+                    <td>
+                        <span class="status">@map[user.Id]</span>
+                    </td>
+                    <td>
+                        <span class="status @(locked ? "OutOfOrder" : "Active")">@(locked ? "Đã khóa" : "Hoạt động")</span>
+                    </td>
+                    <td>
+@if (user.UserName == User.Identity?.Name)
+{
+                        <small>Tài khoản đang sử dụng</small>
+                        } else {
+                        <form method="post" asp-action="Update" class="actions">
+                            <input type="hidden" name="id" value="@user.Id" />
+                            <select name="role" class="form-select" style="width:140px" aria-label="Vai trò của @user.FullName">
+@foreach (var role in new[] { Roles.Customer, Roles.Receptionist, Roles.Admin })
+{
+                            <option value="@role" selected="@(map[user.Id] == role)">@role</option>
+                            }
+</select>
+                            <label class="small">
+                            <input type="checkbox" name="locked" value="true" checked="@locked" /> Khóa</label>
+                            <confirm-submit message="Cập nhật quyền/trạng thái tài khoản? Phiên đăng nhập cũ của tài khoản sẽ hết hiệu lực." label="Lưu" button-class="btn btn-light btn-sm"></confirm-submit>
+                        </form>
+                        }
+</td>
+                </tr>
+                }
+</tbody>
+        </table>
+    </div>
+@if (Model.Total == 0)
+{
+    <div class="empty-state">
+        <h2>Không tìm thấy tài khoản</h2>
+    </div>
+    }
+</div>
+<partial name="_Pager" model="@((Model.Page, Model.Pages))" />
+<div class="notice">Hệ thống không cho phép tự khóa/đổi quyền tài khoản quản trị đang sử dụng hoặc vô hiệu hóa quản trị viên hoạt động cuối cùng.</div>

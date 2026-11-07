@@ -1,3 +1,32 @@
 @model RoomTypeInput
 @{ ViewData["Title"] = Model.Id == 0 ? "Thêm loại phòng" : "Chỉnh sửa loại phòng"; }
-<a class="back-link" asp-action="Types">← Các loại phòng</a><h1 class="mb-4">@ViewData["Title"]</h1><form method="post" class="panel form-panel"><div asp-validation-summary="All" class="text-danger" role="alert"></div><input asp-for="Id" type="hidden" /><div class="field"><label asp-for="Name"></label><input asp-for="Name" class="form-control" /><span asp-validation-for="Name"></span></div><div class="field"><label asp-for="Capacity"></label><input asp-for="Capacity" type="number" min="1" max="20" class="form-control" /><span asp-validation-for="Capacity"></span></div><div class="field"><label asp-for="Description"></label><textarea asp-for="Description" rows="4" class="form-control"></textarea><span asp-validation-for="Description"></span></div><button class="btn btn-primary">Lưu loại phòng</button></form>
+<a class="back-link" asp-action="Types">← Các loại phòng</a>
+<h1 class="mb-4">@ViewData["Title"]</h1>
+<form method="post" class="panel form-panel">
+    <div asp-validation-summary="All" class="text-danger" role="alert">
+    </div>
+    <input asp-for="Id" type="hidden" />
+    <div class="field">
+        <label asp-for="Name">
+        </label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name">
+        </span>
+    </div>
+    <div class="field">
+        <label asp-for="Capacity">
+        </label>
+        <input asp-for="Capacity" type="number" min="1" max="20" class="form-control" />
+        <span asp-validation-for="Capacity">
+        </span>
+    </div>
+    <div class="field">
+        <label asp-for="Description">
+        </label>
+        <textarea asp-for="Description" rows="4" class="form-control">
+        </textarea>
+        <span asp-validation-for="Description">
+        </span>
+    </div>
+    <button class="btn btn-primary">Lưu loại phòng</button>
+</form>

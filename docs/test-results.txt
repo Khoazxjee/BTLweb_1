@@ -1,6 +1,7 @@
-Aurora Hotel — kiểm thử Release / SQL Server LocalDB
-Ngày cập nhật: 14/10/2026 (UTC+7)
-{'total': '18', 'executed': '18', 'passed': '18', 'failed': '0', 'error': '0', 'timeout': '0', 'aborted': '0', 'inconclusive': '0', 'passedButRunAborted': '0', 'notRunnable': '0', 'notExecuted': '0', 'disconnected': '0', 'warning': '0', 'completed': '0', 'inProgress': '0', 'pending': '0'}
+Aurora Hotel - Release / SQL Server LocalDB
+Ngay kiem tra: 07/11/2026 (UTC+7)
+Total: 25; Passed: 25; Failed: 0; Skipped: 0
+Build Release: 0 errors, 0 warnings
 
 Passed | AuroraHotel.Tests.BusinessTests.Catalog_preserves_history_and_sanitizes_editor_content
 Passed | AuroraHotel.Tests.BusinessTests.Charge_edits_keep_price_remove_only_service_and_lock_after_payment
@@ -20,3 +21,10 @@ Passed | AuroraHotel.Tests.HttpTests.Search_paging_filters_and_safe_back_link_pr
 Passed | AuroraHotel.Tests.HttpTests.Service_REST_CRUD_has_csrf_admin_auth_validation_and_real_persistence
 Passed | AuroraHotel.Tests.HttpTests.Sql_schema_and_seed_scripts_are_repeatable_and_create_valid_folio
 Passed | AuroraHotel.Tests.HttpTests.Upload_decodes_images_rejects_disguised_content_and_limits_size
+Passed | AuroraHotel.Tests.ServerRenderedWorkflowTests.Confirm_controls_render_as_native_details_and_keep_antiforgery_protection
+Passed | AuroraHotel.Tests.ServerRenderedWorkflowTests.Dashboard_ready_room_count_excludes_dirty_inactive_and_reserved_rooms
+Passed | AuroraHotel.Tests.ServerRenderedWorkflowTests.Invalid_room_detail_dates_show_validation_instead_of_server_errors(query: "arrivalDate=9999-12-31")
+Passed | AuroraHotel.Tests.ServerRenderedWorkflowTests.Invalid_room_detail_dates_show_validation_instead_of_server_errors(query: "arrivalDate=invalid&guestCount=21")
+Passed | AuroraHotel.Tests.ServerRenderedWorkflowTests.Password_change_requires_current_password_and_revokes_other_sessions
+Passed | AuroraHotel.Tests.ServerRenderedWorkflowTests.Price_preview_recalculates_without_creating_a_reservation_or_loading_scripts
+Passed | AuroraHotel.Tests.ServerRenderedWorkflowTests.Report_export_contains_paid_rows_only_and_escapes_spreadsheet_formulas

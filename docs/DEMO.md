@@ -4,15 +4,15 @@ Các giá và hồ sơ dưới đây là minh họa. Chạy Development rồi l�
 
 ## Luồng từ website đến trả phòng: 1.800.000 VND
 
-1. Admin vào **Danh mục phòng → Thêm phòng**. Chọn Deluxe Garden (2 khách), số phòng mới chưa dùng, giá **800000**. Upload JPEG/PNG/WebP; nhập mô tả bằng editor và lưu.
-2. Khách chưa đăng nhập tìm từ **hôm nay** đến **sau hai ngày**, hai khách. Mở đúng phòng vừa tạo. Bấm Chọn phòng; đăng nhập `minh@aurora.local`. Session giữ kỳ ở. Kiểm tra họ tên/email/điện thoại; gửi yêu cầu. Kết quả là Pending/Đang chờ xác nhận, **chưa giữ chỗ**.
+1. Admin vào **Danh mục phòng → Thêm phòng**. Chọn Deluxe Garden (2 khách), số phòng mới chưa dùng, giá **800000**. Upload JPEG/PNG/WebP; nhập mô tả vào ô văn bản và lưu.
+2. Khách chưa đăng nhập tìm từ **hôm nay** đến **sau hai ngày**, hai khách. Mở đúng phòng vừa tạo. Bấm **Tiếp tục đặt phòng**; đăng nhập `minh@aurora.local`. Session giữ kỳ ở. Kiểm tra liên hệ, bấm **Tính lại giá & kiểm tra lịch**, rồi gửi yêu cầu. Kết quả là Pending/Chờ xác nhận, **chưa giữ chỗ**.
 3. Receptionist đăng nhập `letan@aurora.local`, vào Đặt phòng tìm mã vừa tạo, chọn Xác nhận. Giá chốt 800.000 VND/đêm. Có thể tạo hai Pending trước bước xác nhận để demo đơn thứ hai bị chặn khi xác nhận trùng; ca đồng thời thật được kiểm chứng tự động bằng hai DbContext/transaction độc lập.
 4. Tại Lễ tân hoặc Chi tiết đơn, bấm Nhận phòng. Phòng phải Clean/Active và đúng ngày đến. Kết quả có một folio và một dòng phòng 2 × 800.000 = **1.600.000 VND**. Refresh trang không thêm folio/chi phí.
 5. Chọn **Bữa sáng tại nhà hàng**, giá 100.000/suất, số lượng **2**. Tổng dịch vụ **200.000 VND**, tổng phải thu **1.800.000 VND**.
 6. Thử số tiền 1.700.000 hoặc 1.900.000: bị chặn. Nhập **1800000**, chọn Tiền mặt hoặc Chuyển khoản, xác nhận đã nhận tiền. Phí bị khóa; gửi lại cùng thanh toán không sinh thêm Payment.
 7. Bấm Hoàn tất trả phòng và xác nhận. Reservation CheckedOut, Folio Closed, số dư 0; phòng chuyển Dirty, không còn occupancy.
-8. Xem & in chứng từ. Nội dung có khách, phòng, kỳ ở, phí, nhân viên thu, phương thức và thời điểm; trang ghi rõ chứng từ nội bộ.
-9. Room Board → phòng vừa trả → chọn Sạch → Cập nhật. Dashboard Admin trong kỳ có ngày thu tăng đúng **1.800.000 VND**.
+8. Xem & in chứng từ. Nhấn Ctrl + P để in hoặc lưu PDF. Nội dung có khách, phòng, kỳ ở, phí, nhân viên thu, phương thức và thời điểm; trang ghi rõ chứng từ nội bộ.
+9. Tình trạng phòng → phòng vừa trả → chọn Sạch → Cập nhật. Dashboard Admin trong kỳ có ngày thu tăng đúng **1.800.000 VND**; bấm **Tải CSV** để lấy báo cáo.
 
 ## Demo nhanh từ dữ liệu seed
 

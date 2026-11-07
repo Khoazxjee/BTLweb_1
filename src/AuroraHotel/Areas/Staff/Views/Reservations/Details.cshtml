@@ -1,10 +1,73 @@
 @model Reservation
 @{ ViewData["Title"] = Model.ConfirmationCode; }
-<a class="back-link" asp-action="Index">← Danh sách đặt phòng</a><div class="section-heading"><div><div class="eyebrow">@Model.ConfirmationCode</div><h1>Chi tiết đặt phòng</h1></div><span class="status @Model.Status">@Model.Status.Label()</span></div>
-<div class="dashboard-grid"><div class="panel"><h2>@Model.GuestProfile.FullName</h2><p class="page-subtitle">@Model.GuestProfile.Email · @Model.GuestProfile.Phone</p><dl class="detail-list"><dt>Phòng</dt><dd>@Model.Room.RoomNumber · @Model.Room.RoomType.Name</dd><dt>Kỳ lưu trú</dt><dd>@Ui.Date(Model.ArrivalDate) → @Ui.Date(Model.DepartureDate)</dd><dt>Số đêm / số khách</dt><dd>@Model.Nights đêm · @Model.GuestCount khách</dd><dt>Giá mỗi đêm</dt><dd>@Ui.Money(Model.NightlyRateSnapshot)</dd><dt>Tiền phòng</dt><dd><strong>@Ui.Money(Model.RoomTotal)</strong></dd><dt>Nguồn đặt</dt><dd>@(Model.Source == ReservationSource.Website ? "Website khách hàng" : "Lễ tân")</dd><dt>Tạo lúc</dt><dd>@Ui.Time(Model.CreatedAt)</dd><dt>Nhận / trả thực tế</dt><dd>@(Model.CheckInAt.HasValue ? Ui.Time(Model.CheckInAt.Value) : "Chưa nhận") / @(Model.CheckOutAt.HasValue ? Ui.Time(Model.CheckOutAt.Value) : "Chưa trả")</dd><dt>Ghi chú</dt><dd>@(string.IsNullOrEmpty(Model.Notes) ? "Không có" : Model.Notes)</dd></dl><a class="text-link" asp-controller="Guests" asp-action="Details" asp-route-id="@Model.GuestProfileId">Hồ sơ và lịch sử khách ↗</a></div>
-<div class="panel"><div class="eyebrow">THAO TÁC ĐẶT PHÒNG</div><h2>Bước tiếp theo</h2><p class="page-subtitle mb-4">Các thao tác được kiểm tra lại ở hệ thống trước khi thực hiện.</p><div class="actions">
-@if (Model.Status == ReservationStatus.Pending) { <form method="post" asp-action="Confirm" asp-route-id="@Model.Id" data-confirm="Xác nhận phòng và chốt theo giá hiện hành?"><button class="btn btn-primary">Xác nhận đặt phòng</button></form><form method="post" asp-action="Reject" asp-route-id="@Model.Id" data-confirm="Từ chối yêu cầu đặt phòng này?"><button class="btn btn-outline-danger">Từ chối</button></form> }
-@if (Model.Status == ReservationStatus.Pending || Model.Status == ReservationStatus.Confirmed) { <a class="btn btn-light" asp-action="Edit" asp-route-id="@Model.Id">Điều chỉnh phòng / lịch</a><form method="post" asp-action="Cancel" asp-route-id="@Model.Id" data-confirm="Hủy đơn đặt phòng này?"><button class="btn btn-outline-danger">Hủy đơn</button></form> }
-@if (Model.Status == ReservationStatus.Confirmed) { <form method="post" asp-controller="FrontDesk" asp-action="CheckIn" asp-route-id="@Model.Id"><button class="btn btn-primary">Nhận phòng →</button></form> }
-@if (Model.Folio != null) { <a class="btn btn-primary" asp-controller="FrontDesk" asp-action="Folio" asp-route-id="@Model.Folio.Id">Mở bảng kê & dịch vụ →</a> }
-</div><div class="notice">@(Model.Status == ReservationStatus.Pending ? "Đơn đang chờ, chưa giữ chỗ. Giá hiển thị mới là giá dự kiến." : "Giá phòng đã chốt không thay đổi khi sửa giá trong danh mục. Dịch vụ phát sinh được ghi riêng trong bảng kê.")</div></div></div>
+<a class="back-link" asp-action="Index">← Danh sách đặt phòng</a>
+<div class="section-heading">
+    <div>
+        <div class="eyebrow">@Model.ConfirmationCode</div>
+        <h1>Chi tiết đặt phòng</h1>
+    </div>
+    <span class="status @Model.Status">@Model.Status.Label()</span>
+</div>
+<div class="dashboard-grid">
+    <div class="panel">
+        <h2>@Model.GuestProfile.FullName</h2>
+        <p class="page-subtitle">@Model.GuestProfile.Email · @Model.GuestProfile.Phone</p>
+        <dl class="detail-list">
+            <dt>Phòng</dt>
+            <dd>@Model.Room.RoomNumber · @Model.Room.RoomType.Name</dd>
+            <dt>Kỳ lưu trú</dt>
+            <dd>@Ui.Date(Model.ArrivalDate) → @Ui.Date(Model.DepartureDate)</dd>
+            <dt>Số đêm / số khách</dt>
+            <dd>@Model.Nights đêm · @Model.GuestCount khách</dd>
+            <dt>Giá mỗi đêm</dt>
+            <dd>@Ui.Money(Model.NightlyRateSnapshot)</dd>
+            <dt>Tiền phòng</dt>
+            <dd>
+                <strong>@Ui.Money(Model.RoomTotal)</strong>
+            </dd>
+            <dt>Nguồn đặt</dt>
+            <dd>@(Model.Source == ReservationSource.Website ? "Website khách hàng" : "Lễ tân")</dd>
+            <dt>Tạo lúc</dt>
+            <dd>@Ui.Time(Model.CreatedAt)</dd>
+            <dt>Nhận / trả thực tế</dt>
+            <dd>@(Model.CheckInAt.HasValue ? Ui.Time(Model.CheckInAt.Value) : "Chưa nhận") / @(Model.CheckOutAt.HasValue ? Ui.Time(Model.CheckOutAt.Value) : "Chưa trả")</dd>
+            <dt>Ghi chú</dt>
+            <dd>@(string.IsNullOrEmpty(Model.Notes) ? "Không có" : Model.Notes)</dd>
+        </dl>
+        <a class="text-link" asp-controller="Guests" asp-action="Details" asp-route-id="@Model.GuestProfileId">Hồ sơ và lịch sử khách ↗</a>
+    </div>
+    <div class="panel">
+        <div class="eyebrow">THAO TÁC ĐẶT PHÒNG</div>
+        <h2>Bước tiếp theo</h2>
+        <p class="page-subtitle mb-4">Các thao tác được kiểm tra lại ở hệ thống trước khi thực hiện.</p>
+        <div class="actions">
+            @if (Model.Status == ReservationStatus.Pending)
+            {
+            <form method="post" asp-action="Confirm" asp-route-id="@Model.Id">
+                <confirm-submit message="Xác nhận phòng và chốt theo giá hiện hành?" label="Xác nhận đặt phòng" button-class="btn btn-primary"></confirm-submit>
+            </form>
+            <form method="post" asp-action="Reject" asp-route-id="@Model.Id">
+                <confirm-submit message="Từ chối yêu cầu đặt phòng này?" label="Từ chối" button-class="btn btn-outline-danger"></confirm-submit>
+            </form>
+            }
+            @if (Model.Status == ReservationStatus.Pending || Model.Status == ReservationStatus.Confirmed)
+            {
+            <a class="btn btn-light" asp-action="Edit" asp-route-id="@Model.Id">Điều chỉnh phòng / lịch</a>
+            <form method="post" asp-action="Cancel" asp-route-id="@Model.Id">
+                <confirm-submit message="Hủy đơn đặt phòng này?" label="Hủy đơn" button-class="btn btn-outline-danger"></confirm-submit>
+            </form>
+            }
+            @if (Model.Status == ReservationStatus.Confirmed)
+            {
+            <form method="post" asp-controller="FrontDesk" asp-action="CheckIn" asp-route-id="@Model.Id">
+                <button class="btn btn-primary">Nhận phòng →</button>
+            </form>
+            }
+            @if (Model.Folio != null)
+            {
+            <a class="btn btn-primary" asp-controller="FrontDesk" asp-action="Folio" asp-route-id="@Model.Folio.Id">Mở bảng kê & dịch vụ →</a>
+            }
+        </div>
+        <div class="notice">@(Model.Status == ReservationStatus.Pending ? "Đơn đang chờ, chưa giữ chỗ. Giá hiển thị mới là giá dự kiến." : "Giá phòng đã chốt không thay đổi khi sửa giá trong danh mục. Dịch vụ phát sinh được ghi riêng trong bảng kê.")</div>
+    </div>
+</div>

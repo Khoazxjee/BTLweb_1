@@ -1,4 +1,39 @@
 @inject Microsoft.Extensions.Options.IOptions<HotelOptions> Hotel
 @model LoginInput
 @{ ViewData["Title"] = "Đăng nhập"; }
-<section class="auth-shell"><div class="auth-photo"><div class="eyebrow">@Hotel.Value.Name.ToUpperInvariant()</div><h2>Một nơi để đến.<br />Một chốn để nhớ.</h2><p>Kỳ nghỉ của bạn bắt đầu từ đây.</p></div><div class="auth-form"><div class="eyebrow">CHÀO MỪNG TRỞ LẠI</div><h1>Đăng nhập</h1><p class="muted">Theo dõi kỳ nghỉ và những yêu cầu của bạn.</p><form asp-action="Login" method="post"><input asp-for="ReturnUrl" type="hidden" /><div asp-validation-summary="All" class="text-danger" role="alert"></div><div class="field"><label asp-for="Email"></label><input asp-for="Email" class="form-control" autocomplete="username" /><span asp-validation-for="Email"></span></div><div class="field"><label asp-for="Password"></label><input asp-for="Password" class="form-control" autocomplete="current-password" /><span asp-validation-for="Password"></span></div><label class="check-field"><input asp-for="RememberMe" /> Ghi nhớ đăng nhập</label><button class="btn btn-primary w-100">Đăng nhập →</button></form><p class="form-note">Chưa có tài khoản? <a asp-action="Register" asp-route-returnUrl="@Model.ReturnUrl">Tạo tài khoản</a></p></div></section>
+<section class="auth-shell">
+    <div class="auth-photo">
+        <div class="eyebrow">@Hotel.Value.Name.ToUpperInvariant()</div>
+        <h2>Một nơi để đến.<br />Một chốn để nhớ.</h2>
+        <p>Kỳ nghỉ của bạn bắt đầu từ đây.</p>
+    </div>
+    <div class="auth-form">
+        <div class="eyebrow">CHÀO MỪNG TRỞ LẠI</div>
+        <h1>Đăng nhập</h1>
+        <p class="muted">Theo dõi kỳ nghỉ và những yêu cầu của bạn.</p>
+        <form asp-action="Login" method="post">
+            <input asp-for="ReturnUrl" type="hidden" />
+            <div asp-validation-summary="All" class="text-danger" role="alert">
+            </div>
+            <div class="field">
+                <label asp-for="Email">
+                </label>
+                <input asp-for="Email" class="form-control" autocomplete="username" />
+                <span asp-validation-for="Email">
+                </span>
+            </div>
+            <div class="field">
+                <label asp-for="Password">
+                </label>
+                <input asp-for="Password" class="form-control" autocomplete="current-password" />
+                <span asp-validation-for="Password">
+                </span>
+            </div>
+            <label class="check-field">
+            <input asp-for="RememberMe" /> Ghi nhớ đăng nhập</label>
+            <button class="btn btn-primary w-100">Đăng nhập →</button>
+        </form>
+        <p class="form-note">Chưa có tài khoản? <a asp-action="Register" asp-route-returnUrl="@Model.ReturnUrl">Tạo tài khoản</a>
+        </p>
+    </div>
+</section>

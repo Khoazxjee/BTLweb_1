@@ -1,11 +1,101 @@
 @inject Microsoft.Extensions.Options.IOptions<HotelOptions> Hotel
-<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><meta name="description" content="Aurora Hotel — không gian nghỉ ngơi và đặt phòng trực tiếp. Website minh họa cho đồ án quản lý khách sạn." /><title>@ViewData["Title"] · @Hotel.Value.Name</title><link rel="icon" href="~/images/aurora.svg" type="image/svg+xml" /><link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" /><link rel="stylesheet" href="~/css/site.css" asp-append-version="true" /></head>
-<body><a href="#main" class="skip-link">Đến nội dung chính</a><div class="topbar"><span>ĐÀ NẴNG, VIỆT NAM</span><span>Một khoảng nghỉ, vạn bình yên.</span><a href="tel:@Hotel.Value.Phone.Replace(" ", "")">@Hotel.Value.Phone</a></div>
-<header class="site-header"><div class="container header-inner"><a asp-area="" asp-controller="Home" asp-action="Index" class="brand"><img src="~/images/aurora.svg" alt="" /><span>@Hotel.Value.BrandName<small>HOTEL & RETREAT</small></span></a><button class="menu-toggle" aria-label="Mở menu" aria-expanded="false" aria-controls="main-nav">☰</button><nav id="main-nav" aria-label="Điều hướng chính"><a asp-area="" asp-controller="Home" asp-action="Index">Trang chủ</a><a asp-area="" asp-controller="Rooms" asp-action="Index">Phòng & kỳ nghỉ</a><a href="/#experiences">Trải nghiệm</a>
-@if (User.IsInRole(Roles.Customer)) { <a asp-area="" asp-controller="Bookings" asp-action="Index">Đơn của tôi</a><a asp-area="" asp-controller="Account" asp-action="Profile">Hồ sơ</a> }
-@if (User.IsInRole(Roles.Admin) || User.IsInRole(Roles.Receptionist)) { <a asp-area="Staff" asp-controller="FrontDesk" asp-action="Index">Khu vực nhân viên ↗</a> }
-@if (User.Identity?.IsAuthenticated == true) { <form asp-area="" asp-controller="Account" asp-action="Logout" method="post"><button class="nav-button">Đăng xuất</button></form> } else { <a asp-area="" asp-controller="Account" asp-action="Login">Đăng nhập</a> }
-<a class="btn btn-primary" asp-area="" asp-controller="Rooms" asp-action="Index">Đặt phòng ↗</a></nav></div></header>
-<main id="main"><div class="container alerts-container"><partial name="_Alerts" /></div>@RenderBody()</main>
-<footer class="site-footer"><div class="container"><div class="footer-grid"><div><a class="brand light" asp-area="" asp-controller="Home" asp-action="Index"><img src="~/images/aurora.svg" alt="" /><span>@Hotel.Value.BrandName<small>HOTEL & RETREAT</small></span></a><p>Để mỗi lần dừng chân<br />là một lần tìm thấy bình yên.</p></div><div><h3>Khám phá</h3><a asp-area="" asp-controller="Rooms" asp-action="Index">Phòng & kỳ nghỉ</a><a href="/#experiences">Tiện nghi & trải nghiệm</a><a asp-area="" asp-controller="Bookings" asp-action="Index">Đơn đặt của tôi</a></div><div><h3>Hẹn gặp bạn</h3><p>@Hotel.Value.Address</p><a href="tel:@Hotel.Value.Phone.Replace(" ", "")">@Hotel.Value.Phone</a><a href="mailto:@Hotel.Value.Email">@Hotel.Value.Email</a></div></div><div class="footer-bottom"><span>© @DateTime.Now.Year @Hotel.Value.Name</span><span>Website đồ án · Thông tin và dữ liệu minh họa</span><span>Thiết kế cho những kỳ nghỉ đáng nhớ</span></div></div></footer>
-<script src="~/lib/jquery/dist/jquery.min.js"></script><script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script><script src="~/js/site.js" asp-append-version="true"></script>@await RenderSectionAsync("Scripts", required: false)</body></html>
+@{
+    var current = ViewContext.RouteData.Values["controller"]?.ToString();
+}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Aurora Hotel — tìm phòng, lên kế hoạch và theo dõi kỳ nghỉ của bạn." />
+    <title>@ViewData["Title"] · @Hotel.Value.Name</title>
+    <link rel="icon" href="~/images/aurora.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+    <a href="#main" class="skip-link">Đến nội dung chính</a>
+    <div class="topbar">
+        <span>ĐÀ NẴNG · VIỆT NAM</span>
+        <span>Chào đón những kỳ nghỉ của riêng bạn</span>
+        <a href="tel:@Hotel.Value.Phone.Replace(" ", "")">@Hotel.Value.Phone</a>
+    </div>
+    <header class="site-header">
+        <div class="container header-inner">
+            <a asp-area="" asp-controller="Home" asp-action="Index" class="brand">
+                <img src="~/images/aurora.svg" alt="" />
+                <span>@Hotel.Value.BrandName<small>HOTEL & RETREAT</small></span>
+            </a>
+            <nav aria-label="Điều hướng chính" class="public-nav">
+                <a class="@(current == "Home" ? "active" : "")" asp-area="" asp-controller="Home" asp-action="Index">Trang chủ</a>
+                <a class="@(current == "Rooms" ? "active" : "")" asp-area="" asp-controller="Rooms" asp-action="Index">Tìm phòng</a>
+                <a href="/#experiences">Tiện nghi</a>
+                @if (User.IsInRole(Roles.Customer))
+                {
+                    <a class="@(current == "Bookings" ? "active" : "")" asp-area="" asp-controller="Bookings" asp-action="Index">Đơn của tôi</a>
+                }
+                @if (User.IsInRole(Roles.Admin) || User.IsInRole(Roles.Receptionist))
+                {
+                    <a asp-area="Staff" asp-controller="FrontDesk" asp-action="Index">Quản lý khách sạn ↗</a>
+                }
+                @if (User.Identity?.IsAuthenticated == true)
+                {
+                    <details class="account-menu">
+                        <summary>Tài khoản</summary>
+                        <div class="account-dropdown">
+                            <small>@User.Identity.Name</small>
+                            @if (User.IsInRole(Roles.Customer))
+                            {
+                                <a asp-area="" asp-controller="Account" asp-action="Profile">Thông tin liên hệ</a>
+                            }
+                            <a asp-area="" asp-controller="Account" asp-action="ChangePassword">Đổi mật khẩu</a>
+                            <form asp-area="" asp-controller="Account" asp-action="Logout" method="post">
+                                <button class="nav-button">Đăng xuất</button>
+                            </form>
+                        </div>
+                    </details>
+                }
+                else
+                {
+                    <a asp-area="" asp-controller="Account" asp-action="Login">Đăng nhập</a>
+                }
+                <a class="btn btn-primary btn-sm" asp-area="" asp-controller="Rooms" asp-action="Index">Đặt phòng ↗</a>
+            </nav>
+        </div>
+    </header>
+    <main id="main">
+        <div class="container alerts-container"><partial name="_Alerts" /></div>
+        @RenderBody()
+    </main>
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div>
+                    <a class="brand light" asp-area="" asp-controller="Home" asp-action="Index">
+                        <img src="~/images/aurora.svg" alt="" />
+                        <span>@Hotel.Value.BrandName<small>HOTEL & RETREAT</small></span>
+                    </a>
+                    <p>Thêm một điểm đến.<br />Thêm những kỷ niệm đẹp.</p>
+                </div>
+                <div>
+                    <h3>Khám phá Aurora</h3>
+                    <a asp-area="" asp-controller="Rooms" asp-action="Index">Phòng & kỳ nghỉ</a>
+                    <a asp-area="" asp-controller="Bookings" asp-action="Index">Theo dõi đặt phòng</a>
+                    <a asp-area="" asp-controller="Home" asp-action="Privacy">Thông tin & quyền riêng tư</a>
+                </div>
+                <div>
+                    <h3>Liên hệ với chúng tôi</h3>
+                    <p>@Hotel.Value.Address</p>
+                    <a href="tel:@Hotel.Value.Phone.Replace(" ", "")">@Hotel.Value.Phone</a>
+                    <a href="mailto:@Hotel.Value.Email">@Hotel.Value.Email</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <span>© @DateTime.Now.Year @Hotel.Value.Name</span>
+                <span>Website đồ án · Thông tin và dữ liệu minh họa</span>
+            </div>
+        </div>
+    </footer>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

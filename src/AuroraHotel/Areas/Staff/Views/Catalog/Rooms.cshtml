@@ -1,3 +1,77 @@
 @model PageResult<Room>
 @{ ViewData["Title"] = "Danh mục phòng"; }
-<div class="section-heading"><div><div class="eyebrow">ROOM CATALOG</div><h1>Danh mục phòng</h1><p class="page-subtitle">Thông tin phòng được dùng chung với website khách hàng.</p></div><a class="btn btn-primary" asp-action="Room">＋ Thêm phòng</a></div><form method="get" class="toolbar"><div class="field"><label for="q">Tìm phòng</label><input name="q" id="q" value="@Context.Request.Query["q"]" placeholder="Số phòng hoặc loại phòng" class="form-control" /></div><div class="field"><label for="type">Loại phòng</label><select name="type" id="type" class="form-select"><option value="">Tất cả</option>@foreach (RoomType t in ViewBag.Types) { <option value="@t.Id" selected="@(Context.Request.Query["type"] == t.Id.ToString())">@t.Name</option> }</select></div><button class="btn btn-primary">Tìm kiếm</button></form><div class="panel table-panel"><div class="table-responsive"><table class="table align-middle"><thead><tr><th>Ảnh</th><th>Phòng</th><th>Loại phòng</th><th>Giá / đêm</th><th>Khai thác</th><th>Thao tác</th></tr></thead><tbody>@foreach (var room in Model.Items) { <tr><td><img src="@room.ImagePath" alt="Phòng @room.RoomNumber" class="room-thumb" /></td><td><strong>@room.RoomNumber</strong></td><td>@room.RoomType.Name<small>@room.RoomType.Capacity khách</small></td><td>@Ui.Money(room.NightlyRate)</td><td><span class="status @room.OperationalStatus">@(room.OperationalStatus == OperationalStatus.Active ? "Hoạt động" : "Ngừng sử dụng")</span></td><td><div class="actions"><a class="btn btn-light btn-sm" asp-action="Room" asp-route-id="@room.Id">Sửa</a><form method="post" asp-action="DeleteRoom" asp-route-id="@room.Id" data-confirm="Xóa phòng này? Phòng có lịch sử sẽ không được xóa."><button class="btn btn-outline-danger btn-sm">Xóa</button></form></div></td></tr> }</tbody></table></div>@if (Model.Total == 0) { <div class="empty-state"><h2>Chưa có phòng phù hợp</h2></div> }</div><partial name="_Pager" model="@((Model.Page, Model.Pages))" />
+<div class="section-heading">
+    <div>
+        <div class="eyebrow">ROOM CATALOG</div>
+        <h1>Danh mục phòng</h1>
+        <p class="page-subtitle">Thông tin phòng được dùng chung với website khách hàng.</p>
+    </div>
+    <a class="btn btn-primary" asp-action="Room">＋ Thêm phòng</a>
+</div>
+<form method="get" class="toolbar">
+    <div class="field">
+        <label for="q">Tìm phòng</label>
+        <input name="q" id="q" value="@Context.Request.Query["q"]" placeholder="Số phòng hoặc loại phòng" class="form-control" />
+    </div>
+    <div class="field">
+        <label for="type">Loại phòng</label>
+        <select name="type" id="type" class="form-select">
+        <option value="">Tất cả</option>
+@foreach (RoomType t in ViewBag.Types)
+{
+        <option value="@t.Id" selected="@(Context.Request.Query["type"] == t.Id.ToString())">@t.Name</option>
+        }
+</select>
+    </div>
+    <button class="btn btn-primary">Tìm kiếm</button>
+</form>
+<div class="panel table-panel">
+    <div class="table-responsive">
+        <table class="table align-middle">
+            <thead>
+                <tr>
+                    <th>Ảnh</th>
+                    <th>Phòng</th>
+                    <th>Loại phòng</th>
+                    <th>Giá / đêm</th>
+                    <th>Khai thác</th>
+                    <th>Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+@foreach (var room in Model.Items)
+{
+                <tr>
+                    <td>
+                        <img src="@room.ImagePath" alt="Phòng @room.RoomNumber" class="room-thumb" />
+                    </td>
+                    <td>
+                        <strong>@room.RoomNumber</strong>
+                    </td>
+                    <td>@room.RoomType.Name<small>@room.RoomType.Capacity khách</small>
+                    </td>
+                    <td>@Ui.Money(room.NightlyRate)</td>
+                    <td>
+                        <span class="status @room.OperationalStatus">@(room.OperationalStatus == OperationalStatus.Active ? "Hoạt động" : "Ngừng sử dụng")</span>
+                    </td>
+                    <td>
+                        <div class="actions">
+                            <a class="btn btn-light btn-sm" asp-action="Room" asp-route-id="@room.Id">Sửa</a>
+                            <form method="post" asp-action="DeleteRoom" asp-route-id="@room.Id">
+                                <confirm-submit message="Xóa phòng này? Phòng có lịch sử sẽ không được xóa." label="Xóa" button-class="btn btn-outline-danger btn-sm"></confirm-submit>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                }
+</tbody>
+        </table>
+    </div>
+@if (Model.Total == 0)
+{
+    <div class="empty-state">
+        <h2>Chưa có phòng phù hợp</h2>
+    </div>
+    }
+</div>
+<partial name="_Pager" model="@((Model.Page, Model.Pages))" />

@@ -1,8 +1,40 @@
 @model SearchPage
-<div asp-validation-summary="All" class="text-danger" role="alert"></div>
-<div class="section-heading compact"><p><strong>@Model.Results.Total phòng</strong> phù hợp với kỳ nghỉ của bạn</p><small>Kết quả tại thời điểm tìm · Giá mỗi đêm</small></div>
-@if (!Model.Results.Items.Any()) { <div class="empty-state"><span>⌕</span><h2>Chưa tìm thấy phòng phù hợp</h2><p>Thử thay đổi ngày ở, số khách hoặc mở rộng khoảng giá.</p></div> }
-<div class="room-grid">@foreach (var room in Model.Results.Items) {
-<article class="room-card"><a class="room-image" asp-action="Details" asp-route-id="@room.Id" asp-route-arrivalDate="@Model.Search.ArrivalDate?.ToString("yyyy-MM-dd")" asp-route-departureDate="@Model.Search.DepartureDate?.ToString("yyyy-MM-dd")" asp-route-guestCount="@Model.Search.GuestCount" asp-route-returnUrl="@(Context.Request.Path + Context.Request.QueryString)"><img src="@room.ImagePath" alt="Không gian phòng @room.RoomType.Name" loading="lazy" /><span class="image-label">PHÒNG @room.RoomNumber</span></a>
-<div class="room-content"><small>@room.RoomType.Capacity KHÁCH · KHÔNG GIAN RIÊNG</small><h3>@room.RoomType.Name</h3><p class="amenities">@string.Join(" · ", room.Amenities.Split(',').Take(3))</p><div class="room-bottom"><div><strong>@Ui.Money(room.NightlyRate)</strong><small>/ đêm</small></div><a class="arrow-link" asp-action="Details" asp-route-id="@room.Id" asp-route-arrivalDate="@Model.Search.ArrivalDate?.ToString("yyyy-MM-dd")" asp-route-departureDate="@Model.Search.DepartureDate?.ToString("yyyy-MM-dd")" asp-route-guestCount="@Model.Search.GuestCount" asp-route-returnUrl="@(Context.Request.Path + Context.Request.QueryString)" aria-label="Xem phòng @room.RoomNumber">↗</a></div></div></article>
-}</div><partial name="_Pager" model="@((Model.Results.Page, Model.Results.Pages))" />
+<div asp-validation-summary="All" class="text-danger" role="alert">
+</div>
+<div class="section-heading compact">
+    <p>
+    <strong>@Model.Results.Total phòng</strong> phù hợp với kỳ nghỉ của bạn</p>
+    <small>Kết quả tại thời điểm tìm · Giá mỗi đêm</small>
+</div>
+@if (!Model.Results.Items.Any())
+{
+<div class="empty-state">
+    <span>⌕</span>
+    <h2>Chưa tìm thấy phòng phù hợp</h2>
+    <p>Thử thay đổi ngày ở, số khách hoặc mở rộng khoảng giá.</p>
+</div>
+}
+<div class="room-grid">
+@foreach (var room in Model.Results.Items)
+{
+    <article class="room-card">
+        <a class="room-image" asp-action="Details" asp-route-id="@room.Id" asp-route-arrivalDate="@Model.Search.ArrivalDate?.ToString("yyyy-MM-dd")" asp-route-departureDate="@Model.Search.DepartureDate?.ToString("yyyy-MM-dd")" asp-route-guestCount="@Model.Search.GuestCount" asp-route-returnUrl="@(Context.Request.Path + Context.Request.QueryString)">
+        <img src="@room.ImagePath" alt="Không gian phòng @room.RoomType.Name" loading="lazy" />
+        <span class="image-label">PHÒNG @room.RoomNumber</span>
+        </a>
+        <div class="room-content">
+            <small>@room.RoomType.Capacity KHÁCH · KHÔNG GIAN RIÊNG</small>
+            <h3>@room.RoomType.Name</h3>
+            <p class="amenities">@string.Join(" · ", room.Amenities.Split(',').Take(3))</p>
+            <div class="room-bottom">
+                <div>
+                    <strong>@Ui.Money(room.NightlyRate)</strong>
+                    <small>/ đêm</small>
+                </div>
+                <a class="arrow-link" asp-action="Details" asp-route-id="@room.Id" asp-route-arrivalDate="@Model.Search.ArrivalDate?.ToString("yyyy-MM-dd")" asp-route-departureDate="@Model.Search.DepartureDate?.ToString("yyyy-MM-dd")" asp-route-guestCount="@Model.Search.GuestCount" asp-route-returnUrl="@(Context.Request.Path + Context.Request.QueryString)" aria-label="Xem phòng @room.RoomNumber">↗</a>
+            </div>
+        </div>
+    </article>
+    }
+</div>
+<partial name="_Pager" model="@((Model.Results.Page, Model.Results.Pages))" />

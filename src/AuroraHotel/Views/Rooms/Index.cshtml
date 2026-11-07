@@ -6,7 +6,9 @@
 <div class="field"><label for="arrival">Ngày nhận phòng</label><input id="arrival" name="ArrivalDate" type="date" value="@Model.Search.ArrivalDate?.ToString("yyyy-MM-dd")" required class="form-control" /></div>
 <div class="field"><label for="departure">Ngày trả phòng</label><input id="departure" name="DepartureDate" type="date" value="@Model.Search.DepartureDate?.ToString("yyyy-MM-dd")" required class="form-control" /></div>
 <div class="field"><label for="guests">Số khách</label><input id="guests" name="GuestCount" type="number" min="1" max="20" value="@Model.Search.GuestCount" class="form-control" /></div>
-<div class="field"><label for="roomtype">Loại phòng</label><select id="roomtype" name="RoomTypeId" class="form-select"><option value="">Tất cả loại phòng</option>@foreach (var t in Model.Types) { <option value="@t.Id" selected="@(Model.Search.RoomTypeId == t.Id)">@t.Name</option> }</select></div>
+<div class="field"><label for="roomtype">Loại phòng</label><select id="roomtype" name="RoomTypeId" class="form-select"><option value="">Tất cả loại phòng</option>
+@foreach (var t in Model.Types) { <option value="@t.Id" selected="@(Model.Search.RoomTypeId == t.Id)">@t.Name</option> }
+</select></div>
 <div class="field"><label for="minprice">Giá từ (VND)</label><input id="minprice" type="number" name="MinPrice" min="0" value="@Model.Search.MinPrice" class="form-control" placeholder="Không giới hạn" /></div>
 <div class="field"><label for="maxprice">Giá đến (VND)</label><input id="maxprice" type="number" name="MaxPrice" min="0" value="@Model.Search.MaxPrice" class="form-control" placeholder="Không giới hạn" /></div>
 <div class="field"><label for="sort">Sắp xếp</label><select id="sort" name="Sort" class="form-select"><option value="price" selected="@(Model.Search.Sort == "price")">Giá tăng dần</option><option value="price-desc" selected="@(Model.Search.Sort == "price-desc")">Giá giảm dần</option><option value="capacity" selected="@(Model.Search.Sort == "capacity")">Sức chứa lớn nhất</option></select></div>

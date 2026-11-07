@@ -1,4 +1,69 @@
 @model RoomInput
 @{ ViewData["Title"] = Model.Id == 0 ? "Thêm phòng" : "Chỉnh sửa phòng"; }
-<a class="back-link" asp-action="Rooms">← Danh mục phòng</a><h1>@ViewData["Title"]</h1><p class="page-subtitle mb-4">Thêm ảnh và mô tả để khách dễ dàng chọn không gian phù hợp.</p>
-<form method="post" enctype="multipart/form-data" class="panel form-panel"><div asp-validation-summary="All" class="text-danger" role="alert"></div><input asp-for="Id" type="hidden" /><div class="form-grid"><div class="field"><label asp-for="RoomNumber"></label><input asp-for="RoomNumber" class="form-control" /><span asp-validation-for="RoomNumber"></span></div><div class="field"><label asp-for="RoomTypeId"></label><select asp-for="RoomTypeId" class="form-select"><option value="">Chọn loại phòng</option>@foreach (RoomType t in ViewBag.Types) { <option value="@t.Id">@t.Name · @t.Capacity khách</option> }</select><span asp-validation-for="RoomTypeId"></span></div><div class="field"><label asp-for="NightlyRate"></label><input asp-for="NightlyRate" type="number" step="1" min="1" class="form-control" /><span asp-validation-for="NightlyRate"></span></div></div><div class="field"><label asp-for="Amenities"></label><input asp-for="Amenities" class="form-control" placeholder="Wi-Fi, Điều hòa, Bồn tắm, Ban công" /><span asp-validation-for="Amenities"></span></div><div class="field"><label asp-for="Image"></label><input asp-for="Image" type="file" accept="image/jpeg,image/png,image/webp" class="form-control" /><span asp-validation-for="Image"></span><small>Ảnh được kiểm tra và chuyển sang WebP khi tải lên.</small></div>@if (Model.CurrentImage != null) { <img src="@Model.CurrentImage" alt="Ảnh phòng hiện tại" class="form-image" /> }<div class="field"><label asp-for="Description"></label><textarea asp-for="Description" class="form-control" rows="8" data-editor></textarea><span asp-validation-for="Description"></span></div><div class="actions"><button class="btn btn-primary">Lưu phòng</button><a class="btn btn-light" asp-action="Rooms">Quay lại</a></div></form>
+<a class="back-link" asp-action="Rooms">← Danh mục phòng</a>
+<h1>@ViewData["Title"]</h1>
+<p class="page-subtitle mb-4">Thêm ảnh và mô tả để khách dễ dàng chọn không gian phù hợp.</p>
+<form method="post" enctype="multipart/form-data" class="panel form-panel">
+    <div asp-validation-summary="All" class="text-danger" role="alert">
+    </div>
+    <input asp-for="Id" type="hidden" />
+    <div class="form-grid">
+        <div class="field">
+            <label asp-for="RoomNumber">
+            </label>
+            <input asp-for="RoomNumber" class="form-control" />
+            <span asp-validation-for="RoomNumber">
+            </span>
+        </div>
+        <div class="field">
+            <label asp-for="RoomTypeId">
+            </label>
+            <select asp-for="RoomTypeId" class="form-select">
+            <option value="">Chọn loại phòng</option>
+@foreach (RoomType t in ViewBag.Types)
+{
+            <option value="@t.Id">@t.Name · @t.Capacity khách</option>
+            }
+</select>
+            <span asp-validation-for="RoomTypeId">
+            </span>
+        </div>
+        <div class="field">
+            <label asp-for="NightlyRate">
+            </label>
+            <input asp-for="NightlyRate" type="number" step="1" min="1" class="form-control" />
+            <span asp-validation-for="NightlyRate">
+            </span>
+        </div>
+    </div>
+    <div class="field">
+        <label asp-for="Amenities">
+        </label>
+        <input asp-for="Amenities" class="form-control" placeholder="Wi-Fi, Điều hòa, Bồn tắm, Ban công" />
+        <span asp-validation-for="Amenities">
+        </span>
+    </div>
+    <div class="field">
+        <label asp-for="Image">
+        </label>
+        <input asp-for="Image" type="file" accept="image/jpeg,image/png,image/webp" class="form-control" />
+        <span asp-validation-for="Image">
+        </span>
+        <small>Ảnh được kiểm tra và chuyển sang WebP khi tải lên.</small>
+    </div>
+@if (Model.CurrentImage != null)
+{
+    <img src="@Model.CurrentImage" alt="Ảnh phòng hiện tại" class="form-image" />
+    }<div class="field">
+        <label asp-for="Description">
+        </label>
+        <textarea asp-for="Description" class="form-control" rows="8">
+        </textarea>
+        <span asp-validation-for="Description">
+        </span>
+    </div>
+    <div class="actions">
+        <button class="btn btn-primary">Lưu phòng</button>
+        <a class="btn btn-light" asp-action="Rooms">Quay lại</a>
+    </div>
+</form>

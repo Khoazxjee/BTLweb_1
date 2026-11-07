@@ -1,30 +1,31 @@
-# Rà soát font và bố cục — 15/10/2026
+# Rà soát giao diện C# / Razor — 07/11/2026
 
-Đã sửa trực tiếp giao diện đang phục vụ tại `http://localhost:5080/`. Thay đổi nằm ở `wwwroot/css/site.css` và bộ font cục bộ; giữ nguyên nghiệp vụ và dữ liệu đặt phòng.
+## Thiết kế hiện tại
 
-## Các vấn đề đã xử lý
+- Trang chủ chia phần giới thiệu và ảnh; tìm phòng ngay dưới phần mở đầu.
+- Màu xanh trầm, nền sáng; font Be Vietnam Pro và Lora có hỗ trợ tiếng Việt, tải từ máy chủ.
+- Khu khách: tìm phòng, ảnh/tiện nghi, thông tin kỳ ở, xem trước giá, yêu cầu đặt phòng, lịch sử và tài khoản.
+- Khu nhân viên: sidebar trên desktop; menu ngang cuộn được trên điện thoại; bảng có vùng cuộn riêng.
+- Thông báo thành công/lỗi bằng tiếng Việt, nhãn cho các trường nhập, focus bàn phím, link bỏ qua điều hướng.
+- Xác nhận thao tác dùng details/summary và nút submit do ConfirmSubmitTagHelper tạo.
+- Phần tương tác chạy bằng biểu mẫu C# và HTML; không tải JavaScript.
 
-| Vấn đề | Điều chỉnh |
+## Đã quan sát trong trình duyệt tích hợp
+
+| Màn hình | Kiểm tra |
 |---|---|
-| Dấu tiếng Việt ở tiêu đề serif bị rời, hiển thị khác nhau theo font hệ điều hành | Dùng Lora cho tiêu đề và Be Vietnam Pro cho nội dung, biểu mẫu, quản trị; lưu WOFF2 và giấy phép trong dự án |
-| Chữ phụ, nhãn nhập liệu, bảng và sidebar quá nhỏ | Thống nhất cỡ chữ, độ đậm, màu chữ phụ và chiều cao dòng; nội dung bảng 14px, ô nhập 15px, ô nhập trên điện thoại 16px |
-| Hero và phần giới thiệu chiếm nhiều khoảng trống | Giảm chiều cao/padding ở desktop, điều chỉnh tiêu đề theo chiều rộng điện thoại |
-| Chân thẻ phòng không thẳng hàng khi mô tả dài ngắn khác nhau | Thẻ dùng flex theo cột, phần giá và nút chi tiết cùng nằm ở đáy |
-| Biểu mẫu và ngày tháng bị chật trên màn hình nhỏ | Xếp một cột dưới 480px; trang đăng ký giữ các trường đủ rộng |
-| Các ô thống kê, bảng kê và biểu đồ bị ép ở độ rộng trung gian | Thống kê chuyển 4/2/1 cột theo breakpoint; bảng kê và dashboard chuyển một cột khi thiếu chỗ |
-| Thẻ tình trạng phòng nhỏ, số phòng chưa nổi bật | Grid tự điều chỉnh theo chiều rộng, tăng số phòng và cỡ chữ điều khiển |
-| Nút lưu và lịch sử trong hồ sơ sát nhau | Thêm khoảng cách; nút trải hết chiều rộng ở điện thoại |
-| Bảng dài làm màn hình nhỏ khó đọc | Giữ cỡ chữ, cho cuộn ngang trong khung bảng; không kéo rộng toàn trang |
-| Quy tắc in dễ bị CSS responsive ghi đè | Gom quy tắc in xuống cuối stylesheet, bỏ sidebar và khoảng lề workspace khi in |
+| Trang chủ | Ảnh, font, menu, tiêu đề, form tìm phòng, card đọc từ database |
+| Điện thoại | Trang chủ và form tìm phòng; quản trị chuyển sang menu ngang, thẻ số liệu hai cột |
+| Đăng nhập | Tài khoản quản trị demo đăng nhập và đến đúng khu vực |
+| Dashboard | Bộ lọc ngày, thẻ số liệu, trạng thái đơn, hành động và bảng đơn gần đây |
+| Lễ tân | Các tab khách đến/đang ở/đến hạn trả; đường dẫn tới chi tiết/bảng kê |
+| Bảng kê | Hiển thị tiền phòng, dịch vụ, số phải thu; mở bước xác nhận HTML trước thanh toán, không ghi thêm giao dịch vào dữ liệu phát triển |
+| Menu tài khoản | Mở menu, đường dẫn đổi mật khẩu và đăng xuất hoạt động |
 
-## Phạm vi xác minh
+Responsive được kiểm tra bằng viewport yêu cầu 390 × 844 và 1440 × 900. Trình duyệt tích hợp có thể điều chỉnh kích thước CSS theo mức zoom. Kiểm tra DOM ở dashboard điện thoại cho thấy chiều rộng nội dung bằng chiều rộng viewport, không tràn ngang toàn trang.
 
-- 29 đường dẫn khác nhau thuộc các nhóm: trang chủ, danh sách/chi tiết phòng, đăng nhập/đăng ký, yêu cầu đặt phòng, lịch sử/chi tiết đơn, hồ sơ cá nhân, dashboard, lễ tân, tạo/sửa/chi tiết đặt phòng, bảng phòng, danh sách/thêm/sửa/chi tiết khách, phòng/loại phòng/dịch vụ và biểu mẫu sửa, tài khoản, bảng kê, chứng từ.
-- 79 lượt đo DOM ở các chiều rộng nội dung thực tế từ 303 đến 1600 CSS px. Không phát hiện tràn ngang toàn trang, thành phần chính vượt khung, hoặc ảnh đã tải bị lỗi trong các lượt này. Dữ liệu đo lưu tại `artifacts/ui-review-audit.json` trên máy kiểm tra.
-- Xem ảnh trực quan các bố cục đại diện và kiểm tra menu khách hàng/menu nhân viên trên điện thoại; menu mở và điều hướng được.
-- Cả 6 file font trả HTTP 200. Kiểm tra cmap xác nhận đủ bộ nguyên âm có dấu và Đ/đ tiếng Việt, cả chữ thường lẫn chữ hoa. 45 file view/stylesheet đọc được UTF-8, không có ký tự thay thế U+FFFD.
-- Chạy lại bộ kiểm thử hiện có: **18 PASS, 0 FAIL, 0 SKIP**. Lệnh: `dotnet test tests/AuroraHotel.Tests/AuroraHotel.Tests.csproj -c Release --no-build --logger "trx;LogFileName=ui-review-regression.trx" --results-directory artifacts/test-results`. Không sửa mã C#/Razor trong lượt chỉnh giao diện này. Kiểm thử dùng database riêng.
+Các biểu mẫu nghiệp vụ, quyền truy cập và render những màn hình còn lại được xác minh trong kiểm thử HTTP; xem TESTING.md. Bản dữ liệu phát triển cũ được giữ nguyên nên báo cáo tháng mới có thể chưa có tiền thu.
 
-Ảnh minh chứng: [đăng nhập desktop](screenshots/ui-review/login-desktop.png), [dashboard desktop](screenshots/ui-review/dashboard-desktop.png), [dashboard điện thoại](screenshots/ui-review/dashboard-mobile.png), [trang chủ điện thoại](screenshots/ui-review/home-mobile.png).
+## Giới hạn
 
-Kiểm tra responsive dùng trình duyệt tích hợp với viewport giả lập; độ rộng CSS thực tế đã được ghi lại vì localhost đang có mức zoom riêng. Chưa xác minh Safari/Firefox, điện thoại thật hoặc bản in giấy. Kết quả này xác nhận các trạng thái và dữ liệu đã kiểm tra, không phải mọi tổ hợp nội dung có thể nhập.
+Chưa kiểm tra trên điện thoại thật, Safari/Firefox hoặc máy in vật lý. Giao diện có CSS in A4; in/lưu PDF dùng lệnh in của trình duyệt. Bản làm lại chưa được triển khai lên hosting.

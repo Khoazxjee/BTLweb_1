@@ -1,11 +1,158 @@
 @model Folio
 @{ ViewData["Title"] = "Bảng kê chi phí"; var editable = Model.Status == FolioStatus.Open && Model.Reservation.Status == ReservationStatus.CheckedIn; }
-<a class="back-link" asp-controller="Reservations" asp-action="Details" asp-route-id="@Model.ReservationId">← @Model.Reservation.ConfirmationCode</a><div class="section-heading"><div><div class="eyebrow">FOLIO #@Model.Id.ToString("D5")</div><h1>Bảng kê chi phí</h1><p class="page-subtitle">@Model.Reservation.GuestProfile.FullName · Phòng @Model.Reservation.Room.RoomNumber · @Ui.Date(Model.Reservation.ArrivalDate) – @Ui.Date(Model.Reservation.DepartureDate)</p></div><a class="btn btn-light" asp-action="Invoice" asp-route-id="@Model.Id">Xem & in chứng từ ↗</a></div>
-<div class="folio-grid"><div><div class="panel table-panel"><div class="table-responsive"><table class="table align-middle"><thead><tr><th>Khoản phí</th><th>SL</th><th>Đơn giá</th><th>Thành tiền</th>@if (editable) { <th></th> }</tr></thead><tbody>@foreach (var line in Model.Items.OrderBy(x => x.Kind).ThenBy(x => x.Id)) { <tr><td><strong>@line.DescriptionSnapshot</strong><small>@(line.Kind == ItemKind.Room ? "Tiền phòng đã chốt" : "Dịch vụ · giá tại thời điểm sử dụng")</small></td><td>@if (editable && line.Kind == ItemKind.Service) { <form method="post" asp-action="UpdateCharge" asp-route-id="@Model.Id" class="inline-quantity"><input type="hidden" name="itemId" value="@line.Id" /><input name="quantity" value="@line.Quantity" type="number" min="1" max="1000" aria-label="Số lượng @line.DescriptionSnapshot" class="form-control" /><button class="btn btn-light btn-sm">Lưu</button></form> } else { @line.Quantity }</td><td>@Ui.Money(line.UnitPriceSnapshot)</td><td><strong>@Ui.Money(line.Total)</strong></td>@if (editable) { <td>@if (line.Kind == ItemKind.Service) { <form method="post" asp-action="DeleteCharge" asp-route-id="@Model.Id" data-confirm="Xóa khoản dịch vụ khỏi bảng kê?"><input type="hidden" name="itemId" value="@line.Id" /><button class="btn btn-outline-danger btn-sm">Xóa</button></form> }</td> }</tr> }</tbody></table></div></div>
-@if (editable) { <div class="panel"><h2>Ghi nhận dịch vụ sử dụng</h2><form method="post" asp-action="Charge" asp-route-id="@Model.Id" class="mt-4"><div class="field"><label for="service">Dịch vụ</label><select name="ServiceId" id="service" class="form-select" required><option value="">Chọn dịch vụ</option>@foreach (HotelService service in ViewBag.Services) { <option value="@service.Id">@service.Name · @Ui.Money(service.UnitPrice) / @service.Unit</option> }</select></div><div class="form-grid"><div class="field"><label for="quantity">Số lượng</label><input id="quantity" name="Quantity" type="number" min="1" max="1000" value="1" class="form-control" required /></div></div><button class="btn btn-primary">＋ Thêm vào bảng kê</button></form></div> }
-</div><aside><div class="panel"><div class="section-heading"><h2 class="mb-0">Tổng thanh toán</h2><span class="status @Model.Status">@Model.Status.Label()</span></div><div class="totals"><div><span>Tiền phòng</span><strong>@Ui.Money(Model.Items.Where(x => x.Kind == ItemKind.Room).Sum(x => x.Total))</strong></div><div><span>Dịch vụ</span><strong>@Ui.Money(Model.Items.Where(x => x.Kind == ItemKind.Service).Sum(x => x.Total))</strong></div><div class="grand-total"><span>Tổng cộng</span><strong>@Ui.Money(Model.Total)</strong></div><div><span>Đã thanh toán</span><strong>@Ui.Money(Model.Paid)</strong></div><div><span>Còn phải thu</span><strong>@Ui.Money(Model.Balance)</strong></div></div>
-@if (editable) { <form method="post" asp-action="Pay" asp-route-id="@Model.Id" data-confirm="Xác nhận đã nhận đủ tiền? Sau khi ghi nhận, các khoản phí sẽ bị khóa."><div class="field"><label for="method">Phương thức nhận tiền</label><select name="Method" id="method" class="form-select"><option value="Cash">Tiền mặt</option><option value="BankTransfer">Chuyển khoản</option></select></div><div class="field"><label for="amount">Số tiền đã nhận (VND)</label><input id="amount" name="Amount" type="number" min="1" value="@Model.Total.ToString("0", System.Globalization.CultureInfo.InvariantCulture)" required class="form-control" /></div><button class="btn btn-primary w-100">Ghi nhận thanh toán đủ</button><p class="form-note">Chỉ ghi nhận khi đã thực nhận tiền mặt hoặc chuyển khoản.</p></form> }
-@if (Model.Payment != null) { <div class="notice">Đã thu bằng @Model.Payment.Method.Label().ToLowerInvariant()<br />@Ui.Time(Model.Payment.PaidAt)<br />Nhân viên: @Model.Payment.ReceivedByUser.FullName</div> }
-@if (Model.Status == FolioStatus.Paid) { <form method="post" asp-action="CheckOut" asp-route-id="@Model.Id" data-confirm="Hoàn tất trả phòng và chuyển phòng sang cần dọn?"><button class="btn btn-primary w-100">Hoàn tất trả phòng →</button></form> }
-@if (Model.Status == FolioStatus.Closed) { <p class="form-note">Đã hoàn tất lưu trú. Bảng kê được giữ nguyên để tra cứu.</p> }
-</div></aside></div>
+<a class="back-link" asp-controller="Reservations" asp-action="Details" asp-route-id="@Model.ReservationId">← @Model.Reservation.ConfirmationCode</a>
+<div class="section-heading">
+    <div>
+        <div class="eyebrow">FOLIO #@Model.Id.ToString("D5")</div>
+        <h1>Bảng kê chi phí</h1>
+        <p class="page-subtitle">@Model.Reservation.GuestProfile.FullName · Phòng @Model.Reservation.Room.RoomNumber · @Ui.Date(Model.Reservation.ArrivalDate) – @Ui.Date(Model.Reservation.DepartureDate)</p>
+    </div>
+    <a class="btn btn-light" asp-action="Invoice" asp-route-id="@Model.Id">Xem & in chứng từ ↗</a>
+</div>
+<div class="folio-grid">
+    <div>
+        <div class="panel table-panel">
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead>
+                        <tr>
+                            <th>Khoản phí</th>
+                            <th>SL</th>
+                            <th>Đơn giá</th>
+                            <th>Thành tiền</th>
+@if (editable)
+{
+                            <th>
+                            </th>
+                            }
+</tr>
+                    </thead>
+                    <tbody>
+@foreach (var line in Model.Items.OrderBy(x => x.Kind).ThenBy(x => x.Id))
+{
+                        <tr>
+                            <td>
+                                <strong>@line.DescriptionSnapshot</strong>
+                                <small>@(line.Kind == ItemKind.Room ? "Tiền phòng đã chốt" : "Dịch vụ · giá tại thời điểm sử dụng")</small>
+                            </td>
+                            <td>
+@if (editable && line.Kind == ItemKind.Service)
+{
+                                <form method="post" asp-action="UpdateCharge" asp-route-id="@Model.Id" class="inline-quantity">
+                                    <input type="hidden" name="itemId" value="@line.Id" />
+                                    <input name="quantity" value="@line.Quantity" type="number" min="1" max="1000" aria-label="Số lượng @line.DescriptionSnapshot" class="form-control" />
+                                    <button class="btn btn-light btn-sm">Lưu</button>
+                                </form>
+                                } else { @line.Quantity }
+                            </td>
+                            <td>@Ui.Money(line.UnitPriceSnapshot)</td>
+                            <td>
+                                <strong>@Ui.Money(line.Total)</strong>
+                            </td>
+@if (editable)
+{
+                            <td>
+@if (line.Kind == ItemKind.Service)
+{
+                                <form method="post" asp-action="DeleteCharge" asp-route-id="@Model.Id">
+                                    <input type="hidden" name="itemId" value="@line.Id" />
+                                    <confirm-submit message="Xóa khoản dịch vụ khỏi bảng kê?" label="Xóa" button-class="btn btn-outline-danger btn-sm"></confirm-submit>
+                                </form>
+                                }
+</td>
+                            }
+</tr>
+                        }
+</tbody>
+                </table>
+            </div>
+        </div>
+        @if (editable)
+        {
+        <div class="panel">
+            <h2>Ghi nhận dịch vụ sử dụng</h2>
+            <form method="post" asp-action="Charge" asp-route-id="@Model.Id" class="mt-4">
+                <div class="field">
+                    <label for="service">Dịch vụ</label>
+                    <select name="ServiceId" id="service" class="form-select" required>
+                    <option value="">Chọn dịch vụ</option>
+@foreach (HotelService service in ViewBag.Services)
+{
+                    <option value="@service.Id">@service.Name · @Ui.Money(service.UnitPrice) / @service.Unit</option>
+                    }
+</select>
+                </div>
+                <div class="form-grid">
+                    <div class="field">
+                        <label for="quantity">Số lượng</label>
+                        <input id="quantity" name="Quantity" type="number" min="1" max="1000" value="1" class="form-control" required />
+                    </div>
+                </div>
+                <button class="btn btn-primary">＋ Thêm vào bảng kê</button>
+            </form>
+        </div>
+        }
+    </div>
+    <aside>
+        <div class="panel">
+            <div class="section-heading">
+                <h2 class="mb-0">Tổng thanh toán</h2>
+                <span class="status @Model.Status">@Model.Status.Label()</span>
+            </div>
+            <div class="totals">
+                <div>
+                    <span>Tiền phòng</span>
+                    <strong>@Ui.Money(Model.Items.Where(x => x.Kind == ItemKind.Room).Sum(x => x.Total))</strong>
+                </div>
+                <div>
+                    <span>Dịch vụ</span>
+                    <strong>@Ui.Money(Model.Items.Where(x => x.Kind == ItemKind.Service).Sum(x => x.Total))</strong>
+                </div>
+                <div class="grand-total">
+                    <span>Tổng cộng</span>
+                    <strong>@Ui.Money(Model.Total)</strong>
+                </div>
+                <div>
+                    <span>Đã thanh toán</span>
+                    <strong>@Ui.Money(Model.Paid)</strong>
+                </div>
+                <div>
+                    <span>Còn phải thu</span>
+                    <strong>@Ui.Money(Model.Balance)</strong>
+                </div>
+            </div>
+            @if (editable)
+            {
+            <form method="post" asp-action="Pay" asp-route-id="@Model.Id">
+                <div class="field">
+                    <label for="method">Phương thức nhận tiền</label>
+                    <select name="Method" id="method" class="form-select">
+                    <option value="Cash">Tiền mặt</option>
+                    <option value="BankTransfer">Chuyển khoản</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label for="amount">Số tiền đã nhận (VND)</label>
+                    <input id="amount" name="Amount" type="number" min="1" value="@Model.Total.ToString("0", System.Globalization.CultureInfo.InvariantCulture)" required class="form-control" />
+                </div>
+                <confirm-submit message="Xác nhận đã nhận đủ tiền? Sau khi ghi nhận, các khoản phí sẽ bị khóa." label="Ghi nhận thanh toán đủ" button-class="btn btn-primary w-100"></confirm-submit>
+                <p class="form-note">Chỉ ghi nhận khi đã thực nhận tiền mặt hoặc chuyển khoản.</p>
+            </form>
+            }
+            @if (Model.Payment != null)
+            {
+            <div class="notice">Đã thu bằng @Model.Payment.Method.Label().ToLowerInvariant()<br />@Ui.Time(Model.Payment.PaidAt)<br />Nhân viên: @Model.Payment.ReceivedByUser.FullName</div>
+            }
+            @if (Model.Status == FolioStatus.Paid)
+            {
+            <form method="post" asp-action="CheckOut" asp-route-id="@Model.Id">
+                <confirm-submit message="Hoàn tất trả phòng và chuyển phòng sang cần dọn?" label="Hoàn tất trả phòng →" button-class="btn btn-primary w-100"></confirm-submit>
+            </form>
+            }
+            @if (Model.Status == FolioStatus.Closed)
+            {
+            <p class="form-note">Đã hoàn tất lưu trú. Bảng kê được giữ nguyên để tra cứu.</p>
+            }
+        </div>
+    </aside>
+</div>

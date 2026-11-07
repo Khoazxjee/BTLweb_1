@@ -1,6 +1,64 @@
-@model List<Reservation>
-@{ ViewData["Title"] = "Lễ tân"; var tab = (string)ViewBag.Tab; }
-<div class="section-heading"><div><div class="eyebrow">FRONT DESK</div><h1>Sẵn sàng cho một lời chào.</h1><p class="page-subtitle">Ngày làm việc @Ui.Date((DateOnly)ViewBag.Today) · Nhận phòng, chăm sóc khách và trả phòng.</p></div><a class="btn btn-primary" asp-controller="Reservations" asp-action="Create">＋ Đặt phòng trực tiếp</a></div>
-<div class="tabs"><a class="@(tab == "arrivals" ? "active" : "")" asp-route-tab="arrivals">Khách đến / cần xử lý <b>@ViewBag.Arrivals hôm nay</b></a><a class="@(tab == "inhouse" ? "active" : "")" asp-route-tab="inhouse">Đang lưu trú <b>@ViewBag.InHouse</b></a><a class="@(tab == "departures" ? "active" : "")" asp-route-tab="departures">Đến hạn trả phòng <b>@ViewBag.Departures</b></a></div>
-@if (!Model.Any()) { <div class="empty-state"><span>☼</span><h2>Mọi thứ đã được cập nhật</h2><p>Chưa có khách trong danh sách này. Chọn tab khác để tiếp tục.</p></div> }
-else { <div class="panel table-panel"><div class="table-responsive"><table class="table align-middle"><thead><tr><th>Khách lưu trú</th><th>Phòng</th><th>Kỳ ở</th><th>Tình trạng</th><th>Thao tác</th></tr></thead><tbody>@foreach (var r in Model) { <tr><td><a asp-controller="Guests" asp-action="Details" asp-route-id="@r.GuestProfileId"><strong>@r.GuestProfile.FullName</strong></a><small>@r.ConfirmationCode</small></td><td><strong>@r.Room.RoomNumber</strong><small>@r.GuestCount khách</small></td><td>@Ui.Date(r.ArrivalDate)<small>đến @Ui.Date(r.DepartureDate)</small></td><td><span class="status @r.Status">@r.Status.Label()</span><small>@(r.Room.HousekeepingStatus == HousekeepingStatus.Clean ? "Sạch" : "Cần dọn") · @(r.Room.OperationalStatus == OperationalStatus.Active ? "Hoạt động" : "Ngừng sử dụng")</small></td><td><div class="actions">@if (r.Status == ReservationStatus.Confirmed) { <form method="post" asp-action="CheckIn" asp-route-id="@r.Id"><button class="btn btn-primary btn-sm">Nhận phòng</button></form> } @if (r.Folio != null) { <a class="btn btn-primary btn-sm" asp-action="Folio" asp-route-id="@r.Folio.Id">Dịch vụ & bảng kê →</a> }<a class="btn btn-light btn-sm" asp-controller="Reservations" asp-action="Details" asp-route-id="@r.Id">Chi tiết</a></div></td></tr> }</tbody></table></div></div> }
+@model FrontDeskPage
+@{ ViewData["Title"] = "Lễ tân"; }
+<div class="section-heading">
+    <div>
+        <div class="eyebrow">VẬN HÀNH HẰNG NGÀY</div>
+        <h1>Lễ tân & lưu trú</h1>
+        <p class="page-subtitle">Ngày @Ui.Date(Model.Today) · Nhận phòng, ghi dịch vụ và hoàn tất trả phòng.</p>
+    </div>
+    <a class="btn btn-primary" asp-controller="Reservations" asp-action="Create">＋ Đặt phòng trực tiếp</a>
+</div>
+<div class="tabs">
+    <a class="@(Model.Tab == "arrivals" ? "active" : "")" asp-route-tab="arrivals">Khách đến <b>@Model.Arrivals hôm nay · @Model.OverdueArrivals quá hẹn</b></a>
+    <a class="@(Model.Tab == "inhouse" ? "active" : "")" asp-route-tab="inhouse">Đang lưu trú <b>@Model.InHouse</b></a>
+    <a class="@(Model.Tab == "departures" ? "active" : "")" asp-route-tab="departures">Đến hạn trả phòng <b>@Model.Departures</b></a>
+</div>
+@if (Model.Reservations.Count == 0)
+{
+    <div class="empty-state"><span>☼</span><h2>Chưa có khách trong danh sách này</h2><p>Chọn tab khác hoặc tạo một đơn đặt phòng mới.</p></div>
+}
+else
+{
+    <div class="panel table-panel">
+        <div class="table-responsive">
+            <table class="table align-middle">
+                <thead><tr><th>Khách lưu trú</th><th>Phòng</th><th>Kỳ ở</th><th>Tình trạng</th><th>Thao tác</th></tr></thead>
+                <tbody>
+                    @foreach (var reservation in Model.Reservations)
+                    {
+                        var overdue = reservation.Status == ReservationStatus.Confirmed && reservation.ArrivalDate < Model.Today;
+                        <tr>
+                            <td>
+                                <a asp-controller="Guests" asp-action="Details" asp-route-id="@reservation.GuestProfileId"><strong>@reservation.GuestProfile.FullName</strong></a>
+                                <small>@reservation.ConfirmationCode</small>
+                            </td>
+                            <td><strong>@reservation.Room.RoomNumber</strong><small>@reservation.GuestCount khách</small></td>
+                            <td>@Ui.Date(reservation.ArrivalDate)<small>đến @Ui.Date(reservation.DepartureDate)</small></td>
+                            <td>
+                                <span class="status @reservation.Status">@(overdue ? "Quá ngày nhận phòng" : reservation.Status.Label())</span>
+                                <small>@(reservation.Room.HousekeepingStatus == HousekeepingStatus.Clean ? "Sạch" : "Cần dọn") · @(reservation.Room.OperationalStatus == OperationalStatus.Active ? "Hoạt động" : "Ngừng sử dụng")</small>
+                            </td>
+                            <td>
+                                <div class="actions">
+                                    @if (overdue)
+                                    {
+                                        <a class="btn btn-light btn-sm" asp-controller="Reservations" asp-action="Edit" asp-route-id="@reservation.Id">Điều chỉnh lịch</a>
+                                    }
+                                    else if (reservation.Status == ReservationStatus.Confirmed)
+                                    {
+                                        <form method="post" asp-action="CheckIn" asp-route-id="@reservation.Id"><button class="btn btn-primary btn-sm">Nhận phòng</button></form>
+                                    }
+                                    @if (reservation.Folio != null)
+                                    {
+                                        <a class="btn btn-primary btn-sm" asp-action="Folio" asp-route-id="@reservation.Folio.Id">Dịch vụ & bảng kê →</a>
+                                    }
+                                    <a class="btn btn-light btn-sm" asp-controller="Reservations" asp-action="Details" asp-route-id="@reservation.Id">Chi tiết</a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}

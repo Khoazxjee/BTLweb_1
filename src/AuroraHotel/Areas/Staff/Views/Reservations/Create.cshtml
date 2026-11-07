@@ -1,4 +1,43 @@
 @model BookingInput
 @{ ViewData["Title"] = "Tạo đặt phòng"; }
-<a class="back-link" asp-action="Index">← Danh sách đặt phòng</a><div class="section-heading"><div><h1>Tạo đặt phòng trực tiếp</h1><p class="page-subtitle">Tạo yêu cầu trước, kiểm tra và xác nhận để giữ phòng.</p></div></div>
-<form method="post" class="panel form-panel"><div asp-validation-summary="All" class="text-danger" role="alert"></div><div class="field"><label asp-for="GuestProfileId"></label><select asp-for="GuestProfileId" class="form-select"><option value="">Chọn hồ sơ khách</option>@foreach (GuestProfile guest in ViewBag.Guests) { <option value="@guest.Id">@guest.FullName · @guest.Phone · @guest.Email</option> }</select><span asp-validation-for="GuestProfileId"></span><small>Khách mới? <a asp-controller="Guests" asp-action="Edit">Tạo hồ sơ khách →</a></small></div><div class="field"><label asp-for="RoomId"></label><select asp-for="RoomId" class="form-select"><option value="">Chọn phòng</option>@foreach (Room room in ViewBag.Rooms) { <option value="@room.Id">@room.RoomNumber · @room.RoomType.Name · @Ui.Money(room.NightlyRate) / đêm @(room.OperationalStatus == OperationalStatus.OutOfOrder ? "(Ngừng sử dụng)" : "")</option> }</select><span asp-validation-for="RoomId"></span></div><partial name="_StayFields" model="Model" /><button class="btn btn-primary">Tạo đơn chờ xác nhận</button></form>
+<a class="back-link" asp-action="Index">← Danh sách đặt phòng</a>
+<div class="section-heading">
+    <div>
+        <h1>Tạo đặt phòng trực tiếp</h1>
+        <p class="page-subtitle">Tạo yêu cầu trước, kiểm tra và xác nhận để giữ phòng.</p>
+    </div>
+</div>
+<form method="post" class="panel form-panel">
+    <div asp-validation-summary="All" class="text-danger" role="alert">
+    </div>
+    <div class="field">
+        <label asp-for="GuestProfileId">
+        </label>
+        <select asp-for="GuestProfileId" class="form-select">
+        <option value="">Chọn hồ sơ khách</option>
+@foreach (GuestProfile guest in ViewBag.Guests)
+{
+        <option value="@guest.Id">@guest.FullName · @guest.Phone · @guest.Email</option>
+        }
+</select>
+        <span asp-validation-for="GuestProfileId">
+        </span>
+        <small>Khách mới? <a asp-controller="Guests" asp-action="Edit">Tạo hồ sơ khách →</a>
+        </small>
+    </div>
+    <div class="field">
+        <label asp-for="RoomId">
+        </label>
+        <select asp-for="RoomId" class="form-select">
+        <option value="">Chọn phòng</option>
+@foreach (Room room in ViewBag.Rooms)
+{
+        <option value="@room.Id">@room.RoomNumber · @room.RoomType.Name · @Ui.Money(room.NightlyRate) / đêm @(room.OperationalStatus == OperationalStatus.OutOfOrder ? "(Ngừng sử dụng)" : "")</option>
+        }
+</select>
+        <span asp-validation-for="RoomId">
+        </span>
+    </div>
+    <partial name="_StayFields" model="Model" />
+    <button class="btn btn-primary">Tạo đơn chờ xác nhận</button>
+</form>

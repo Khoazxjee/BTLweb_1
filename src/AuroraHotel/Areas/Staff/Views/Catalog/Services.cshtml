@@ -1,3 +1,62 @@
 @model PageResult<HotelService>
 @{ ViewData["Title"] = "Danh mục dịch vụ"; }
-<div class="section-heading"><div><div class="eyebrow">HOTEL SERVICES</div><h1>Danh mục dịch vụ</h1><p class="page-subtitle">Giá thay đổi chỉ áp dụng cho lần ghi nhận dịch vụ mới.</p></div><a class="btn btn-primary" asp-action="Service">＋ Thêm dịch vụ</a></div><form method="get" class="toolbar"><div class="field"><label for="q">Tìm dịch vụ</label><input name="q" id="q" value="@Context.Request.Query["q"]" placeholder="Nhập tên dịch vụ" class="form-control" /></div><button class="btn btn-primary">Tìm kiếm</button></form><div class="panel table-panel"><div class="table-responsive"><table class="table align-middle"><thead><tr><th>Dịch vụ</th><th>Đơn vị</th><th>Đơn giá</th><th>Trạng thái</th><th>Thao tác</th></tr></thead><tbody>@foreach (var s in Model.Items) { <tr><td><strong>@s.Name</strong></td><td>@s.Unit</td><td>@Ui.Money(s.UnitPrice)</td><td><span class="status @(s.IsActive ? "Active" : "OutOfOrder")">@(s.IsActive ? "Đang cung cấp" : "Ngừng cung cấp")</span></td><td><div class="actions"><a class="btn btn-light btn-sm" asp-action="Service" asp-route-id="@s.Id">Sửa</a><form method="post" asp-action="DeleteService" asp-route-id="@s.Id" data-confirm="Xóa hoặc ngừng cung cấp dịch vụ này? Lịch sử sử dụng được giữ nguyên."><button class="btn btn-outline-danger btn-sm">Xóa / ngừng</button></form></div></td></tr> }</tbody></table></div>@if (Model.Total == 0) { <div class="empty-state"><h2>Chưa tìm thấy dịch vụ</h2></div> }</div><partial name="_Pager" model="@((Model.Page, Model.Pages))" />
+<div class="section-heading">
+    <div>
+        <div class="eyebrow">HOTEL SERVICES</div>
+        <h1>Danh mục dịch vụ</h1>
+        <p class="page-subtitle">Giá thay đổi chỉ áp dụng cho lần ghi nhận dịch vụ mới.</p>
+    </div>
+    <a class="btn btn-primary" asp-action="Service">＋ Thêm dịch vụ</a>
+</div>
+<form method="get" class="toolbar">
+    <div class="field">
+        <label for="q">Tìm dịch vụ</label>
+        <input name="q" id="q" value="@Context.Request.Query["q"]" placeholder="Nhập tên dịch vụ" class="form-control" />
+    </div>
+    <button class="btn btn-primary">Tìm kiếm</button>
+</form>
+<div class="panel table-panel">
+    <div class="table-responsive">
+        <table class="table align-middle">
+            <thead>
+                <tr>
+                    <th>Dịch vụ</th>
+                    <th>Đơn vị</th>
+                    <th>Đơn giá</th>
+                    <th>Trạng thái</th>
+                    <th>Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+@foreach (var s in Model.Items)
+{
+                <tr>
+                    <td>
+                        <strong>@s.Name</strong>
+                    </td>
+                    <td>@s.Unit</td>
+                    <td>@Ui.Money(s.UnitPrice)</td>
+                    <td>
+                        <span class="status @(s.IsActive ? "Active" : "OutOfOrder")">@(s.IsActive ? "Đang cung cấp" : "Ngừng cung cấp")</span>
+                    </td>
+                    <td>
+                        <div class="actions">
+                            <a class="btn btn-light btn-sm" asp-action="Service" asp-route-id="@s.Id">Sửa</a>
+                            <form method="post" asp-action="DeleteService" asp-route-id="@s.Id">
+                                <confirm-submit message="Xóa hoặc ngừng cung cấp dịch vụ này? Lịch sử sử dụng được giữ nguyên." label="Xóa / ngừng" button-class="btn btn-outline-danger btn-sm"></confirm-submit>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                }
+</tbody>
+        </table>
+    </div>
+@if (Model.Total == 0)
+{
+    <div class="empty-state">
+        <h2>Chưa tìm thấy dịch vụ</h2>
+    </div>
+    }
+</div>
+<partial name="_Pager" model="@((Model.Page, Model.Pages))" />

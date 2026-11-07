@@ -1,11 +1,77 @@
 @inject Microsoft.Extensions.Options.IOptions<HotelOptions> Hotel
 @inject IHotelClock Clock
-@{ var admin = User.IsInRole(Roles.Admin); var current = ViewContext.RouteData.Values["controller"]?.ToString(); var action = ViewContext.RouteData.Values["action"]?.ToString(); }
-<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><title>@ViewData["Title"] · @Hotel.Value.BrandName Workspace</title><link rel="icon" href="~/images/aurora.svg" type="image/svg+xml" /><link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" /><link rel="stylesheet" href="~/css/site.css" asp-append-version="true" /></head>
-<body class="staff-body"><a href="#main" class="skip-link">Đến nội dung chính</a><aside class="sidebar" id="staff-nav"><a asp-area="Staff" asp-controller="FrontDesk" asp-action="Index" class="brand light"><img src="~/images/aurora.svg" alt="" /><span>@Hotel.Value.BrandName<small>HOTEL MANAGEMENT</small></span></a><div class="sidebar-label">KHÔNG GIAN LÀM VIỆC</div><nav aria-label="Điều hướng nhân viên">
-@if (admin) { <a class="@(current == "Dashboard" ? "active" : "")" asp-area="Staff" asp-controller="Dashboard" asp-action="Index"><span>◫</span>Tổng quan</a> }
-<a class="@(current == "FrontDesk" ? "active" : "")" asp-area="Staff" asp-controller="FrontDesk" asp-action="Index"><span>⌂</span>Lễ tân</a><a class="@(current == "Reservations" ? "active" : "")" asp-area="Staff" asp-controller="Reservations" asp-action="Index"><span>▤</span>Đặt phòng</a><a class="@(current == "Board" ? "active" : "")" asp-area="Staff" asp-controller="Board" asp-action="Index"><span>▦</span>Tình trạng phòng</a><a class="@(current == "Guests" ? "active" : "")" asp-area="Staff" asp-controller="Guests" asp-action="Index"><span>♧</span>Khách hàng</a>
-@if (admin) { <div class="sidebar-label">QUẢN TRỊ</div><a class="@(current == "Catalog" && (action == "Rooms" || action == "Room") ? "active" : "")" asp-area="Staff" asp-controller="Catalog" asp-action="Rooms"><span>▣</span>Danh mục phòng</a><a class="@(current == "Catalog" && (action == "Types" || action == "Type") ? "active" : "")" asp-area="Staff" asp-controller="Catalog" asp-action="Types"><span>◇</span>Loại phòng</a><a class="@(current == "Catalog" && (action == "Services" || action == "Service") ? "active" : "")" asp-area="Staff" asp-controller="Catalog" asp-action="Services"><span>✧</span>Dịch vụ</a><a class="@(current == "Users" ? "active" : "")" asp-area="Staff" asp-controller="Users" asp-action="Index"><span>◎</span>Tài khoản & quyền</a> }
-</nav><div class="sidebar-bottom"><a asp-area="" asp-controller="Home" asp-action="Index">Xem website khách hàng ↗</a><div class="demo-label">MÔI TRƯỜNG ĐỒ ÁN</div></div></aside>
-<div class="workspace"><header class="workspace-topbar"><button class="staff-menu-toggle" aria-controls="staff-nav" aria-expanded="false" aria-label="Mở menu quản lý">☰</button><div><span class="live-dot"></span> @Hotel.Value.BrandName Workspace <span class="muted">/ @ViewData["Title"]</span></div><div class="workspace-account"><span>@Ui.Date(Clock.Today)</span><span class="avatar">@(admin ? "AD" : "LT")</span><div><strong>@(admin ? "Quản trị viên" : "Lễ tân")</strong><small>@User.Identity?.Name</small></div><form asp-area="" asp-controller="Account" asp-action="Logout" method="post"><button class="nav-button">Đăng xuất</button></form></div></header><main id="main" class="workspace-main"><partial name="_Alerts" />@RenderBody()</main><footer class="workspace-footer">@Hotel.Value.Name · Hệ thống quản lý khách sạn <span>Múi giờ Việt Nam · UTC+7</span></footer></div>
-<script src="~/lib/jquery/dist/jquery.min.js"></script><script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script><script src="~/js/site.js" asp-append-version="true"></script>@await RenderSectionAsync("Scripts", required: false)</body></html>
+@{
+    var admin = User.IsInRole(Roles.Admin);
+    var current = ViewContext.RouteData.Values["controller"]?.ToString();
+    var action = ViewContext.RouteData.Values["action"]?.ToString();
+}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@ViewData["Title"] · Quản lý @Hotel.Value.Name</title>
+    <link rel="icon" href="~/images/aurora.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body class="staff-body">
+    <a href="#main" class="skip-link">Đến nội dung chính</a>
+    <aside class="sidebar">
+        <a asp-area="Staff" asp-controller="FrontDesk" asp-action="Index" class="brand light">
+            <img src="~/images/aurora.svg" alt="" />
+            <span>@Hotel.Value.BrandName<small>QUẢN LÝ KHÁCH SẠN</small></span>
+        </a>
+        <div class="sidebar-label">VẬN HÀNH HẰNG NGÀY</div>
+        <nav aria-label="Điều hướng nhân viên">
+            @if (admin)
+            {
+                <a class="@(current == "Dashboard" ? "active" : "")" asp-area="Staff" asp-controller="Dashboard" asp-action="Index"><span>◫</span>Tổng quan & báo cáo</a>
+            }
+            <a class="@(current == "FrontDesk" ? "active" : "")" asp-area="Staff" asp-controller="FrontDesk" asp-action="Index"><span>⌂</span>Lễ tân</a>
+            <a class="@(current == "Reservations" ? "active" : "")" asp-area="Staff" asp-controller="Reservations" asp-action="Index"><span>▤</span>Đơn đặt phòng</a>
+            <a class="@(current == "Board" ? "active" : "")" asp-area="Staff" asp-controller="Board" asp-action="Index"><span>▦</span>Tình trạng phòng</a>
+            <a class="@(current == "Guests" ? "active" : "")" asp-area="Staff" asp-controller="Guests" asp-action="Index"><span>◎</span>Khách hàng</a>
+            @if (admin)
+            {
+                <div class="sidebar-label">DANH MỤC & HỆ THỐNG</div>
+                <a class="@(current == "Catalog" && (action == "Rooms" || action == "Room") ? "active" : "")" asp-area="Staff" asp-controller="Catalog" asp-action="Rooms"><span>▣</span>Danh mục phòng</a>
+                <a class="@(current == "Catalog" && (action == "Types" || action == "Type") ? "active" : "")" asp-area="Staff" asp-controller="Catalog" asp-action="Types"><span>◇</span>Loại phòng</a>
+                <a class="@(current == "Catalog" && (action == "Services" || action == "Service") ? "active" : "")" asp-area="Staff" asp-controller="Catalog" asp-action="Services"><span>✧</span>Dịch vụ</a>
+                <a class="@(current == "Users" ? "active" : "")" asp-area="Staff" asp-controller="Users" asp-action="Index"><span>⚙</span>Tài khoản & quyền</a>
+            }
+        </nav>
+        <div class="sidebar-bottom">
+            <a asp-area="" asp-controller="Home" asp-action="Index">Xem website khách hàng ↗</a>
+            <small>Aurora · Hotel Management</small>
+        </div>
+    </aside>
+    <div class="workspace">
+        <header class="workspace-topbar">
+            <div><span class="live-dot"></span> @ViewData["Title"]</div>
+            <div class="workspace-account">
+                <span class="work-date">@Ui.Date(Clock.Today)</span>
+                <details class="account-menu">
+                    <summary><span class="avatar">@(admin ? "AD" : "LT")</span> @(admin ? "Quản trị viên" : "Lễ tân")</summary>
+                    <div class="account-dropdown">
+                        <small>@User.Identity?.Name</small>
+                        <a asp-area="" asp-controller="Account" asp-action="ChangePassword">Đổi mật khẩu</a>
+                        <form asp-area="" asp-controller="Account" asp-action="Logout" method="post">
+                            <button class="nav-button">Đăng xuất</button>
+                        </form>
+                    </div>
+                </details>
+            </div>
+        </header>
+        <main id="main" class="workspace-main">
+            <partial name="_Alerts" />
+            @RenderBody()
+        </main>
+        <footer class="workspace-footer">
+            <span>@Hotel.Value.Name · Hệ thống quản lý khách sạn</span>
+            <span>Múi giờ Việt Nam · UTC+7</span>
+        </footer>
+    </div>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

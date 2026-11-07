@@ -2,7 +2,40 @@
 
 ## Kiến trúc và trách nhiệm
 
-`Controllers` phục vụ khách; `Areas/Staff/Controllers` phục vụ nhân viên. `ViewModels` xác thực dữ liệu nhập và ngăn overposting. `HotelOperations` giữ quy tắc kỳ ở, khả dụng, trạng thái đơn, nhận phòng, phí và thu tiền. `CatalogService` dùng chung giữa MVC và REST API cho dịch vụ; quản lý phòng, loại phòng, lọc HTML và upload. `HotelDbContext` là schema duy nhất, kế thừa IdentityDbContext. `SeedData` chỉ chạy trong Development. `Views/Shared` chứa thành phần dùng chung; CSS và JS nằm trong `wwwroot`.
+Ứng dụng MVC đơn giản cho một khách sạn. Mỗi entity, enum và view model có file riêng. Các lớp vẫn giữ namespace ổn định để dữ liệu và migrations tương thích bản cũ.
+
+| Thành phần | Trách nhiệm |
+|---|---|
+| Controllers / Areas/Staff | Nhận request, kiểm tra ModelState/quyền, gọi service, trả trang hoặc redirect |
+| ViewModels theo chức năng | Dữ liệu nhập với DataAnnotations và dữ liệu trang |
+| RoomAvailabilityService | Kiểm tra kỳ ở, sức chứa, khoảng trùng lịch, lọc/phân trang |
+| ReservationService | Tạo, sửa, xác nhận, hủy/từ chối đơn |
+| FrontDeskService | Nhận phòng, bảng kê, dịch vụ, thu tiền, trả phòng |
+| RoomStatusService | Dọn phòng và trạng thái khai thác |
+| CatalogService / RoomImageService | Danh mục, lọc mô tả, kiểm tra và mã hóa lại ảnh |
+| ReportService | Tổng quan và xuất CSV tiền đã thu |
+| HotelTransaction | Giao dịch và khóa SQL chung cho thay đổi nghiệp vụ |
+| HotelDbContext | Ánh xạ EF Core + Identity, ràng buộc và chỉ mục |
+| Extensions | Đăng ký dependency, pipeline HTTP, khởi tạo môi trường |
+| ConfirmSubmitTagHelper | Bước xác nhận HTML do C# tạo, dùng lại ở các biểu mẫu |
+| Views / wwwroot/css | Razor tạo HTML và CSS chia theo màn hình |
+
+`Program.cs` chỉ ghép cấu hình và khởi động. Seed chạy một lần ở Development hoặc qua lệnh bootstrap hosting có chủ đích. Không đổi schema trong lần tái cấu trúc này.
+
+## Luồng một yêu cầu
+
+```mermaid
+flowchart LR
+    Browser[Biểu mẫu HTML] --> Controller[Controller C#]
+    Controller --> Validation[ViewModel và quyền]
+    Validation --> Service[Service nghiệp vụ]
+    Service --> Transaction[HotelTransaction]
+    Transaction --> Database[(SQL Server)]
+    Controller --> View[Razor View]
+    View --> Browser
+```
+
+Tìm kiếm dùng GET để giữ bộ lọc trong URL. Các thay đổi dùng POST cùng antiforgery token. Gửi thành công rồi redirect để tải lại không gửi lại biểu mẫu. Giá và quyền sở hữu luôn đọc lại từ database. Không cần JavaScript ứng dụng.
 
 Controller kiểm tra quyền qua `[Authorize]`, xác thực ModelState, đọc UserId từ claim rồi gọi service. Giá, chủ hồ sơ, tổng phải thu và trạng thái không lấy từ trường do trình duyệt tự quyết định. Server trả 400 cho validation/CSRF, 401/403 ở API và 404 khi khách truy cập đơn không thuộc mình; MVC dùng trang lỗi/redirect login theo Identity.
 
@@ -104,7 +137,7 @@ Occupancy suy ra từ Reservation.Status=CheckedIn. Clean/Dirty không trộn v�
 
 ## Chống thao tác đồng thời
 
-Tất cả lệnh ghi nghiệp vụ qua `HotelOperations.Atomic`: bắt đầu transaction, lấy `sp_getapplock` Exclusive với LockOwner=Transaction và tài nguyên `AuroraHotel:operations`, đọc lại dữ liệu, kiểm tra, SaveChanges, Commit. Lỗi tự rollback. Transaction-scoped lock của SQL Server áp dụng giữa các process/server cùng database; không dựa vào semaphore trong bộ nhớ. Unique indexes là lớp bảo vệ bổ sung.
+Tất cả lệnh ghi nghiệp vụ qua `HotelTransaction.RunAsync`: bắt đầu transaction, lấy `sp_getapplock` Exclusive với LockOwner=Transaction và tài nguyên `AuroraHotel:operations`, đọc lại dữ liệu, kiểm tra, SaveChanges, Commit. Lỗi tự rollback. Transaction-scoped lock của SQL Server áp dụng giữa các process/server cùng database; không dựa vào semaphore trong bộ nhớ. Unique indexes là lớp bảo vệ bổ sung.
 
 Đây là khóa chung cho một khách sạn, dễ đọc và dễ chứng minh tính đúng trong đồ án; đổi lại các ghi nghiệp vụ được tuần tự hóa. Nếu mở rộng tải cao, thay bằng khóa theo phòng/folio với thứ tự lấy khóa thống nhất và kiểm thử deadlock. Không thêm retry mù khi request có tác dụng phụ. Giá chốt chỉ đổi khi nhân viên chủ động thay phòng/lịch trước nhận phòng, và UI báo rõ chính sách.
 
@@ -112,7 +145,7 @@ Tất cả lệnh ghi nghiệp vụ qua `HotelOperations.Atomic`: bắt đầu t
 
 ```mermaid
 flowchart LR
-    Home[Trang chủ] --> Search[Tìm phòng / AJAX]
+    Home[Trang chủ] --> Search[Tìm phòng / GET]
     Search --> Detail[Chi tiết phòng]
     Detail --> Login[Đăng nhập / đăng ký]
     Login --> Request[Gửi yêu cầu Pending]
@@ -175,7 +208,7 @@ Không chỉ ẩn nút: server chặn từng controller/action. Customer truy v�
 | `/api/services/{id}` | PUT | Admin, ServiceInput; 204 |
 | `/api/services/{id}` | DELETE | Admin; xóa chưa dùng/ngừng nếu có lịch sử; 204 |
 
-AJAX tìm kiếm gọi API khả dụng và cập nhật kết quả, URL và phân trang. Form GET vẫn chạy khi tắt JavaScript. Link quay lại từ chi tiết giữ bộ lọc; return URL được kiểm tra nội bộ. Body JSON ghi dữ liệu dùng header `X-CSRF-TOKEN` chứa token lấy từ hidden input trên trang đã xác thực, đồng thời gửi cookie. MVC form tạo token bằng Tag Helpers.
+Tìm kiếm và phân trang dùng biểu mẫu GET. Link quay lại từ chi tiết giữ bộ lọc; return URL được kiểm tra nội bộ. Xem trước tiền phòng gửi POST với intent=preview và không tạo đơn. REST API vẫn dùng C#, kiểm tra quyền và token X-CSRF-TOKEN cho thao tác ghi; giao diện Razor dùng hidden token do Form Tag Helper tạo.
 
 ## Bảo mật, nhập liệu và quốc tế hóa
 
@@ -184,3 +217,15 @@ Identity cookie HttpOnly/SameSite Lax, lockout 5 lần đăng nhập thất bạ
 Upload JPEG/PNG/WebP tối đa 5 MB; kiểm tra extension và định dạng giải mã; giới hạn 8.000 px mỗi chiều/32 MP trước giải mã, tên UUID, ghi lại WebP vào static uploads. Không dùng tên file client, không giữ metadata hoặc file thực thi. CSP chỉ cho tài nguyên/script cùng nguồn; header nosniff/frame DENY. Không trả lỗi stack trace ra trình duyệt.
 
 Nhãn nghiệp vụ ở Ui.Label; định dạng Ui.Date/Money/Time, văn hóa vi-VN, HotelClock dùng múi giờ cấu hình (mặc định Việt Nam). Để mở rộng ngôn ngữ: chuyển nhãn Views/DataAnnotations/Ui.Label sang Resources `.resx` + `IViewLocalizer`/`IStringLocalizer`, thêm supported cultures và kiểm thử từng ngôn ngữ. Hiện không có nút đổi ngôn ngữ.
+
+## Quy ước mở rộng
+
+1. Thêm dữ liệu nhập vào ViewModels của đúng chức năng, kèm validation tiếng Việt.
+2. Đặt quy tắc nghiệp vụ trong service tương ứng. Thao tác nhiều bản ghi dùng HotelTransaction.
+3. Controller giữ ngắn: kiểm tra request, gọi service, thông báo và redirect.
+4. Không nhận giá, chủ sở hữu hoặc quyền truy cập từ trường ẩn do trình duyệt gửi.
+5. Khi sửa schema, tạo migration; không sửa migration đã áp dụng hoặc xóa database của người dùng.
+6. Viết kiểm thử hành vi cho thay đổi nghiệp vụ. Chạy solution test trên database riêng.
+7. Giữ giao diện bằng Razor/HTML/CSS. Dùng confirm-submit cho xác nhận; dùng CSS print cho chứng từ.
+
+Namespace Models và ViewModels được giữ ổn định; thư mục con giúp tra cứu theo thực thể hoặc chức năng. Không tạo nhiều tầng repository chỉ để bọc lại EF Core.

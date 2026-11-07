@@ -1,8 +1,74 @@
-@inject Microsoft.Extensions.Options.IOptions<HotelOptions> Hotel
 @model DashboardModel
-@{ ViewData["Title"] = "Tổng quan"; var total = Math.Max(1, Model.Counts.Values.Sum()); }
-<div class="section-heading"><div><div class="eyebrow">@Hotel.Value.Name.ToUpperInvariant() / TỔNG QUAN</div><h1>Một ngày mới, những trải nghiệm mới.</h1><p class="page-subtitle">Theo dõi hoạt động và những con số của khách sạn.</p></div><a class="btn btn-primary" asp-controller="Reservations" asp-action="Create">＋ Tạo đặt phòng</a></div>
-<div class="panel"><div class="section-heading mb-0"><div><h2 class="mb-1">Báo cáo hoạt động</h2><small>Đơn theo ngày tạo · Tiền thu theo thời điểm thanh toán</small></div><form method="get" class="date-filter"><div class="field"><label for="from">Từ ngày</label><input id="from" type="date" name="from" value="@Model.From.ToString("yyyy-MM-dd")" class="form-control" required /></div><div class="field"><label for="to">Đến ngày</label><input id="to" type="date" name="to" value="@Model.To.ToString("yyyy-MM-dd")" class="form-control" required /></div><button class="btn btn-light btn-sm">Áp dụng</button></form></div></div>
-<div class="stats-grid"><div class="stat-card"><span class="stat-label">Tổng tiền đã thu</span><span class="stat-symbol">₫</span><div class="stat-value money">@Model.Revenue.ToString("N0") <small>VND</small></div><small>@Model.PaymentCount thanh toán trong kỳ</small></div><div class="stat-card"><span class="stat-label">Đơn đặt trong kỳ</span><span class="stat-symbol">▤</span><div class="stat-value">@Model.Counts.Values.Sum().ToString("00")</div><small>@Model.Counts.GetValueOrDefault(ReservationStatus.Pending) đơn đang chờ xác nhận</small></div><div class="stat-card"><span class="stat-label">Phòng đang có khách</span><span class="stat-symbol">⌂</span><div class="stat-value">@Model.Occupied.ToString("00") <small>/ @Model.Available hoạt động</small></div><small>Tình trạng hiện tại</small></div><div class="stat-card"><span class="stat-label">Phòng cần dọn</span><span class="stat-symbol">✧</span><div class="stat-value">@Model.Dirty.ToString("00")</div><a asp-controller="Board" asp-action="Index" asp-route-state="dirty"><small>Xem bảng tình trạng →</small></a></div></div>
-<div class="dashboard-grid"><div class="panel"><h2 class="mb-4">Trạng thái đặt phòng</h2><div class="report-bars">@foreach (var status in Enum.GetValues<ReservationStatus>()) { var count = Model.Counts.GetValueOrDefault(status); <div class="report-row"><span>@status.Label()</span><div class="bar-track"><div class="bar-fill" style="width:@((count * 100 / total).ToString(System.Globalization.CultureInfo.InvariantCulture))%"></div></div><strong>@count</strong></div> }</div></div><div class="panel"><div class="eyebrow">BẮT ĐẦU CA LÀM VIỆC</div><h2>Mọi thứ trong tầm tay.</h2><p class="page-subtitle mb-4">Đón khách, chăm sóc kỳ nghỉ và chuẩn bị những căn phòng sẵn sàng.</p><div class="actions"><a class="btn btn-primary btn-sm" asp-controller="FrontDesk" asp-action="Index">Mở lễ tân →</a><a class="btn btn-light btn-sm" asp-controller="Board" asp-action="Index">Tình trạng phòng</a></div><div class="notice mb-0">Tiền đã thu lấy từ các khoản thanh toán thực tế. Đơn chưa thanh toán chưa được tính vào doanh thu thu tiền.</div></div></div>
-<div class="section-heading"><h2>Đặt phòng gần đây</h2><a class="text-link" asp-controller="Reservations" asp-action="Index">Xem tất cả →</a></div><div class="panel table-panel"><partial name="_ReservationsTable" model="Model.Recent" /></div>
+@inject IHotelClock Clock
+@{
+    ViewData["Title"] = "Tổng quan & báo cáo";
+    var total = Math.Max(1, Model.Counts.Values.Sum());
+}
+<div class="section-heading">
+    <div><div class="eyebrow">AURORA / TỔNG QUAN</div><h1>Hoạt động khách sạn</h1><p class="page-subtitle">Nắm tình trạng phòng và theo dõi kết quả kinh doanh.</p></div>
+    <a class="btn btn-primary" asp-controller="Reservations" asp-action="Create">＋ Tạo đặt phòng</a>
+</div>
+<div class="panel">
+    <div class="section-heading mb-0">
+        <div><h2 class="mb-1">Khoảng thời gian báo cáo</h2><small>Đơn theo ngày tạo · Tiền thu theo ngày thanh toán</small></div>
+        <form method="get" class="date-filter">
+            <div class="field"><label for="from">Từ ngày</label><input id="from" type="date" name="from" value="@Model.From.ToString("yyyy-MM-dd")" class="form-control" required /></div>
+            <div class="field"><label for="to">Đến ngày</label><input id="to" type="date" name="to" value="@Model.To.ToString("yyyy-MM-dd")" class="form-control" required /></div>
+            <button class="btn btn-primary">Xem báo cáo</button>
+            <a class="btn btn-light" asp-action="Export" asp-route-from="@Model.From.ToString("yyyy-MM-dd")" asp-route-to="@Model.To.ToString("yyyy-MM-dd")">Tải CSV ↓</a>
+        </form>
+    </div>
+</div>
+<div class="stats-grid">
+    <article class="stat-card">
+        <span class="stat-label">Tổng tiền đã thu</span><span class="stat-symbol">₫</span>
+        <div class="stat-value money">@Model.Revenue.ToString("N0") <small>VND</small></div>
+        <small>@Model.PaymentCount thanh toán trong kỳ</small>
+    </article>
+    <article class="stat-card">
+        <span class="stat-label">Đơn đặt trong kỳ</span><span class="stat-symbol">▤</span>
+        <div class="stat-value">@Model.Counts.Values.Sum().ToString("00")</div>
+        <small>@Model.Counts.GetValueOrDefault(ReservationStatus.Pending) đơn đang chờ xác nhận</small>
+    </article>
+    <article class="stat-card">
+        <span class="stat-label">Đang lưu trú</span><span class="stat-symbol">⌂</span>
+        <div class="stat-value">@Model.Occupied.ToString("00") <small>phòng</small></div>
+        <small>@Model.Available phòng sạch, sẵn sàng hôm nay</small>
+    </article>
+    <article class="stat-card">
+        <span class="stat-label">Cần dọn phòng</span><span class="stat-symbol">✧</span>
+        <div class="stat-value">@Model.Dirty.ToString("00")</div>
+        <a asp-controller="Board" asp-action="Index" asp-route-state="dirty"><small>Xem các phòng cần dọn →</small></a>
+    </article>
+</div>
+<div class="dashboard-grid">
+    <section class="panel">
+        <h2 class="mb-4">Trạng thái đơn đặt trong kỳ</h2>
+        <div class="report-bars">
+            @foreach (var status in Enum.GetValues<ReservationStatus>())
+            {
+                var count = Model.Counts.GetValueOrDefault(status);
+                <div class="report-row">
+                    <span>@status.Label()</span>
+                    <div class="bar-track"><div class="bar-fill" style="width:@((count * 100 / total).ToString(System.Globalization.CultureInfo.InvariantCulture))%"></div></div>
+                    <strong>@count</strong>
+                </div>
+            }
+        </div>
+    </section>
+    <section class="panel">
+        <div class="eyebrow">CA LÀM VIỆC · @Ui.Date(Clock.Today)</div>
+        <h2>Bắt đầu từ những việc cần làm.</h2>
+        <p class="page-subtitle mb-4">Kiểm tra khách đến, cập nhật dịch vụ và chuẩn bị phòng sạch cho kỳ ở tiếp theo.</p>
+        <div class="actions">
+            <a class="btn btn-primary" asp-controller="FrontDesk" asp-action="Index">Mở lễ tân →</a>
+            <a class="btn btn-light" asp-controller="Board" asp-action="Index">Tình trạng phòng</a>
+        </div>
+        <div class="notice mb-0">Chỉ các khoản đã thu mới được tính vào báo cáo tiền thu. Số phòng hiển thị là tình trạng hiện tại.</div>
+    </section>
+</div>
+<div class="section-heading">
+    <h2>Đơn đặt gần đây</h2>
+    <a class="text-link" asp-controller="Reservations" asp-action="Index">Xem tất cả →</a>
+</div>
+<div class="panel table-panel"><partial name="_ReservationsTable" model="Model.Recent" /></div>

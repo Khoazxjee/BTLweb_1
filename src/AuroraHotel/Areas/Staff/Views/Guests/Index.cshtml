@@ -1,3 +1,59 @@
 @model PageResult<GuestProfile>
 @{ ViewData["Title"] = "Hồ sơ khách hàng"; }
-<div class="section-heading"><div><div class="eyebrow">GUEST PROFILES</div><h1>Những vị khách của Aurora.</h1><p class="page-subtitle">Thông tin liên hệ và lịch sử lưu trú trong một hồ sơ.</p></div><a class="btn btn-primary" asp-action="Edit">＋ Tạo hồ sơ khách</a></div><form method="get" class="toolbar"><div class="field"><label for="q">Tìm khách hàng</label><input id="q" name="q" class="form-control" value="@Context.Request.Query["q"]" placeholder="Họ tên, email hoặc số điện thoại" /></div><button class="btn btn-primary">Tìm kiếm</button></form><div class="panel table-panel"><div class="table-responsive"><table class="table align-middle"><thead><tr><th>Khách hàng</th><th>Liên hệ</th><th>Hồ sơ</th><th></th></tr></thead><tbody>@foreach (var guest in Model.Items) { <tr><td><strong>@guest.FullName</strong><small>KH-@guest.Id.ToString("D4")</small></td><td>@guest.Email<small>@guest.Phone</small></td><td><span class="status">@(guest.UserId == null ? "Khách trực tiếp" : "Có tài khoản")</span></td><td><a asp-action="Details" asp-route-id="@guest.Id" class="btn btn-light btn-sm">Xem hồ sơ →</a></td></tr> }</tbody></table></div>@if (Model.Total == 0) { <div class="empty-state"><h2>Chưa tìm thấy khách</h2><p>Thử từ khóa khác hoặc tạo hồ sơ mới.</p></div> }</div><partial name="_Pager" model="@((Model.Page, Model.Pages))" />
+<div class="section-heading">
+    <div>
+        <div class="eyebrow">GUEST PROFILES</div>
+        <h1>Những vị khách của Aurora.</h1>
+        <p class="page-subtitle">Thông tin liên hệ và lịch sử lưu trú trong một hồ sơ.</p>
+    </div>
+    <a class="btn btn-primary" asp-action="Edit">＋ Tạo hồ sơ khách</a>
+</div>
+<form method="get" class="toolbar">
+    <div class="field">
+        <label for="q">Tìm khách hàng</label>
+        <input id="q" name="q" class="form-control" value="@Context.Request.Query["q"]" placeholder="Họ tên, email hoặc số điện thoại" />
+    </div>
+    <button class="btn btn-primary">Tìm kiếm</button>
+</form>
+<div class="panel table-panel">
+    <div class="table-responsive">
+        <table class="table align-middle">
+            <thead>
+                <tr>
+                    <th>Khách hàng</th>
+                    <th>Liên hệ</th>
+                    <th>Hồ sơ</th>
+                    <th>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+@foreach (var guest in Model.Items)
+{
+                <tr>
+                    <td>
+                        <strong>@guest.FullName</strong>
+                        <small>KH-@guest.Id.ToString("D4")</small>
+                    </td>
+                    <td>@guest.Email<small>@guest.Phone</small>
+                    </td>
+                    <td>
+                        <span class="status">@(guest.UserId == null ? "Khách trực tiếp" : "Có tài khoản")</span>
+                    </td>
+                    <td>
+                        <a asp-action="Details" asp-route-id="@guest.Id" class="btn btn-light btn-sm">Xem hồ sơ →</a>
+                    </td>
+                </tr>
+                }
+</tbody>
+        </table>
+    </div>
+@if (Model.Total == 0)
+{
+    <div class="empty-state">
+        <h2>Chưa tìm thấy khách</h2>
+        <p>Thử từ khóa khác hoặc tạo hồ sơ mới.</p>
+    </div>
+    }
+</div>
+<partial name="_Pager" model="@((Model.Page, Model.Pages))" />

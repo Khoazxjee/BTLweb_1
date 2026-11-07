@@ -3,7 +3,8 @@
 @if (!Model.Any()) { <div class="empty-state"><span>◇</span><h3>Chưa có đơn đặt phòng</h3><p>Các đơn phù hợp sẽ xuất hiện tại đây.</p></div> }
 else {
 <div class="table-responsive"><table class="table align-middle"><thead><tr><th>Mã đặt phòng</th><th>Khách / Phòng</th><th>Kỳ lưu trú</th><th>Tiền phòng</th><th>Trạng thái</th><th></th></tr></thead><tbody>
-@foreach (var item in Model) {
+@foreach (var item in Model)
+{
 <tr><td><a asp-area="@(staff ? "Staff" : "")" asp-controller="@(staff ? "Reservations" : "Bookings")" asp-action="Details" asp-route-id="@item.Id" class="code-link">@item.ConfirmationCode</a><small>@Ui.Time(item.CreatedAt)</small></td>
 <td><strong>@(staff ? item.GuestProfile.FullName : item.Room.RoomType.Name)</strong><small>Phòng @item.Room.RoomNumber · @item.GuestCount khách</small></td>
 <td>@Ui.Date(item.ArrivalDate)<small>đến @Ui.Date(item.DepartureDate) · @item.Nights đêm</small></td>

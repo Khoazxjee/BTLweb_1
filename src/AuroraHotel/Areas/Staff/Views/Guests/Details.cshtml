@@ -1,3 +1,22 @@
 @model GuestProfile
 @{ ViewData["Title"] = "Hồ sơ khách"; }
-<a class="back-link" asp-action="Index">← Danh sách khách</a><div class="section-heading"><div><div class="eyebrow">KH-@Model.Id.ToString("D4")</div><h1>@Model.FullName</h1><p class="page-subtitle">@Model.Email · @Model.Phone</p></div><div class="actions"><a class="btn btn-light" asp-action="Edit" asp-route-id="@Model.Id">Cập nhật hồ sơ</a><a class="btn btn-primary" asp-controller="Reservations" asp-action="Create" asp-route-guestId="@Model.Id">＋ Tạo đặt phòng</a></div></div><div class="panel mb-4"><h2>Ghi chú hồ sơ</h2><p class="muted mb-0">@(string.IsNullOrWhiteSpace(Model.Notes) ? "Chưa có ghi chú." : Model.Notes)</p></div><h2 class="mb-4">Lịch sử đặt phòng (@Model.Reservations.Count)</h2><div class="panel table-panel"><partial name="_ReservationsTable" model="Model.Reservations.OrderByDescending(x => x.CreatedAt)" /></div>
+<a class="back-link" asp-action="Index">← Danh sách khách</a>
+<div class="section-heading">
+    <div>
+        <div class="eyebrow">KH-@Model.Id.ToString("D4")</div>
+        <h1>@Model.FullName</h1>
+        <p class="page-subtitle">@Model.Email · @Model.Phone</p>
+    </div>
+    <div class="actions">
+        <a class="btn btn-light" asp-action="Edit" asp-route-id="@Model.Id">Cập nhật hồ sơ</a>
+        <a class="btn btn-primary" asp-controller="Reservations" asp-action="Create" asp-route-guestId="@Model.Id">＋ Tạo đặt phòng</a>
+    </div>
+</div>
+<div class="panel mb-4">
+    <h2>Ghi chú hồ sơ</h2>
+    <p class="muted mb-0">@(string.IsNullOrWhiteSpace(Model.Notes) ? "Chưa có ghi chú." : Model.Notes)</p>
+</div>
+<h2 class="mb-4">Lịch sử đặt phòng (@Model.Reservations.Count)</h2>
+<div class="panel table-panel">
+    <partial name="_ReservationsTable" model="Model.Reservations.OrderByDescending(x => x.CreatedAt)" />
+</div>

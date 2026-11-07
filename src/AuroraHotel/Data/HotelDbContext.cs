@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace AuroraHotel.Data;
+
 public class HotelDbContext(DbContextOptions<HotelDbContext> options) : IdentityDbContext<ApplicationUser>(options)
 {
     public DbSet<RoomType> RoomTypes => Set<RoomType>();
@@ -13,6 +14,7 @@ public class HotelDbContext(DbContextOptions<HotelDbContext> options) : Identity
     public DbSet<Folio> Folios => Set<Folio>();
     public DbSet<FolioItem> FolioItems => Set<FolioItem>();
     public DbSet<Payment> Payments => Set<Payment>();
+
     protected override void OnModelCreating(ModelBuilder b)
     {
         base.OnModelCreating(b);
@@ -26,11 +28,13 @@ public class HotelDbContext(DbContextOptions<HotelDbContext> options) : Identity
         b.Entity<FolioItem>().HasIndex(x => x.FolioId).IsUnique().HasFilter("[Kind] = 0");
         b.Entity<Room>().ToTable(t => t.HasCheckConstraint("CK_Room_Rate", "[NightlyRate] > 0"));
         b.Entity<RoomType>().ToTable(t => t.HasCheckConstraint("CK_RoomType_Capacity", "[Capacity] BETWEEN 1 AND 20"));
-        b.Entity<Reservation>().ToTable(t => {
+        b.Entity<Reservation>().ToTable(t =>
+        {
             t.HasCheckConstraint("CK_Reservation_Dates", "[ArrivalDate] < [DepartureDate]");
             t.HasCheckConstraint("CK_Reservation_Values", "[GuestCount] > 0 AND [NightlyRateSnapshot] > 0");
         });
-        b.Entity<FolioItem>().ToTable(t => {
+        b.Entity<FolioItem>().ToTable(t =>
+        {
             t.HasCheckConstraint("CK_FolioItem_Values", "[Quantity] > 0 AND [UnitPriceSnapshot] >= 0");
             t.HasCheckConstraint("CK_FolioItem_Kind", "([Kind] = 0 AND [ServiceId] IS NULL) OR ([Kind] = 1 AND [ServiceId] IS NOT NULL)");
         });
@@ -39,8 +43,13 @@ public class HotelDbContext(DbContextOptions<HotelDbContext> options) : Identity
         foreach (var entity in b.Model.GetEntityTypes())
         {
             foreach (var property in entity.GetProperties().Where(p => p.ClrType == typeof(decimal)))
-            { property.SetPrecision(18); property.SetScale(0); }
-            foreach (var fk in entity.GetForeignKeys()) fk.DeleteBehavior = DeleteBehavior.Restrict;
+            {
+                property.SetPrecision(18);
+                property.SetScale(0);
+            }
+
+            foreach (var fk in entity.GetForeignKeys())
+                fk.DeleteBehavior = DeleteBehavior.Restrict;
         }
     }
 }

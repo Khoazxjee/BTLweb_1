@@ -1,3 +1,52 @@
 @model BookingPage
-@{ ViewData["Title"] = "Yêu cầu đặt phòng"; }
-<section class="container section"><div class="eyebrow">01 CHỌN PHÒNG ── <strong>02 YÊU CẦU ĐẶT PHÒNG</strong> ── 03 CHỜ XÁC NHẬN</div><h1>Kỳ nghỉ đang đến gần.</h1><div class="detail-grid"><div class="panel"><h2>Thông tin đặt phòng</h2><div asp-validation-summary="All" class="text-danger" role="alert"></div><div class="guest-summary"><strong>@Model.Guest.FullName</strong><p>@Model.Guest.Email · @Model.Guest.Phone</p><a asp-controller="Account" asp-action="Profile">Cập nhật liên hệ ↗</a></div><form asp-action="Create" method="post" class="stay-estimate" data-rate="@Model.Room.NightlyRate.ToString("0", System.Globalization.CultureInfo.InvariantCulture)"><input type="hidden" name="RoomId" value="@Model.Room.Id" /><partial name="_StayFields" model="Model.Input" /><div class="estimate-total" aria-live="polite"></div><div class="notice">Yêu cầu ở trạng thái <strong>Đang chờ xác nhận</strong> và chưa giữ chỗ. Không cần thanh toán trực tuyến.</div><button class="btn btn-primary">Gửi yêu cầu đặt phòng →</button></form></div><aside class="room-card"><img src="@Model.Room.ImagePath" class="summary-image" alt="@Model.Room.RoomType.Name" /><div class="room-content"><div class="eyebrow">PHÒNG @Model.Room.RoomNumber</div><h2>@Model.Room.RoomType.Name</h2><p>Tối đa @Model.Room.RoomType.Capacity khách</p><strong>@Ui.Money(Model.Room.NightlyRate) / đêm</strong><p class="muted mt-3">Giá dự kiến được đọc lại từ hệ thống khi gửi yêu cầu.</p></div></aside></div></section>
+@{
+    ViewData["Title"] = "Yêu cầu đặt phòng";
+    var nights = Model.Input.DepartureDate.DayNumber - Model.Input.ArrivalDate.DayNumber;
+}
+<section class="container section">
+    <div class="booking-steps"><span>01 Chọn phòng</span><span>→</span><strong>02 Kiểm tra & gửi yêu cầu</strong><span>→</span><span>03 Chờ xác nhận</span></div>
+    <h1>Kiểm tra kỳ nghỉ của bạn.</h1>
+    <p class="page-subtitle mb-4">Xem lại thông tin trước khi gửi yêu cầu đến lễ tân.</p>
+    <div class="detail-grid">
+        <div class="panel">
+            <h2>Thông tin đặt phòng</h2>
+            <div asp-validation-summary="All" class="text-danger" role="alert"></div>
+            @if (ViewData["Previewed"] is true)
+            {
+                <div class="alert alert-success" role="status">Đã kiểm tra lịch và tính lại tiền phòng. Bạn có thể gửi yêu cầu bên dưới.</div>
+            }
+            <div class="guest-summary">
+                <strong>@Model.Guest.FullName</strong>
+                <p>@Model.Guest.Email · @Model.Guest.Phone</p>
+                <a asp-controller="Account" asp-action="Profile">Cập nhật liên hệ ↗</a>
+            </div>
+            <form asp-action="Create" method="post">
+                <input type="hidden" name="RoomId" value="@Model.Room.Id" />
+                <partial name="_StayFields" model="Model.Input" />
+                <div class="notice">Yêu cầu sẽ ở trạng thái <strong>Chờ xác nhận</strong>. Phòng được giữ sau khi lễ tân xác nhận; không cần thanh toán trực tuyến.</div>
+                <div class="actions">
+                    <button class="btn btn-light" name="intent" value="preview">Tính lại giá & kiểm tra lịch</button>
+                    <button class="btn btn-primary" name="intent" value="book">Gửi yêu cầu →</button>
+                </div>
+            </form>
+        </div>
+        <aside class="room-card">
+            <img src="@Model.Room.ImagePath" class="summary-image" alt="@Model.Room.RoomType.Name" />
+            <div class="room-content">
+                <div class="eyebrow">PHÒNG @Model.Room.RoomNumber</div>
+                <h2>@Model.Room.RoomType.Name</h2>
+                <p>Tối đa @Model.Room.RoomType.Capacity khách</p>
+                <dl class="detail-list">
+                    <dt>Nhận phòng</dt><dd>@Ui.Date(Model.Input.ArrivalDate)</dd>
+                    <dt>Trả phòng</dt><dd>@Ui.Date(Model.Input.DepartureDate)</dd>
+                    <dt>Giá mỗi đêm</dt><dd>@Ui.Money(Model.Room.NightlyRate)</dd>
+                </dl>
+                @if (nights is > 0 and <= 365)
+                {
+                    <div class="estimate-summary"><small>@nights đêm · Tiền phòng dự kiến</small><strong>@Ui.Money(nights * Model.Room.NightlyRate)</strong></div>
+                }
+                <p class="form-note">Sau khi sửa ngày ở, chọn “Tính lại giá & kiểm tra lịch” để cập nhật tổng tiền.</p>
+            </div>
+        </aside>
+    </div>
+</section>

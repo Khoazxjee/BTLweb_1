@@ -1,10 +1,95 @@
-@inject Microsoft.Extensions.Options.IOptions<HotelOptions> Hotel
 @model List<Room>
+@inject Microsoft.Extensions.Options.IOptions<HotelOptions> Hotel
 @inject IHotelClock Clock
-@{ ViewData["Title"] = "Chạm vào bình yên"; }
-<section class="hero"><img src="~/images/hero.jpg" class="hero-image" alt="Khách sạn giữa khu vườn nhiệt đới và hồ bơi xanh mát" fetchpriority="high" /><div class="hero-shade"></div><div class="container hero-content"><div class="eyebrow">@Hotel.Value.Name.ToUpperInvariant() · ĐÀ NẴNG</div><h1>Chạm vào<br /><em>những bình yên.</em></h1><p>Rời xa nhịp sống vội vàng.<br />Một không gian tinh tế, một kỳ nghỉ của riêng bạn.</p><a href="#rooms" class="hero-link">Khám phá @Hotel.Value.BrandName <span>↓</span></a></div><div class="hero-caption">NƠI NHỮNG KHOẢNH KHẮC TRỞ THÀNH KỶ NIỆM</div></section>
-<div class="container booking-search-wrap"><form method="get" asp-controller="Rooms" asp-action="Index" class="search-panel home-search"><div class="search-label"><span class="eyebrow">LÊN KẾ HOẠCH</span><h2>Kỳ nghỉ của bạn</h2></div><div class="field"><label for="home-arrival">Ngày nhận phòng</label><input type="date" id="home-arrival" name="ArrivalDate" value="@Clock.Today.ToString("yyyy-MM-dd")" min="@Clock.Today.ToString("yyyy-MM-dd")" required /></div><div class="field"><label for="home-departure">Ngày trả phòng</label><input type="date" id="home-departure" name="DepartureDate" value="@Clock.Today.AddDays(2).ToString("yyyy-MM-dd")" min="@Clock.Today.AddDays(1).ToString("yyyy-MM-dd")" required /></div><div class="field"><label for="home-guests">Số khách</label><select id="home-guests" name="GuestCount"><option value="1">01 khách</option><option value="2" selected>02 khách</option><option value="3">03 khách</option><option value="4">04 khách</option></select></div><button class="btn btn-primary">Tìm phòng trống ↗</button></form></div>
-<section class="container section intro-section"><div><div class="eyebrow">CHÀO MỪNG ĐẾN @Hotel.Value.BrandName</div><h2>Chậm lại một chút.<br />Tận hưởng nhiều hơn.</h2></div><div><p>Từ ánh sáng đầu ngày đến những buổi chiều thảnh thơi, @Hotel.Value.Name dành cho bạn một khoảng riêng để nghỉ ngơi và kết nối.</p><p class="muted">Không gian ấm áp, dịch vụ chu đáo và những điều giản dị được chăm chút. Để bạn luôn cảm thấy được chào đón.</p><a class="text-link" asp-controller="Rooms" asp-action="Index">Tìm căn phòng của bạn ↗</a></div></section>
-<section class="room-section" id="rooms"><div class="container"><div class="section-heading"><div><div class="eyebrow">ROOMS & SUITES</div><h2>Ở lại theo cách của bạn.</h2></div><a class="text-link" asp-controller="Rooms" asp-action="Index">Khám phá tất cả phòng ↗</a></div><div class="room-grid">@foreach (var room in Model) { <article class="room-card"><a class="room-image" asp-controller="Rooms" asp-action="Details" asp-route-id="@room.Id"><img src="@room.ImagePath" alt="Không gian @room.RoomType.Name" loading="lazy" /><span class="image-label">AURORA COLLECTION</span></a><div class="room-content"><small>@room.RoomType.Capacity KHÁCH · @room.RoomType.Name.ToUpperInvariant()</small><h3>@room.RoomType.Name</h3><p>@room.RoomType.Description</p><div class="room-bottom"><div><strong>@Ui.Money(room.NightlyRate)</strong><small>/ đêm</small></div><a class="arrow-link" asp-controller="Rooms" asp-action="Details" asp-route-id="@room.Id" aria-label="Xem @room.RoomType.Name">↗</a></div></div></article> }</div></div></section>
-<section class="container section" id="experiences"><div class="section-heading"><div><div class="eyebrow">NHỮNG ĐIỀU LÀM NÊN KỲ NGHỈ</div><h2>Trọn vẹn từng khoảnh khắc.</h2></div><p class="muted">Một chút thư thái.<br />Một chút nuông chiều bản thân.</p></div><div class="experience-grid"><div><span class="experience-icon">≈</span><h3>Không gian thư giãn</h3><p>Tận hưởng nắng ấm và những khoảng xanh yên tĩnh trong khuôn viên.</p></div><div><span class="experience-icon">♧</span><h3>Ẩm thực mỗi ngày</h3><p>Khởi đầu nhẹ nhàng với bữa sáng và dành thời gian cho một buổi trà chiều.</p></div><div><span class="experience-icon">✧</span><h3>Dịch vụ chu đáo</h3><p>Giặt ủi, đưa đón và những hỗ trợ nhỏ để hành trình của bạn thêm dễ dàng.</p></div><div><span class="experience-icon">⌁</span><h3>Luôn kết nối</h3><p>Wi-Fi trong phòng và không gian riêng cho những điều bạn muốn làm.</p></div></div></section>
-<section class="closing-banner"><div class="container"><div class="eyebrow">MỘT CUỘC HẸN VỚI BÌNH YÊN</div><h2>Ngày nghỉ tiếp theo,<br />hẹn bạn ở @Hotel.Value.BrandName.</h2><a asp-controller="Rooms" asp-action="Index" class="btn btn-gold">Bắt đầu kỳ nghỉ →</a></div></section>
+@{ ViewData["Title"] = "Kỳ nghỉ của riêng bạn"; }
+<section class="home-hero">
+    <div class="hero-copy">
+        <div class="eyebrow">AURORA HOTEL · ĐÀ NẴNG</div>
+        <h1>Kỳ nghỉ nhẹ nhàng,<br /><em>bắt đầu từ đây.</em></h1>
+        <p>Một căn phòng ấm áp, những khoảng xanh bình yên và thời gian dành riêng cho bạn.</p>
+        <a class="btn btn-primary" asp-controller="Rooms" asp-action="Index">Khám phá các phòng <span>↗</span></a>
+        <div class="hero-note"><span>01 /</span> Nghỉ ngơi. Kết nối. Tận hưởng.</div>
+    </div>
+    <div class="hero-visual">
+        <img src="~/images/hero.jpg" alt="Khu nghỉ dưỡng với hồ bơi và khu vườn nhiệt đới" fetchpriority="high" />
+        <div class="photo-caption"><span>CHÀO MỪNG ĐẾN AURORA</span><strong>Một khoảng nghỉ thật đẹp.</strong></div>
+    </div>
+</section>
+<section class="container booking-search-wrap" aria-label="Tìm phòng cho kỳ nghỉ">
+    <form method="get" asp-controller="Rooms" asp-action="Index" class="search-panel home-search">
+        <div class="search-label"><span class="eyebrow">LÊN KẾ HOẠCH</span><h2>Kỳ nghỉ của bạn</h2></div>
+        <div class="field">
+            <label for="home-arrival">Ngày nhận phòng</label>
+            <input type="date" id="home-arrival" name="ArrivalDate" value="@Clock.Today.ToString("yyyy-MM-dd")" min="@Clock.Today.ToString("yyyy-MM-dd")" required />
+        </div>
+        <div class="field">
+            <label for="home-departure">Ngày trả phòng</label>
+            <input type="date" id="home-departure" name="DepartureDate" value="@Clock.Today.AddDays(2).ToString("yyyy-MM-dd")" min="@Clock.Today.AddDays(1).ToString("yyyy-MM-dd")" required />
+        </div>
+        <div class="field">
+            <label for="home-guests">Số khách</label>
+            <select id="home-guests" name="GuestCount">
+                @for (var guests = 1; guests <= 6; guests++)
+                {
+                    <option value="@guests" selected="@(guests == 2)">@guests khách</option>
+                }
+            </select>
+        </div>
+        <button class="btn btn-primary">Tìm phòng trống →</button>
+    </form>
+</section>
+<section class="container section" id="rooms">
+    <div class="section-heading">
+        <div><div class="eyebrow">PHÒNG & KỲ NGHỈ</div><h2>Chọn không gian của bạn.</h2></div>
+        <a class="text-link" asp-controller="Rooms" asp-action="Index">Xem tất cả phòng ↗</a>
+    </div>
+    <div class="room-grid">
+        @foreach (var room in Model)
+        {
+            <article class="room-card">
+                <a class="room-image" asp-controller="Rooms" asp-action="Details" asp-route-id="@room.Id">
+                    <img src="@room.ImagePath" alt="Không gian @room.RoomType.Name" loading="lazy" />
+                    <span class="image-label">@room.RoomType.Capacity KHÁCH</span>
+                </a>
+                <div class="room-content">
+                    <div class="eyebrow">AURORA COLLECTION</div>
+                    <h3>@room.RoomType.Name</h3>
+                    <p>@room.RoomType.Description</p>
+                    <div class="room-bottom">
+                        <div><strong>@Ui.Money(room.NightlyRate)</strong><small>/ đêm</small></div>
+                        <a class="arrow-link" asp-controller="Rooms" asp-action="Details" asp-route-id="@room.Id" aria-label="Xem @room.RoomType.Name">↗</a>
+                    </div>
+                </div>
+            </article>
+        }
+    </div>
+    @if (Model.Count == 0)
+    {
+        <div class="empty-state"><h3>Phòng đang được cập nhật</h3><p>Vui lòng liên hệ lễ tân để được hỗ trợ.</p></div>
+    }
+</section>
+<section class="experience-section" id="experiences">
+    <div class="container section">
+        <div class="section-heading">
+            <div><div class="eyebrow">NHỮNG ĐIỀU NHỎ, NIỀM VUI LỚN</div><h2>Thoải mái trong từng khoảnh khắc.</h2></div>
+            <p class="muted">Đủ tiện nghi để yên tâm.<br />Đủ riêng tư để nghỉ ngơi.</p>
+        </div>
+        <div class="experience-grid">
+            <article><span class="experience-icon">≈</span><h3>Không gian xanh</h3><p>Thả lỏng giữa khu vườn và những góc nghỉ ngơi yên tĩnh.</p></article>
+            <article><span class="experience-icon">☼</span><h3>Khởi đầu thư thái</h3><p>Đón ngày mới với bữa sáng và nhịp sống chậm rãi.</p></article>
+            <article><span class="experience-icon">✧</span><h3>Hỗ trợ tận tâm</h3><p>Liên hệ lễ tân để sử dụng giặt ủi, đưa đón và dịch vụ trong kỳ ở.</p></article>
+            <article><span class="experience-icon">⌁</span><h3>Luôn kết nối</h3><p>Wi-Fi và tiện nghi trong phòng giúp bạn dễ dàng sắp xếp công việc.</p></article>
+        </div>
+    </div>
+</section>
+<section class="container section">
+    <div class="section-heading"><div><div class="eyebrow">ĐẶT PHÒNG THẬT ĐƠN GIẢN</div><h2>Ba bước cho một kỳ nghỉ.</h2></div></div>
+    <div class="steps-grid">
+        <article><span>01</span><h3>Chọn phòng & ngày ở</h3><p>Tìm phòng theo lịch, số khách và ngân sách của bạn.</p></article>
+        <article><span>02</span><h3>Gửi yêu cầu</h3><p>Đăng nhập và kiểm tra thông tin. Chưa cần thanh toán.</p></article>
+        <article><span>03</span><h3>Theo dõi xác nhận</h3><p>Lễ tân kiểm tra và giữ phòng sau khi xác nhận đơn.</p></article>
+    </div>
+</section>
+<section class="closing-banner">
+    <div class="container"><div><div class="eyebrow">HẸN BẠN Ở AURORA</div><h2>Một kỳ nghỉ đáng mong chờ.</h2></div><a asp-controller="Rooms" asp-action="Index" class="btn btn-gold">Tìm phòng phù hợp ↗</a></div>
+</section>

@@ -1,3 +1,35 @@
 @model ServiceInput
 @{ ViewData["Title"] = Model.Id == 0 ? "Thêm dịch vụ" : "Chỉnh sửa dịch vụ"; }
-<a class="back-link" asp-action="Services">← Danh mục dịch vụ</a><h1 class="mb-4">@ViewData["Title"]</h1><form method="post" class="panel form-panel"><div asp-validation-summary="All" class="text-danger" role="alert"></div><input asp-for="Id" type="hidden" /><div class="field"><label asp-for="Name"></label><input asp-for="Name" class="form-control" /><span asp-validation-for="Name"></span></div><div class="form-grid"><div class="field"><label asp-for="Unit"></label><input asp-for="Unit" class="form-control" /><span asp-validation-for="Unit"></span></div><div class="field"><label asp-for="UnitPrice"></label><input asp-for="UnitPrice" type="number" min="0" step="1" class="form-control" /><span asp-validation-for="UnitPrice"></span></div></div><label class="check-field"><input asp-for="IsActive" /> Đang cung cấp</label><button class="btn btn-primary">Lưu dịch vụ</button></form>
+<a class="back-link" asp-action="Services">← Danh mục dịch vụ</a>
+<h1 class="mb-4">@ViewData["Title"]</h1>
+<form method="post" class="panel form-panel">
+    <div asp-validation-summary="All" class="text-danger" role="alert">
+    </div>
+    <input asp-for="Id" type="hidden" />
+    <div class="field">
+        <label asp-for="Name">
+        </label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name">
+        </span>
+    </div>
+    <div class="form-grid">
+        <div class="field">
+            <label asp-for="Unit">
+            </label>
+            <input asp-for="Unit" class="form-control" />
+            <span asp-validation-for="Unit">
+            </span>
+        </div>
+        <div class="field">
+            <label asp-for="UnitPrice">
+            </label>
+            <input asp-for="UnitPrice" type="number" min="0" step="1" class="form-control" />
+            <span asp-validation-for="UnitPrice">
+            </span>
+        </div>
+    </div>
+    <label class="check-field">
+    <input asp-for="IsActive" /> Đang cung cấp</label>
+    <button class="btn btn-primary">Lưu dịch vụ</button>
+</form>

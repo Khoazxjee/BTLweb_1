@@ -1,7 +1,92 @@
 @model Folio
 @inject Microsoft.Extensions.Options.IOptions<HotelOptions> Hotel
 @{ ViewData["Title"] = "Chứng từ nội bộ"; }
-<div class="actions no-print"><a class="btn btn-light" asp-action="Folio" asp-route-id="@Model.Id">← Bảng kê</a><button class="btn btn-primary" type="button" data-print>In chứng từ</button></div>
-<article class="invoice"><header class="invoice-header"><div><a class="brand" href="/"><img src="~/images/aurora.svg" alt="" /><span>@Hotel.Value.BrandName<small>HOTEL & RETREAT</small></span></a><p>@Hotel.Value.Address<br />@Hotel.Value.Phone · @Hotel.Value.Email</p></div><div><h1>BẢNG KÊ LƯU TRÚ</h1><p>Chứng từ nội bộ · #@Model.Id.ToString("D5")<br />Mã đặt phòng: @Model.Reservation.ConfirmationCode</p><span class="status @Model.Status">@Model.Status.Label()</span></div></header><div class="invoice-info"><div><p><strong>Khách hàng:</strong> @Model.Reservation.GuestProfile.FullName</p><p>Điện thoại: @Model.Reservation.GuestProfile.Phone</p><p>Email: @Model.Reservation.GuestProfile.Email</p></div><div><p><strong>Phòng:</strong> @Model.Reservation.Room.RoomNumber · @Model.Reservation.GuestCount khách</p><p>Ngày ở: @Ui.Date(Model.Reservation.ArrivalDate) – @Ui.Date(Model.Reservation.DepartureDate)</p><p>Số đêm: @Model.Reservation.Nights</p></div></div><div class="table-responsive"><table class="table"><thead><tr><th>Khoản phí</th><th>Số lượng</th><th>Đơn giá</th><th>Thành tiền</th></tr></thead><tbody>@foreach (var line in Model.Items.OrderBy(x => x.Kind).ThenBy(x => x.Id)) { <tr><td>@line.DescriptionSnapshot</td><td>@line.Quantity</td><td>@Ui.Money(line.UnitPriceSnapshot)</td><td>@Ui.Money(line.Total)</td></tr> }</tbody></table></div><div class="totals mt-4"><div><span>Tổng phải thu</span><strong>@Ui.Money(Model.Total)</strong></div><div><span>Đã thanh toán</span><strong>@Ui.Money(Model.Paid)</strong></div><div class="grand-total"><span>Còn phải thu</span><strong>@Ui.Money(Model.Balance)</strong></div></div>
-@if (Model.Payment != null) { <p>Phương thức: @Model.Payment.Method.Label() · Thu lúc: @Ui.Time(Model.Payment.PaidAt)<br />Nhân viên thu: @Model.Payment.ReceivedByUser.FullName</p> }
-<div class="invoice-signatures"><div><strong>Khách hàng</strong><br /><small>(Ký, ghi rõ họ tên)</small></div><div><strong>Nhân viên thu</strong><br /><small>(Ký, ghi rõ họ tên)</small></div></div><p class="invoice-footer muted">Cảm ơn bạn đã lựa chọn @Hotel.Value.Name. Đây là chứng từ nội bộ phục vụ đồ án, không phải hóa đơn điện tử. Đơn vị tiền: VND · Múi giờ: UTC+7.</p></article>
+<div class="actions no-print">
+    <a class="btn btn-light" asp-action="Folio" asp-route-id="@Model.Id">← Bảng kê</a>
+    <span class="notice">In hoặc lưu PDF: nhấn Ctrl + P, rồi chọn máy in hoặc “Lưu dưới dạng PDF”.</span>
+</div>
+<article class="invoice">
+    <header class="invoice-header">
+        <div>
+            <a class="brand" href="/">
+            <img src="~/images/aurora.svg" alt="" />
+            <span>@Hotel.Value.BrandName<small>HOTEL & RETREAT</small>
+            </span>
+            </a>
+            <p>@Hotel.Value.Address<br />@Hotel.Value.Phone · @Hotel.Value.Email</p>
+        </div>
+        <div>
+            <h1>BẢNG KÊ LƯU TRÚ</h1>
+            <p>Chứng từ nội bộ · #@Model.Id.ToString("D5")<br />Mã đặt phòng: @Model.Reservation.ConfirmationCode</p>
+            <span class="status @Model.Status">@Model.Status.Label()</span>
+        </div>
+    </header>
+    <div class="invoice-info">
+        <div>
+            <p>
+            <strong>Khách hàng:</strong> @Model.Reservation.GuestProfile.FullName</p>
+            <p>Điện thoại: @Model.Reservation.GuestProfile.Phone</p>
+            <p>Email: @Model.Reservation.GuestProfile.Email</p>
+        </div>
+        <div>
+            <p>
+            <strong>Phòng:</strong> @Model.Reservation.Room.RoomNumber · @Model.Reservation.GuestCount khách</p>
+            <p>Ngày ở: @Ui.Date(Model.Reservation.ArrivalDate) – @Ui.Date(Model.Reservation.DepartureDate)</p>
+            <p>Số đêm: @Model.Reservation.Nights</p>
+        </div>
+    </div>
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Khoản phí</th>
+                    <th>Số lượng</th>
+                    <th>Đơn giá</th>
+                    <th>Thành tiền</th>
+                </tr>
+            </thead>
+            <tbody>
+@foreach (var line in Model.Items.OrderBy(x => x.Kind).ThenBy(x => x.Id))
+{
+                <tr>
+                    <td>@line.DescriptionSnapshot</td>
+                    <td>@line.Quantity</td>
+                    <td>@Ui.Money(line.UnitPriceSnapshot)</td>
+                    <td>@Ui.Money(line.Total)</td>
+                </tr>
+                }
+</tbody>
+        </table>
+    </div>
+    <div class="totals mt-4">
+        <div>
+            <span>Tổng phải thu</span>
+            <strong>@Ui.Money(Model.Total)</strong>
+        </div>
+        <div>
+            <span>Đã thanh toán</span>
+            <strong>@Ui.Money(Model.Paid)</strong>
+        </div>
+        <div class="grand-total">
+            <span>Còn phải thu</span>
+            <strong>@Ui.Money(Model.Balance)</strong>
+        </div>
+    </div>
+    @if (Model.Payment != null)
+    {
+    <p>Phương thức: @Model.Payment.Method.Label() · Thu lúc: @Ui.Time(Model.Payment.PaidAt)<br />Nhân viên thu: @Model.Payment.ReceivedByUser.FullName</p>
+    }
+    <div class="invoice-signatures">
+        <div>
+            <strong>Khách hàng</strong>
+            <br />
+            <small>(Ký, ghi rõ họ tên)</small>
+        </div>
+        <div>
+            <strong>Nhân viên thu</strong>
+            <br />
+            <small>(Ký, ghi rõ họ tên)</small>
+        </div>
+    </div>
+    <p class="invoice-footer muted">Cảm ơn bạn đã lựa chọn @Hotel.Value.Name. Đây là chứng từ nội bộ phục vụ đồ án, không phải hóa đơn điện tử. Đơn vị tiền: VND · Múi giờ: UTC+7.</p>
+</article>

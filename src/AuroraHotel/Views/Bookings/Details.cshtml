@@ -1,7 +1,43 @@
 @model Reservation
 @inject IHotelClock Clock
 @{ ViewData["Title"] = Model.ConfirmationCode; }
-<section class="container section narrow"><a asp-action="Index" class="back-link">← Đơn đặt của tôi</a><div class="section-heading"><h1>Chi tiết kỳ nghỉ</h1><span class="status @Model.Status">@Model.Status.Label()</span></div><div class="panel"><div class="eyebrow">@Model.ConfirmationCode</div><h2>@Model.Room.RoomType.Name</h2><p>Phòng @Model.Room.RoomNumber · @Model.GuestCount khách</p><dl class="detail-list"><dt>Khách lưu trú</dt><dd>@Model.GuestProfile.FullName</dd><dt>Nhận phòng</dt><dd>@Ui.Date(Model.ArrivalDate)</dd><dt>Trả phòng</dt><dd>@Ui.Date(Model.DepartureDate)</dd><dt>Số đêm</dt><dd>@Model.Nights</dd><dt>Giá / đêm</dt><dd>@Ui.Money(Model.NightlyRateSnapshot)</dd><dt>Tiền phòng @(Model.Status == ReservationStatus.Pending ? "dự kiến" : "đã chốt")</dt><dd><strong>@Ui.Money(Model.RoomTotal)</strong></dd><dt>Ghi chú</dt><dd>@(string.IsNullOrWhiteSpace(Model.Notes) ? "Không có" : Model.Notes)</dd></dl>
-@if (Model.Status == ReservationStatus.Pending) { <div class="notice">Đang chờ lễ tân xác nhận. Yêu cầu này chưa giữ chỗ; giá sẽ được chốt khi xác nhận.</div> }
-@if ((Model.Status == ReservationStatus.Pending || Model.Status == ReservationStatus.Confirmed) && Model.ArrivalDate > Clock.Today) { <form asp-action="Cancel" asp-route-id="@Model.Id" method="post" data-confirm="Bạn chắc chắn muốn hủy đơn đặt phòng này?"><button class="btn btn-outline-danger">Hủy đơn đặt phòng</button></form> }
-</div></section>
+<section class="container section narrow">
+    <a asp-action="Index" class="back-link">← Đơn đặt của tôi</a>
+    <div class="section-heading">
+        <h1>Chi tiết kỳ nghỉ</h1>
+        <span class="status @Model.Status">@Model.Status.Label()</span>
+    </div>
+    <div class="panel">
+        <div class="eyebrow">@Model.ConfirmationCode</div>
+        <h2>@Model.Room.RoomType.Name</h2>
+        <p>Phòng @Model.Room.RoomNumber · @Model.GuestCount khách</p>
+        <dl class="detail-list">
+            <dt>Khách lưu trú</dt>
+            <dd>@Model.GuestProfile.FullName</dd>
+            <dt>Nhận phòng</dt>
+            <dd>@Ui.Date(Model.ArrivalDate)</dd>
+            <dt>Trả phòng</dt>
+            <dd>@Ui.Date(Model.DepartureDate)</dd>
+            <dt>Số đêm</dt>
+            <dd>@Model.Nights</dd>
+            <dt>Giá / đêm</dt>
+            <dd>@Ui.Money(Model.NightlyRateSnapshot)</dd>
+            <dt>Tiền phòng @(Model.Status == ReservationStatus.Pending ? "dự kiến" : "đã chốt")</dt>
+            <dd>
+                <strong>@Ui.Money(Model.RoomTotal)</strong>
+            </dd>
+            <dt>Ghi chú</dt>
+            <dd>@(string.IsNullOrWhiteSpace(Model.Notes) ? "Không có" : Model.Notes)</dd>
+        </dl>
+        @if (Model.Status == ReservationStatus.Pending)
+        {
+        <div class="notice">Đang chờ lễ tân xác nhận. Yêu cầu này chưa giữ chỗ; giá sẽ được chốt khi xác nhận.</div>
+        }
+        @if ((Model.Status == ReservationStatus.Pending || Model.Status == ReservationStatus.Confirmed) && Model.ArrivalDate > Clock.Today)
+        {
+        <form asp-action="Cancel" asp-route-id="@Model.Id" method="post">
+            <confirm-submit message="Bạn chắc chắn muốn hủy đơn đặt phòng này?" label="Hủy đơn đặt phòng" button-class="btn btn-outline-danger"></confirm-submit>
+        </form>
+        }
+    </div>
+</section>

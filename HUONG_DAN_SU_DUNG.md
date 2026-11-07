@@ -176,7 +176,20 @@ dotnet run --project src/AuroraHotel
 
 Nếu bạn đã tự sửa code, lưu/commit thay đổi trước khi pull. Với bản ZIP, tải phiên bản mới vào thư mục khác và giữ lại file cấu hình, tài khoản cùng dữ liệu đang dùng; không ghi đè hoặc xóa dữ liệu một cách tùy tiện.
 
-## 9. Chia sẻ với người khác
+## 9. Chức năng và cách đọc mã nguồn bản C# / Razor
+
+- **Tính lại tiền phòng:** sau khi chọn phòng và đăng nhập, sửa lịch ở rồi bấm “Tính lại giá & kiểm tra lịch”. Bước này chưa tạo đơn; bấm “Gửi yêu cầu” để đặt.
+- **Xác nhận thao tác:** bấm nút thao tác để mở lời nhắc, rồi bấm nút xác nhận bên trong. Không cần JavaScript.
+- **Đổi mật khẩu:** mở menu Tài khoản ở đầu trang; nhập mật khẩu hiện tại và mật khẩu mới. Đổi thành công sẽ làm hết hiệu lực các phiên cũ khác.
+- **Xuất báo cáo:** Admin mở Tổng quan & báo cáo, chọn khoảng ngày, xem kết quả rồi bấm Tải CSV. File có thể mở trong Excel.
+- **In/lưu PDF:** mở bảng kê → Xem & in chứng từ → nhấn Ctrl + P.
+- **Đơn quá hẹn:** tại Lễ tân, điều chỉnh lịch trước khi nhận khách. Không dùng nút nhận phòng cho lịch đã qua.
+
+Mỗi entity, enum và view model nằm trong file riêng. Bắt đầu từ `Program.cs`, sau đó đọc `Extensions`, `Controllers`, `ViewModels` và `Services` của chức năng muốn tìm. Giao diện khách ở `Views`, giao diện nhân viên ở `Areas/Staff/Views`. CSS tách thành `base`, `public`, `workspace`, `responsive` và `print`. Xem sơ đồ trong [README.md](README.md) và giải thích tại [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+
+Ứng dụng xử lý nghiệp vụ bằng C#; HTML/CSS là thành phần giao diện Razor. Không cần cài Node.js/npm để chạy dự án.
+
+## 10. Chia sẻ với người khác
 
 - Gửi link GitHub để người khác tải mã nguồn và làm theo hướng dẫn này.
 - `localhost:5080` chỉ mở trên máy đang chạy ứng dụng; người khác không thể truy cập localhost của bạn từ máy của họ.

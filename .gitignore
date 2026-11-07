@@ -8,6 +8,8 @@
 **/wwwroot/uploads/
 TestResults/
 artifacts/
+/output/
+/pdh_sdh_assets/
 *.log
 .env
 .env.*

@@ -1,7 +1,48 @@
-@model Room
-@{ ViewData["Title"] = Model.RoomType.Name; var stay = (StayInput)ViewBag.Stay; }
-<section class="container section"><a href="@(ViewBag.SearchReturnUrl ?? Url.Action("Index", new { arrivalDate = stay.ArrivalDate.ToString("yyyy-MM-dd"), departureDate = stay.DepartureDate.ToString("yyyy-MM-dd"), guestCount = stay.GuestCount }))" class="back-link">← Quay lại danh sách phòng</a>
-<div class="section-heading"><div><div class="eyebrow">PHÒNG @Model.RoomNumber · AURORA COLLECTION</div><h1>@Model.RoomType.Name</h1></div><span class="tag">Tối đa @Model.RoomType.Capacity khách</span></div>
-<img class="detail-hero" src="@Model.ImagePath" alt="Phòng @Model.RoomType.Name với nội thất hiện đại" />
-<div class="detail-grid"><div><div class="eyebrow">DÀNH CHO NHỮNG KHOẢNH KHẮC THẢNH THƠI</div><h2>Ở lại, và tận hưởng.</h2><div class="rich-copy">@Html.Raw(Model.Description)</div><h3>Tiện nghi trong phòng</h3><div class="amenity-list">@foreach (var amenity in Model.Amenities.Split(',', StringSplitOptions.RemoveEmptyEntries)) { <span>✓ @amenity.Trim()</span> }</div><div class="notice">Giá hiển thị là giá dự kiến. Lễ tân sẽ kiểm tra khả dụng và chốt giá khi xác nhận đơn.</div></div>
-<aside class="panel booking-panel"><div class="eyebrow">KỲ NGHỈ CỦA BẠN</div><h3>@Ui.Money(Model.NightlyRate) <small>/ đêm</small></h3><form asp-controller="Bookings" asp-action="Select" method="post" class="stay-estimate" data-rate="@Model.NightlyRate.ToString("0", System.Globalization.CultureInfo.InvariantCulture)"><input type="hidden" name="RoomId" value="@Model.Id" /><partial name="_StayFields" model="stay" /><div class="estimate-total" aria-live="polite"></div><button class="btn btn-primary w-100">Chọn phòng này →</button><p class="form-note">Đăng nhập để gửi yêu cầu. Chưa thanh toán ở bước này.</p></form></aside></div></section>
+@model RoomDetailsPage
+@{
+    ViewData["Title"] = Model.Room.RoomType.Name;
+    var room = Model.Room;
+    var stay = Model.Stay;
+}
+<section class="container section">
+    <a href="@(Model.ReturnUrl ?? Url.Action("Index", new { arrivalDate = stay.ArrivalDate.ToString("yyyy-MM-dd"), departureDate = stay.DepartureDate.ToString("yyyy-MM-dd"), guestCount = stay.GuestCount }))" class="back-link">← Quay lại danh sách phòng</a>
+    <div class="section-heading">
+        <div><div class="eyebrow">PHÒNG @room.RoomNumber · AURORA COLLECTION</div><h1>@room.RoomType.Name</h1></div>
+        <span class="tag">Tối đa @room.RoomType.Capacity khách</span>
+    </div>
+    <img class="detail-hero" src="@room.ImagePath" alt="Không gian phòng @room.RoomType.Name" />
+    <div class="detail-grid">
+        <div>
+            <div class="eyebrow">KHÔNG GIAN DÀNH CHO BẠN</div>
+            <h2>Nghỉ ngơi thật thoải mái.</h2>
+            <div class="rich-copy">@Html.Raw(CatalogService.Sanitize(room.Description))</div>
+            <h3>Tiện nghi trong phòng</h3>
+            <div class="amenity-list">
+                @foreach (var amenity in room.Amenities.Split(',', StringSplitOptions.RemoveEmptyEntries))
+                {
+                    <span>✓ @amenity.Trim()</span>
+                }
+            </div>
+            <div class="notice">Giá được chốt khi lễ tân xác nhận. Yêu cầu đặt phòng chưa được xác nhận sẽ chưa giữ chỗ.</div>
+        </div>
+        <aside class="panel booking-panel">
+            <div class="eyebrow">LÊN KẾ HOẠCH KỲ NGHỈ</div>
+            <h3>@Ui.Money(room.NightlyRate) <small>/ đêm</small>
+            <div asp-validation-summary="All" class="text-danger" role="alert"></div>
+            <form asp-controller="Bookings" asp-action="Select" method="post">
+                <input type="hidden" name="RoomId" value="@room.Id" />
+                <partial name="_StayFields" model="stay" />
+                @if (ViewData.ModelState.IsValid)
+                {
+                    <div class="estimate-summary">
+                        <small>@Model.Nights đêm theo lịch đang xem · Tiền phòng dự kiến</small>
+                        <strong>@Ui.Money(Model.EstimatedTotal)</strong>
+                    </div>
+                }
+                <p class="form-note">Bạn có thể xem lại tổng tiền theo lịch mới ở bước tiếp theo.</p>
+                <button class="btn btn-primary w-100 mt-4">Tiếp tục đặt phòng →</button>
+                <p class="form-note">Đăng nhập để gửi yêu cầu. Chưa thanh toán ở bước này.</p>
+            </form>
+        </aside>
+    </div>
+</section>

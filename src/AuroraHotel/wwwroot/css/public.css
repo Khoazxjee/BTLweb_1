@@ -1,0 +1,98 @@
+/* Customer-facing pages */
+.topbar { display: flex; justify-content: space-between; gap: 20px; padding: 10px 5%; background: #153d37; color: #ecf3e9; font-size: 10px; letter-spacing: .04em; }
+.topbar a { color: #ecf3e9; }
+.site-header { background: var(--paper); border-bottom: 1px solid var(--line); }
+.header-inner { display: flex; justify-content: space-between; align-items: center; gap: 24px; min-height: 90px; }
+.brand { display: inline-flex; align-items: center; gap: 12px; color: var(--ink); flex-shrink: 0; }
+.brand img { width: 40px; height: 48px; }
+.brand > span { font-size: 25px; letter-spacing: .16em; font-family: "Lora", serif; line-height: 1.15; }
+.brand small { display: block; margin-top: 8px; font-family: "Be Vietnam Pro", sans-serif; font-size: 8px; letter-spacing: .18em; }
+.brand.light { color: white; }
+.brand.light img { filter: brightness(0) invert(1); opacity: .85; }
+.public-nav { display: flex; align-items: center; flex-wrap: wrap; gap: 26px; font-size: 12px; }
+.public-nav > a:not(.btn) { color: #4e6260; padding: 14px 0; }
+.public-nav > a.active { color: var(--primary); box-shadow: inset 0 -2px var(--primary); }
+.home-hero { display: grid; grid-template-columns: 1fr 1fr; min-height: 540px; }
+.hero-copy { padding: 72px 10% 55px max(36px, calc((100vw - 1184px) / 2)); display: flex; flex-direction: column; align-items: flex-start; justify-content: center; }
+.hero-copy h1 { font-size: clamp(36px, 3.7vw, 56px); line-height: 1.25; margin-bottom: 24px; }
+.hero-copy h1 em { color: var(--primary); font-weight: 400; }
+.hero-copy p { color: var(--muted); max-width: 390px; margin-bottom: 30px; line-height: 1.9; }
+.hero-note { display: flex; gap: 18px; font-size: 10px; color: var(--muted); margin-top: 42px; }
+.hero-note span { color: var(--primary); font-weight: 700; }
+.hero-visual { position: relative; overflow: hidden; min-height: 480px; }
+.hero-visual img { width: 100%; height: 100%; position: absolute; object-fit: cover; }
+.hero-visual::after { content: ""; position: absolute; inset: 45% 0 0; background: linear-gradient(transparent, #123e35a0); }
+.photo-caption { position: absolute; bottom: 38px; left: 38px; color: white; z-index: 1; }
+.photo-caption span { display: block; font-size: 9px; letter-spacing: .18em; margin-bottom: 8px; }
+.photo-caption strong { font-family: "Lora", serif; font-size: 26px; font-weight: 400; }
+.booking-search-wrap { margin-top: 26px; }
+.search-panel { padding: 24px; background: white; border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); }
+.home-search { display: grid; grid-template-columns: 1.15fr 1fr 1fr .65fr 1fr; align-items: center; gap: 22px; }
+.home-search .field { margin: 0; }
+.search-label h2 { font-size: 23px; margin-bottom: 0; }
+.search-label .eyebrow { margin-bottom: 8px; }
+.home-search .btn { margin-top: 24px; }
+.room-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 25px; }
+.room-card { background: white; border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; height: fit-content; }
+.room-image { display: block; position: relative; height: 240px; overflow: hidden; }
+.room-image img { width: 100%; height: 100%; object-fit: cover; transition: transform .4s; }
+.room-image:hover img { transform: scale(1.04); }
+.image-label { position: absolute; top: 18px; left: 18px; padding: 6px 11px; background: #fffffff2; color: #28493f; border-radius: 4px; font-size: 9px; font-weight: 600; letter-spacing: .08em; }
+.room-content { padding: 26px; }
+.room-content .eyebrow, .room-content > small { font-size: 9px; color: var(--muted); margin-bottom: 10px; }
+.room-content h3 { margin: 10px 0 14px; }
+.room-content p { color: var(--muted); font-size: 12px; min-height: 40px; }
+.room-bottom { display: flex; justify-content: space-between; align-items: center; padding-top: 20px; border-top: 1px solid var(--line); gap: 14px; }
+.room-bottom strong { font-size: 16px; color: var(--primary); }
+.room-bottom small { color: var(--muted); margin-left: 6px; }
+.arrow-link { display: grid; place-items: center; width: 40px; height: 40px; border: 1px solid var(--line); border-radius: 50%; font-size: 20px; }
+.arrow-link:hover { background: var(--primary); color: white; }
+.experience-section { background: #edf3ed; }
+.experience-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px; }
+.experience-grid h3 { font-size: 21px; margin: 24px 0 14px; }
+.experience-grid p { font-size: 12px; color: var(--muted); margin: 0; }
+.experience-icon { display: grid; place-items: center; width: 48px; height: 48px; border: 1px solid #bbcec0; border-radius: 50%; color: var(--primary); font-size: 26px; }
+.steps-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; }
+.steps-grid article { border-top: 1px solid var(--line); padding-top: 26px; }
+.steps-grid span { font-family: "Lora", serif; color: #708a76; font-size: 32px; }
+.steps-grid h3 { font-size: 22px; margin: 16px 0; }
+.steps-grid p { color: var(--muted); font-size: 13px; }
+.closing-banner { background: #1c4b42; padding: 46px 0; }
+.closing-banner > .container { display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+.closing-banner h2 { color: white; margin: 0; }
+.closing-banner .eyebrow { color: var(--gold); }
+.site-footer { background: #132f2c; color: #b7c7c1; padding: 56px 0 20px; }
+.footer-grid { display: grid; grid-template-columns: 1.25fr .8fr 1fr; gap: 70px; }
+.footer-grid p { margin-top: 24px; font-size: 12px; }
+.footer-grid h3 { color: #edf3e9; font-family: inherit; font-size: 13px; margin: 4px 0 22px; }
+.footer-grid > div > a:not(.brand) { display: block; color: #b7c7c1; font-size: 12px; margin: 12px 0; }
+.footer-grid > div > a:hover { color: white; }
+.footer-bottom { display: flex; justify-content: space-between; gap: 20px; border-top: 1px solid #36514a; margin-top: 38px; padding-top: 22px; font-size: 10px; }
+.page-intro { padding-top: 54px; padding-bottom: 26px; }
+.page-intro p { color: var(--muted); }
+.filter-panel { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 18px; align-items: end; }
+.filter-panel .field { margin: 0; }
+.detail-hero { width: 100%; height: 450px; object-fit: cover; border-radius: 16px; margin-bottom: 40px; }
+.detail-grid { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 40px; align-items: start; }
+.detail-grid h2 { margin-bottom: 24px; }
+.detail-grid h3 { margin-top: 28px; }
+.booking-panel h3 { font-family: inherit; font-size: 23px; margin: 0 0 24px; }
+.booking-panel h3 small { font-weight: 400; color: var(--muted); }
+.booking-panel .form-grid { grid-template-columns: 1fr; }
+.amenity-list { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 22px; font-size: 13px; }
+.rich-copy { color: var(--muted); line-height: 1.9; white-space: pre-line; }
+.summary-image { width: 100%; height: 230px; object-fit: cover; }
+.guest-summary { padding: 20px; background: var(--soft); border-radius: 9px; margin-bottom: 24px; }
+.guest-summary p { margin: 6px 0; font-size: 12px; }
+.guest-summary a { font-size: 12px; font-weight: 600; }
+.booking-steps { display: flex; gap: 14px; margin-bottom: 28px; color: var(--muted); font-size: 11px; flex-wrap: wrap; }
+.booking-steps strong { color: var(--primary); }
+.estimate-summary { border-top: 1px solid var(--line); padding-top: 20px; margin-top: 20px; }
+.estimate-summary strong { display: block; color: var(--primary); font-size: 25px; }
+.auth-shell { display: grid; grid-template-columns: 1fr 1fr; max-width: 1090px; margin: 48px auto; background: white; border: 1px solid var(--line); border-radius: 18px; overflow: hidden; }
+.auth-photo { background: linear-gradient(#163b3840, #0e302ce0), url("../images/hero.jpg") center / cover; padding: 50px; display: flex; flex-direction: column; justify-content: flex-end; min-height: 620px; }
+.auth-photo h2 { color: white; font-size: 37px; }
+.auth-photo p, .auth-photo .eyebrow { color: #ecf1e8; }
+.auth-form { padding: 50px; }
+.auth-form h1 { font-size: 36px; }
+.auth-form > p { margin-bottom: 28px; font-size: 13px; }

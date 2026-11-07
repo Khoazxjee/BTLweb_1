@@ -1,4 +1,6 @@
 @model StayInput
 @{ ViewData["Title"] = "Điều chỉnh đặt phòng"; }
 <a class="back-link" asp-action="Details" asp-route-id="@ViewBag.Id">← Chi tiết đặt phòng</a><h1>Điều chỉnh kỳ lưu trú</h1><p class="page-subtitle mb-4">Đổi phòng hoặc ngày ở sẽ kiểm tra trùng lịch và đọc lại giá hiện hành để chốt lại.</p>
-<form method="post" asp-route-id="@ViewBag.Id" class="panel form-panel"><div asp-validation-summary="All" class="text-danger" role="alert"></div><div class="field"><label asp-for="RoomId"></label><select asp-for="RoomId" class="form-select">@foreach (Room room in ViewBag.Rooms) { <option value="@room.Id">@room.RoomNumber · @room.RoomType.Name · @Ui.Money(room.NightlyRate)</option> }</select><span asp-validation-for="RoomId"></span></div><partial name="_StayFields" model="Model" /><button class="btn btn-primary">Lưu và kiểm tra khả dụng</button></form>
+<form method="post" asp-route-id="@ViewBag.Id" class="panel form-panel"><div asp-validation-summary="All" class="text-danger" role="alert"></div><div class="field"><label asp-for="RoomId"></label><select asp-for="RoomId" class="form-select">
+@foreach (Room room in ViewBag.Rooms) { <option value="@room.Id">@room.RoomNumber · @room.RoomType.Name · @Ui.Money(room.NightlyRate)</option> }
+</select><span asp-validation-for="RoomId"></span></div><partial name="_StayFields" model="Model" /><button class="btn btn-primary">Lưu và kiểm tra khả dụng</button></form>
