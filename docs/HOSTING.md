@@ -17,7 +17,7 @@ Nguồn kiểm tra ngày 14/10/2026: [gói Free/Premium](https://help.monsterasp
 3. Tạo repository GitHub và push source dự án. Đưa URL hosting thực tế vào mục Website/About của repository và README sau khi kiểm tra.
 4. `.gitignore` loại App_Data, ảnh người dùng upload, bản build, cấu hình SQL cục bộ và publish profile. Không tải nguyên thư mục máy lên GitHub qua kéo thả; bản source ZIP đã lọc là lựa chọn an toàn hơn.
 
-Repository của dự án: [Khoazxjee/BTLWEBTest](https://github.com/Khoazxjee/BTLWEBTest). Người tải mã nguồn lần đầu xem [hướng dẫn sử dụng](../HUONG_DAN_SU_DUNG.md). Workflow `.github/workflows/build.yml` build, chạy test với LocalDB và tạo artifact ZIP khi có push/PR hoặc chạy thủ công. Workflow **không tự upload hosting**, không cần mật khẩu hosting. Xem trạng thái từng lần chạy tại tab **Actions** của repository.
+Repository của dự án: [Khoazxjee/BTLweb_1](https://github.com/Khoazxjee/BTLweb_1). Người tải mã nguồn lần đầu xem [hướng dẫn sử dụng](../HUONG_DAN_SU_DUNG.md). Workflow `.github/workflows/build.yml` build, chạy test với LocalDB và tạo artifact ZIP khi có push/PR hoặc chạy thủ công. Workflow **không tự upload hosting**, không cần mật khẩu hosting. Xem trạng thái từng lần chạy tại tab **Actions** của repository.
 
 ## 2. Tạo schema và dữ liệu demo trên database mới
 

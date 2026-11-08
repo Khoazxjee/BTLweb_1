@@ -1,6 +1,6 @@
 # Hướng dẫn tải và sử dụng Aurora Hotel
 
-Repository: [Khoazxjee/BTLWEBTest](https://github.com/Khoazxjee/BTLWEBTest).
+Repository: [Khoazxjee/BTLweb_1](https://github.com/Khoazxjee/BTLweb_1).
 
 Đây là website quản lý khách sạn viết bằng ASP.NET Core MVC, có backend và SQL Server. Sau khi tải mã nguồn, bạn chạy ứng dụng rồi mở địa chỉ localhost trong trình duyệt. Mở một file HTML hoặc bật GitHub Pages sẽ không chạy được các chức năng đăng nhập, đặt phòng và quản trị.
 
@@ -22,9 +22,9 @@ LocalDB chỉ chạy trên Windows. Nếu dùng macOS/Linux hoặc SQL Server ri
 
 ### Cách A — không cần Git
 
-1. Mở [repository](https://github.com/Khoazxjee/BTLWEBTest).
+1. Mở [repository](https://github.com/Khoazxjee/BTLweb_1).
 2. Chọn **Code → Download ZIP**.
-3. Giải nén bằng **Extract All** vào một thư mục bạn có quyền ghi, ví dụ `D:\BTLWEBTest-main`.
+3. Giải nén bằng **Extract All** vào một thư mục bạn có quyền ghi, ví dụ `D:\BTLweb_1-main`.
 4. Mở thư mục chứa `AuroraHotel.sln`, `README.md`, `src` và `scripts`. Không chạy trực tiếp bên trong file ZIP.
 5. Bấm vào thanh địa chỉ File Explorer, nhập `powershell`, nhấn Enter để mở PowerShell tại thư mục đó.
 
@@ -33,8 +33,8 @@ LocalDB chỉ chạy trên Windows. Nếu dùng macOS/Linux hoặc SQL Server ri
 Mở PowerShell tại thư mục muốn lưu dự án rồi chạy:
 
 ```powershell
-git clone https://github.com/Khoazxjee/BTLWEBTest.git
-cd BTLWEBTest
+git clone https://github.com/Khoazxjee/BTLweb_1.git
+cd BTLweb_1
 ```
 
 ## 3. Chạy website lần đầu
@@ -110,7 +110,7 @@ Ngoài luồng trên, có thể thử quản lý loại phòng/phòng/dịch v�
 | Không tìm thấy SDK phù hợp / lỗi `NETSDK1045` | Kiểm tra `dotnet --list-sdks`; dự án dùng `net10.0`, không chạy với chỉ SDK 8 hoặc 9 |
 | Không tìm thấy `sqllocaldb` / lỗi kết nối SQL | Cài LocalDB, mở lại PowerShell, chạy `sqllocaldb info` và làm theo các lệnh bên dưới |
 | `Unable to load the service index` khi restore | Kiểm tra Internet, proxy hoặc kết nối đến NuGet, rồi chạy lại restore |
-| Không tìm thấy project/solution | Chuyển vào đúng thư mục chứa `AuroraHotel.sln`; với ZIP có thể cần mở thêm thư mục `BTLWEBTest-main` bên trong |
+| Không tìm thấy project/solution | Chuyển vào đúng thư mục chứa `AuroraHotel.sln`; với ZIP có thể cần mở thêm thư mục `BTLweb_1-main` bên trong |
 | `Address already in use` ở cổng 5080 | Có một bản web khác đang chạy. Mở bản đang chạy hoặc dừng đúng cửa sổ PowerShell cũ bằng Ctrl + C trước khi chạy lại |
 | Không mở được localhost | Kiểm tra PowerShell có dòng `Now listening on` và không có lỗi; dùng **http**, không phải https, ở chế độ local |
 | Không có file tài khoản demo | Xem lỗi trong PowerShell; file chỉ được tạo khi seed thành công ở Development |
