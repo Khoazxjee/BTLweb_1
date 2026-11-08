@@ -171,6 +171,9 @@ Nếu bạn đã tự sửa code, lưu/commit thay đổi trước khi pull. V�
 
 ## 9. Chức năng và cách đọc mã nguồn bản C# / Razor
 
+- **Tìm phòng bằng AJAX:** đổi bộ lọc rồi bấm Tìm phòng trống; chỉ vùng kết quả cập nhật. Bấm số trang để phân trang, dùng Back/Forward để quay lại bộ lọc trước. Khi lỗi mạng có liên kết mở kết quả bằng trang đầy đủ.
+- **Editor mô tả phòng:** Admin vào Danh mục phòng → Thêm/Sửa phòng. Chọn chữ rồi dùng thanh công cụ để in đậm, nghiêng, đặt tiêu đề hoặc tạo danh sách. Bấm Lưu phòng để lưu; C# kiểm tra dữ liệu và lọc HTML trước khi ghi database.
+- **Sitemap:** mở `docs/sitemap.svg` để xem hoặc mở trang Sitemap trong `docs/diagrams.drawio` để chỉnh sửa. Sơ đồ chia trang theo quyền truy cập.
 - **Tính lại tiền phòng:** sau khi chọn phòng và đăng nhập, sửa lịch ở rồi bấm “Tính lại giá & kiểm tra lịch”. Bước này chưa tạo đơn; bấm “Gửi yêu cầu” để đặt.
 - **Xác nhận thao tác:** bấm nút thao tác để mở lời nhắc, rồi bấm nút xác nhận bên trong. Không cần JavaScript.
 - **Đổi mật khẩu:** mở menu Tài khoản ở đầu trang; nhập mật khẩu hiện tại và mật khẩu mới. Đổi thành công sẽ làm hết hiệu lực các phiên cũ khác.

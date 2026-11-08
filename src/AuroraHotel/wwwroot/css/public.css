@@ -96,3 +96,7 @@
 .auth-form { padding: 50px; }
 .auth-form h1 { font-size: 36px; }
 .auth-form > p { margin-bottom: 28px; font-size: 13px; }
+.search-feedback { min-height: 1.6em; margin: .8rem 0; color: #216452; }
+#room-results { scroll-margin-top: 6rem; }
+#room-results[aria-busy="true"] { opacity: .65; }
+#room-results:focus-visible { outline: 2px solid #216452; outline-offset: 6px; }

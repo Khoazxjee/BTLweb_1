@@ -2,7 +2,7 @@
 
 Ứng dụng **ASP.NET Core MVC / .NET 10**, giao diện **Razor**, dữ liệu **SQL Server**, đăng nhập và phân quyền bằng **ASP.NET Core Identity**.
 
-Toàn bộ nghiệp vụ và xử lý biểu mẫu viết bằng **C#**. Razor tạo HTML, CSS tạo giao diện; ứng dụng không cần JavaScript, jQuery, Node.js hay npm để chạy. Bootstrap chỉ dùng phần CSS. Đây là đồ án quản lý một khách sạn với ba vai trò: khách hàng, lễ tân và quản trị viên.
+Toàn bộ nghiệp vụ và xử lý biểu mẫu viết bằng **C#**. Razor tạo HTML, Bootstrap CSS tạo giao diện. JavaScript chỉ hỗ trợ tìm kiếm/phân trang bằng AJAX và editor Quill cho mô tả phòng; các thư viện được lưu cục bộ. Không cần cài Node.js/npm để chạy dự án. Đây là đồ án quản lý một khách sạn với ba vai trò: khách hàng, lễ tân và quản trị viên.
 
 ## Chạy dự án
 
@@ -19,7 +19,7 @@ Development tự áp dụng migration và tạo dữ liệu minh họa một l�
 
 Hướng dẫn chi tiết: [HUONG_DAN_SU_DUNG.md](HUONG_DAN_SU_DUNG.md).
 
-Đối chiếu đề bài giảng viên: [docs/REQUIREMENTS.md](docs/REQUIREMENTS.md#đối-chiếu-đề-bài-giảng-viên--08112026). Phiên bản hiện tại còn thiếu AJAX trên giao diện, editor cho textarea và sơ đồ sitemap; xem bảng đối chiếu trước khi chuẩn bị bài nộp.
+Đối chiếu đề bài giảng viên: [docs/REQUIREMENTS.md](docs/REQUIREMENTS.md#đối-chiếu-đề-bài-giảng-viên--08112026). Đã bổ sung AJAX, editor cho textarea và [sơ đồ sitemap](docs/sitemap.svg); mở trang **Sitemap** trong `docs/diagrams.drawio` để chỉnh sửa sơ đồ.
 
 ## Tài khoản demo
 
@@ -72,9 +72,10 @@ src/AuroraHotel/
 ├── Views/                  # Razor của khách + thành phần dùng chung
 └── wwwroot/
     ├── css/                # base, public, workspace, responsive, print
+    ├── js/                 # AJAX tìm phòng và kết nối editor với form C#
     ├── images/             # Ảnh và logo
     ├── fonts/              # Font tiếng Việt dùng cục bộ
-    └── lib/                # Bootstrap CSS và giấy phép
+    └── lib/                # Bootstrap CSS, Quill và giấy phép
 tests/AuroraHotel.Tests/     # Kiểm thử nghiệp vụ, HTTP, hosting
 docs/                       # Kiến trúc, chức năng, demo, kiểm thử
 ```

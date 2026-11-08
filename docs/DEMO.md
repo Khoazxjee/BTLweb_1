@@ -4,7 +4,7 @@ Các giá và hồ sơ dưới đây là minh họa. Chạy Development rồi l�
 
 ## Luồng từ website đến trả phòng: 1.800.000 VND
 
-1. Admin vào **Danh mục phòng → Thêm phòng**. Chọn Deluxe Garden (2 khách), số phòng mới chưa dùng, giá **800000**. Upload JPEG/PNG/WebP; nhập mô tả vào ô văn bản và lưu.
+1. Admin vào **Danh mục phòng → Thêm phòng**. Chọn Deluxe Garden (2 khách), số phòng mới chưa dùng, giá **800000**. Upload JPEG/PNG/WebP; nhập mô tả bằng editor, thử chữ đậm/danh sách và lưu. Mở lại phòng để kiểm tra định dạng đã lưu.
 2. Khách chưa đăng nhập tìm từ **hôm nay** đến **sau hai ngày**, hai khách. Mở đúng phòng vừa tạo. Bấm **Tiếp tục đặt phòng**; đăng nhập `minh@aurora.local`. Session giữ kỳ ở. Kiểm tra liên hệ, bấm **Tính lại giá & kiểm tra lịch**, rồi gửi yêu cầu. Kết quả là Pending/Chờ xác nhận, **chưa giữ chỗ**.
 3. Receptionist đăng nhập `letan@aurora.local`, vào Đặt phòng tìm mã vừa tạo, chọn Xác nhận. Giá chốt 800.000 VND/đêm. Có thể tạo hai Pending trước bước xác nhận để demo đơn thứ hai bị chặn khi xác nhận trùng; ca đồng thời thật được kiểm chứng tự động bằng hai DbContext/transaction độc lập.
 4. Tại Lễ tân hoặc Chi tiết đơn, bấm Nhận phòng. Phòng phải Clean/Active và đúng ngày đến. Kết quả có một folio và một dòng phòng 2 × 800.000 = **1.600.000 VND**. Refresh trang không thêm folio/chi phí.

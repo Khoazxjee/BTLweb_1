@@ -55,10 +55,22 @@
 {
     <img src="@Model.CurrentImage" alt="Ảnh phòng hiện tại" class="form-image" />
     }<div class="field">
-        <label asp-for="Description">
+        <label asp-for="Description" id="description-label">
         </label>
-        <textarea asp-for="Description" class="form-control" rows="8">
-        </textarea>
+        <div class="rich-editor" data-rich-editor>
+            <div class="editor-toolbar" data-editor-toolbar hidden role="toolbar" aria-label="Định dạng mô tả phòng">
+                <button type="button" class="ql-bold" aria-label="Chữ đậm" title="Chữ đậm"></button>
+                <button type="button" class="ql-italic" aria-label="Chữ nghiêng" title="Chữ nghiêng"></button>
+                <button type="button" class="ql-header" value="3" aria-label="Tiêu đề" title="Tiêu đề"></button>
+                <button type="button" class="ql-list" value="bullet" aria-label="Danh sách gạch đầu dòng" title="Danh sách gạch đầu dòng"></button>
+                <button type="button" class="ql-list" value="ordered" aria-label="Danh sách đánh số" title="Danh sách đánh số"></button>
+                <button type="button" class="ql-clean" aria-label="Xóa định dạng" title="Xóa định dạng"></button>
+            </div>
+            <div data-editor-surface hidden></div>
+            <textarea asp-for="Description" class="form-control" rows="8" aria-describedby="description-help"></textarea>
+            <small id="description-help">Mô tả không gian, tiện nghi và những điểm nổi bật của phòng.</small>
+            <p class="text-danger" data-editor-error role="alert" hidden></p>
+        </div>
         <span asp-validation-for="Description">
         </span>
     </div>
@@ -67,3 +79,11 @@
         <a class="btn btn-light" asp-action="Rooms">Quay lại</a>
     </div>
 </form>
+@section Styles {
+    <link rel="stylesheet" href="~/lib/quill/quill.snow.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/editor.css" asp-append-version="true" />
+}
+@section Scripts {
+    <script src="~/lib/quill/quill.js" asp-append-version="true" defer></script>
+    <script src="~/js/room-editor.js" asp-append-version="true" defer></script>
+}

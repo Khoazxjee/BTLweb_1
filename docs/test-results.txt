@@ -1,8 +1,11 @@
 Aurora Hotel - Release / SQL Server LocalDB
 Ngay kiem tra: 08/11/2026 (UTC+7)
-Total: 25; Passed: 25; Failed: 0; Skipped: 0
+Total: 28; Passed: 28; Failed: 0; Skipped: 0
 Build Release: 0 errors, 0 warnings
 
+Passed | AuroraHotel.Tests.AjaxEditorTests.Ajax_search_paginates_filtered_results_and_keeps_a_full_page_fallback
+Passed | AuroraHotel.Tests.AjaxEditorTests.Ajax_search_returns_validation_and_empty_states_without_a_server_error
+Passed | AuroraHotel.Tests.AjaxEditorTests.Editor_form_persists_safe_formatting_and_preserves_validation_and_csrf
 Passed | AuroraHotel.Tests.BusinessTests.Catalog_preserves_history_and_sanitizes_editor_content
 Passed | AuroraHotel.Tests.BusinessTests.Charge_edits_keep_price_remove_only_service_and_lock_after_payment
 Passed | AuroraHotel.Tests.BusinessTests.Checkin_requires_today_clean_active_and_vacant

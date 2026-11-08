@@ -1,0 +1,20 @@
+.rich-editor { min-width: 0; }
+.rich-editor [hidden] { display: none !important; }
+.rich-editor .ql-toolbar.ql-snow {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .35rem;
+    border: 1px solid #cbd8d5;
+    border-radius: .7rem .7rem 0 0;
+    background: #f4f8f6;
+    padding: .6rem;
+}
+.rich-editor .ql-toolbar button { width: 36px; height: 36px; border-radius: .3rem; }
+.rich-editor .ql-toolbar button:hover,
+.rich-editor .ql-toolbar button.ql-active { background: #e0eee8; }
+.rich-editor .ql-toolbar button:focus-visible { outline: 2px solid #216452; outline-offset: 2px; }
+.rich-editor .ql-container.ql-snow { border-color: #cbd8d5; border-radius: 0 0 .7rem .7rem; font: inherit; }
+.rich-editor .ql-editor { min-height: 220px; overflow-wrap: anywhere; line-height: 1.7; }
+.rich-editor .ql-editor:focus { outline: 2px solid #216452; outline-offset: -2px; border-radius: 0 0 .7rem .7rem; }
+.rich-editor .ql-editor h3 { font-size: 1.2rem; margin: .5rem 0; }
+.rich-editor small { display: block; margin-top: .5rem; }

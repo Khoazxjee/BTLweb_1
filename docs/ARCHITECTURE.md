@@ -35,7 +35,7 @@ flowchart LR
     View --> Browser
 ```
 
-Tìm kiếm dùng GET để giữ bộ lọc trong URL. Các thay đổi dùng POST cùng antiforgery token. Gửi thành công rồi redirect để tải lại không gửi lại biểu mẫu. Giá và quyền sở hữu luôn đọc lại từ database. Không cần JavaScript ứng dụng.
+Tìm kiếm dùng GET để giữ bộ lọc trong URL. JavaScript gửi AJAX và thay vùng kết quả bằng partial Razor do C# render; phân trang và Back/Forward giữ bộ lọc. Khi JavaScript không chạy, biểu mẫu và liên kết GET vẫn hoạt động. Các thay đổi dùng POST cùng antiforgery token. Gửi thành công rồi redirect để tải lại không gửi lại biểu mẫu. Giá và quyền sở hữu luôn đọc lại từ database.
 
 Controller kiểm tra quyền qua `[Authorize]`, xác thực ModelState, đọc UserId từ claim rồi gọi service. Giá, chủ hồ sơ, tổng phải thu và trạng thái không lấy từ trường do trình duyệt tự quyết định. Server trả 400 cho validation/CSRF, 401/403 ở API và 404 khi khách truy cập đơn không thuộc mình; MVC dùng trang lỗi/redirect login theo Identity.
 
@@ -219,6 +219,10 @@ Upload JPEG/PNG/WebP tối đa 5 MB; kiểm tra extension và định dạng gi�
 Nhãn nghiệp vụ ở Ui.Label; định dạng Ui.Date/Money/Time, văn hóa vi-VN, HotelClock dùng múi giờ cấu hình (mặc định Việt Nam). Để mở rộng ngôn ngữ: chuyển nhãn Views/DataAnnotations/Ui.Label sang Resources `.resx` + `IViewLocalizer`/`IStringLocalizer`, thêm supported cultures và kiểm thử từng ngôn ngữ. Hiện không có nút đổi ngôn ngữ.
 
 ## Quy ước mở rộng
+
+Editor Quill chỉ tải ở màn hình thêm/sửa phòng. `room-editor.js` đồng bộ HTML từ editor vào textarea `Description`, sau đó form POST về CatalogController như trước. C# vẫn kiểm tra độ dài và lọc HTML; các định dạng cho phép gồm đoạn, đậm, nghiêng, tiêu đề và danh sách. Nếu thư viện không tải được, textarea gốc vẫn dùng được.
+
+Sitemap có trong [sitemap.svg](sitemap.svg) và trang Sitemap của `diagrams.drawio`; đường nối thể hiện nhóm trang theo quyền, không phải thứ tự xử lý nghiệp vụ.
 
 1. Thêm dữ liệu nhập vào ViewModels của đúng chức năng, kèm validation tiếng Việt.
 2. Đặt quy tắc nghiệp vụ trong service tương ứng. Thao tác nhiều bản ghi dùng HotelTransaction.

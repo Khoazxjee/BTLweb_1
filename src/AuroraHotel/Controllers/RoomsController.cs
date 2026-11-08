@@ -10,6 +10,7 @@ public class RoomsController(HotelDbContext db, RoomAvailabilityService availabi
 {
     public async Task<IActionResult> Index(SearchInput input)
     {
+        Response.Headers.Append("Vary", "X-Requested-With");
         PageResult<Models.Room> result = new([], 0, 1);
         try
         {

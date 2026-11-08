@@ -1,4 +1,4 @@
-# Rà soát giao diện C# / Razor — 07/11/2026
+# Rà soát giao diện C# / Razor — cập nhật 08/11/2026
 
 ## Thiết kế hiện tại
 
@@ -8,7 +8,7 @@
 - Khu nhân viên: sidebar trên desktop; menu ngang cuộn được trên điện thoại; bảng có vùng cuộn riêng.
 - Thông báo thành công/lỗi bằng tiếng Việt, nhãn cho các trường nhập, focus bàn phím, link bỏ qua điều hướng.
 - Xác nhận thao tác dùng details/summary và nút submit do ConfirmSubmitTagHelper tạo.
-- Phần tương tác chạy bằng biểu mẫu C# và HTML; không tải JavaScript.
+- Nghiệp vụ dùng biểu mẫu C#/Razor; trang tìm phòng tải JavaScript AJAX, trang sửa phòng tải Quill và mã kết nối editor. Các trang khác không tải các script này.
 
 ## Đã quan sát trong trình duyệt tích hợp
 
@@ -26,6 +26,16 @@ Responsive được kiểm tra bằng viewport yêu cầu 390 × 844 và 1440 ×
 
 Các biểu mẫu nghiệp vụ, quyền truy cập và render những màn hình còn lại được xác minh trong kiểm thử HTTP; xem TESTING.md. Bản dữ liệu phát triển cũ được giữ nguyên nên báo cáo tháng mới có thể chưa có tiền thu.
 
-## Giới hạn
+## Kiểm tra bổ sung AJAX/editor ngày 08/11/2026
+
+- Lọc giá tối đa 900.000: 11 phòng giảm còn 5, thông báo cập nhật kết quả xuất hiện mà không tải lại trang.
+- Back khôi phục bộ lọc trống và 11 phòng; bấm trang 2 trả hai phòng Suite và giữ URL phân trang.
+- Mức giá tối đa 1 hiển thị trạng thái không có phòng; trên viewport mobile nội dung không tràn ngang toàn trang.
+- Admin nhập mô tả đậm và danh sách, thử số phòng trùng: báo lỗi và giữ nguyên nội dung/định dạng. Đổi sang mã phòng thử mới, lưu rồi mở lại editor: định dạng được giữ. Phòng thử vừa tạo đã được xóa sau kiểm tra; dữ liệu phòng có sẵn được giữ nguyên.
+- Editor trên desktop và viewport yêu cầu 390 × 844 có đủ thanh công cụ, ô nhập và nút lưu. Chiều rộng nội dung bằng viewport thực tế mà trình duyệt trả về (có thể khác kích thước yêu cầu do zoom).
+- Ảnh: `screenshots/ui-review/editor-desktop.png`, `editor-mobile.png`. Console không ghi lỗi JavaScript trong phiên thử. Các kiểm thử HTTP/SQL tự động xác minh lưu HTML an toàn, CSRF và validation.
+- Chưa mô phỏng mất mạng hoặc mọi tình huống tranh chấp request trong trình duyệt; code có AbortController, timeout và đường dẫn fallback.
+
+## Giới hạn kiểm tra
 
 Chưa kiểm tra trên điện thoại thật, Safari/Firefox hoặc máy in vật lý. Giao diện có CSS in A4; in/lưu PDF dùng lệnh in của trình duyệt. Bản làm lại chưa được triển khai lên hosting.

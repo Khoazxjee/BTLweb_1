@@ -1,4 +1,5 @@
 @model SearchPage
+<div data-room-search-results data-total="@Model.Results.Total">
 <div asp-validation-summary="All" class="text-danger" role="alert">
 </div>
 <div class="section-heading compact">
@@ -38,3 +39,4 @@
     }
 </div>
 <partial name="_Pager" model="@((Model.Results.Page, Model.Results.Pages))" />
+</div>

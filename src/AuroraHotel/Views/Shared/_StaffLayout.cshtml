@@ -14,6 +14,7 @@
     <link rel="icon" href="~/images/aurora.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    @await RenderSectionAsync("Styles", required: false)
 </head>
 <body class="staff-body">
     <a href="#main" class="skip-link">Đến nội dung chính</a>

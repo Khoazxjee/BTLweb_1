@@ -16,7 +16,7 @@ Font được lưu cục bộ trong `wwwroot/fonts`, không phụ thuộc Google
 - **Lora**: tiêu đề trang khách hàng, có bản thường và nghiêng, độ đậm biến thiên 400–700. Nguồn: [Google Fonts / Lora](https://github.com/google/fonts/tree/main/ofl/lora).
 - Các file WOFF2 giữ nguyên bộ ký tự tiếng Việt từ font gốc; giấy phép SIL Open Font License nằm cùng thư mục (`BeVietnamPro-OFL.txt`, `Lora-OFL.txt`).
 
-Bootstrap, jQuery và bộ validation là các tài nguyên template ASP.NET MVC lưu cục bộ. NuGet versions được pin trong csproj: EF/Identity/Testing 10.0.11, HtmlSanitizer 9.2.1039, SkiaSharp 4.153.1. Kiểm tra thông tin license thư viện/ảnh trước khi chuyển từ đồ án sang sản phẩm thương mại.
+Bootstrap chỉ dùng CSS; không dùng jQuery. Editor [Quill 2.0.3](https://quilljs.com/docs/installation) được lưu trong `wwwroot/lib/quill` cùng giấy phép BSD-3-Clause, lấy từ gói chính thức `quill@2.0.3` qua jsDelivr. Website tải các file này từ máy chủ của mình, không gọi CDN khi chạy. JavaScript ứng dụng nằm trong `wwwroot/js/room-search.js` và `room-editor.js`. NuGet versions được pin trong csproj: EF/Identity/Testing 10.0.11, HtmlSanitizer 9.2.1039, SkiaSharp 4.153.1.
 
 `System.Security.Cryptography.Pkcs` được pin trực tiếp ở **9.0.21** để ghi đè phiên bản 9.0.11 do SqlClient kéo vào. Bản vá xử lý hai cảnh báo NuGet phát hiện khi chuẩn bị repository ngày 16/10/2026: [GHSA-2fmv-rv2c-59x7](https://github.com/advisories/GHSA-2fmv-rv2c-59x7) và [GHSA-846f-f764-76mx](https://github.com/advisories/GHSA-846f-f764-76mx).
 

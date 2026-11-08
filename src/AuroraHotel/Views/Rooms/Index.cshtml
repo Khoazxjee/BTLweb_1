@@ -13,4 +13,10 @@
 <div class="field"><label for="maxprice">Giá đến (VND)</label><input id="maxprice" type="number" name="MaxPrice" min="0" value="@Model.Search.MaxPrice" class="form-control" placeholder="Không giới hạn" /></div>
 <div class="field"><label for="sort">Sắp xếp</label><select id="sort" name="Sort" class="form-select"><option value="price" selected="@(Model.Search.Sort == "price")">Giá tăng dần</option><option value="price-desc" selected="@(Model.Search.Sort == "price-desc")">Giá giảm dần</option><option value="capacity" selected="@(Model.Search.Sort == "capacity")">Sức chứa lớn nhất</option></select></div>
 <button class="btn btn-primary" type="submit">Tìm phòng trống ↗</button>
-</form><div id="search-feedback" role="status" aria-live="polite"></div><div id="room-results"><partial name="_Results" model="Model" /></div></section>
+</form>
+<div id="search-feedback" class="search-feedback" role="status" aria-live="polite"></div>
+<div id="room-results" tabindex="-1" aria-label="Kết quả tìm phòng"><partial name="_Results" model="Model" /></div>
+</section>
+@section Scripts {
+    <script src="~/js/room-search.js" asp-append-version="true" defer></script>
+}

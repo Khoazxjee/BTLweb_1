@@ -1,6 +1,6 @@
 # Chức năng của phiên bản C# / Razor
 
-Phiên bản ngày 07/11/2026 ưu tiên yêu cầu mới: xử lý nghiệp vụ bằng C#, mã nguồn tách rõ và giao diện dễ sử dụng. Tìm kiếm gửi biểu mẫu GET, xác nhận thao tác dùng HTML gốc, mô tả phòng nhập bằng textarea. Không dùng AJAX hoặc trình soạn thảo JavaScript của bản trước.
+Phiên bản ngày 08/11/2026 giữ xử lý nghiệp vụ bằng C#, mã nguồn tách rõ và giao diện dễ sử dụng. Tìm kiếm/phân trang dùng AJAX với partial Razor, mô tả phòng dùng editor Quill kết nối textarea; biểu mẫu GET và textarea gốc vẫn dùng được khi JavaScript không tải. Xác nhận thao tác tiếp tục dùng HTML gốc.
 
 | Nhóm | Đã triển khai | Nơi xử lý |
 |---|---|---|
@@ -35,7 +35,7 @@ Phù hợp đồ án quản lý một khách sạn. Chưa có đa chi nhánh, đ
 
 ## Đối chiếu đề bài giảng viên — 08/11/2026
 
-Nguồn: [YeuCauBaiTapLon.pdf, 5 trang](https://drive.google.com/file/d/1NQPNslhcTx0k3nXyhvn6nrl0muoT6KDw/view). Đã đọc toàn bộ tài liệu và đối chiếu mã nguồn, tài liệu dự án, phản hồi HTTP cùng 25 kiểm thử tự động. Bản hiện tại chạy được nghiệp vụ, nhưng **chưa đáp ứng đủ đề bài vì thiếu AJAX trên giao diện và editor cho textarea**.
+Nguồn: [YeuCauBaiTapLon.pdf, 5 trang](https://drive.google.com/file/d/1NQPNslhcTx0k3nXyhvn6nrl0muoT6KDw/view). Đã đọc toàn bộ tài liệu và đối chiếu mã nguồn, tài liệu dự án, phản hồi HTTP cùng 28 kiểm thử tự động. **Đã bổ sung AJAX, editor cho textarea và sitemap**; các yêu cầu về bản báo cáo và xác nhận phiên bản framework vẫn cần hoàn thiện như bảng dưới.
 
 | Mục đề bài | Hiện trạng | Minh chứng / việc còn thiếu |
 |---|---|---|
@@ -43,28 +43,26 @@ Nguồn: [YeuCauBaiTapLon.pdf, 5 trang](https://drive.google.com/file/d/1NQPNslh
 | 3.1 — Ít nhất hai nhóm người dùng | Có | Ba vai trò Customer, Receptionist, Admin; kiểm tra quyền trên controller và quyền sở hữu đơn. |
 | 3.2 — Framework giao diện | Có | Layout tải Bootstrap CSS; phần giao diện kết hợp CSS riêng. Không cần Angular/React để đáp ứng mục này. |
 | 3.3 — Phân trang và lọc | Có | RoomAvailabilityService dùng lọc theo ngày, giá, loại phòng, sắp xếp và Skip/Take; trang danh mục cũng có lọc/phân trang. |
-| 3.3 — AJAX | **Chưa đáp ứng trên giao diện** | RoomsController còn nhánh trả partial khi có X-Requested-With, nhưng trang tìm phòng không có mã phía trình duyệt gọi bất đồng bộ. Biểu mẫu GET hiện tải lại cả trang; REST API không tự thay thế yêu cầu AJAX. |
+| 3.3 — AJAX | Có | room-search.js dùng fetch với X-Requested-With, thay vùng kết quả bằng partial Razor; phân trang giữ bộ lọc, Back/Forward khôi phục URL/form. Hủy yêu cầu cũ, báo lỗi tải và có liên kết mở trang đầy đủ. |
 | 3.3 — Thêm/sửa/xóa | Có | CRUD phòng, loại phòng, dịch vụ; chặn xóa dữ liệu đang được tham chiếu hoặc chuyển ngừng cung cấp để giữ lịch sử. |
 | 3.3 — Session/cookies | Có | Session giữ lựa chọn phòng; Identity dùng cookie đăng nhập, phân quyền và đăng xuất. |
 | 3.3 — Validation/Annotation | Có | ViewModel có Required, Range, StringLength, Compare, Display; controller và service kiểm tra dữ liệu phía máy chủ. |
 | 3.3 — RESTful API/Service | Có | GET khả dụng phòng; GET/POST/PUT/DELETE dịch vụ, phân quyền và kiểm tra chống giả mạo cho thao tác ghi. |
 | 3.3 — Upload ảnh | Có | Ảnh phòng JPEG/PNG/WebP tối đa 5 MB, kiểm tra nội dung và mã hóa lại WebP. |
-| 3.3 — Editor cho textarea | **Chưa có** | Mô tả phòng/loại phòng đang dùng textarea thường. Lọc HTML khi lưu/hiển thị không phải trình soạn thảo có thanh công cụ. |
-| 3.3 — Kiểm thử | Có | Chạy lại ngày 08/11/2026: 25/25 PASS, không bỏ qua; gồm nghiệp vụ, HTTP, quyền, upload, API và SQL. |
+| 3.3 — Editor cho textarea | Có | Quill 2.0.3 ở màn hình Thêm/Sửa phòng, có đậm/nghiêng/tiêu đề/danh sách. Đồng bộ về textarea Description, giữ nội dung khi lỗi; C# kiểm tra độ dài và lọc HTML khi lưu/hiển thị. |
+| 3.3 — Kiểm thử | Có | Chạy lại ngày 08/11/2026: 28/28 PASS, không bỏ qua; gồm nghiệp vụ, HTTP, quyền, upload, API, SQL, AJAX và lưu nội dung editor. |
 | 3.4 — Responsive | Có triển khai và bằng chứng kiểm tra | CSS theo breakpoint, menu/bảng điều chỉnh theo chiều rộng; ảnh và phạm vi kiểm tra ở UI-REVIEW.md. Chưa kiểm tra mọi thiết bị/trình duyệt. |
 | 3.5 — Bảo mật, quốc tế hóa | Đã đề cập và có phần triển khai | ARCHITECTURE.md mô tả Identity, CSRF, XSS, upload, vi-VN, múi giờ và hướng mở rộng tài nguyên ngôn ngữ. Hiện chỉ có tiếng Việt; PDF yêu cầu tìm hiểu/đề cập, không ghi bắt buộc có nút đổi ngôn ngữ. |
 | 4.2 — Mã nguồn, hướng dẫn, SQL | Có | Source, HUONG_DAN_SU_DUNG.md, schema.sql và seed-demo.sql. Script dữ liệu yêu cầu chạy Development một lần để khởi tạo Identity, có ghi rõ trong đầu file. |
-| 5.2 — Use case, ERD, wireframe, sitemap | Có một phần | diagrams.drawio có Use Case, ERD, Wireframe Customer, Wireframe Staff; **chưa có sơ đồ sitemap**. ARCHITECTURE.md có mô tả bảng/ràng buộc và route, nhưng bảng route không thay cho sơ đồ sitemap. |
+| 5.2 — Use case, ERD, wireframe, sitemap | Có | diagrams.drawio có Use Case, ERD, Wireframe Customer, Wireframe Staff và Sitemap. Có bản xem nhanh sitemap.svg; ARCHITECTURE.md mô tả bảng, ràng buộc và route. |
 | 4.1, 5 — Báo cáo đúng cấu trúc | Chưa có bản DOCX hoàn chỉnh trong repo | Tài liệu Markdown là nguồn tham khảo để viết báo cáo; chưa có bằng chứng khảo sát thực tế, bảng phân công nhóm hoặc bảng test case đầy đủ mục tiêu/đầu vào/dự kiến/thực tế/pass-fail và xử lý lỗi theo mẫu. |
 
-### Những việc cần làm để đáp ứng đề
+### Phần còn cần hoàn thiện trước khi nộp
 
-1. Bổ sung AJAX cho tìm kiếm/phân trang phòng, giữ biểu mẫu GET làm phương án khi JavaScript không chạy.
-2. Tích hợp editor cho mô tả phòng, vẫn giữ validation và lọc HTML ở C#.
-3. Bổ sung sơ đồ sitemap và hoàn thiện tài liệu báo cáo khi chuyển sang phần bài nộp.
-4. Đối chiếu project của bài lab để xác định giảng viên có yêu cầu đúng ASP.NET MVC 5/.NET Framework hay chấp nhận ASP.NET Core MVC.
+1. Viết báo cáo đúng bố cục/định dạng, bổ sung khảo sát, bảng test case và phân công thực tế của nhóm.
+2. Đối chiếu project của bài lab để xác định giảng viên có yêu cầu đúng ASP.NET MVC 5/.NET Framework hay chấp nhận ASP.NET Core MVC.
 
-PowerShell và Python chỉ là công cụ hỗ trợ đã được bỏ khỏi bản mã nguồn hiện tại. Bổ sung JavaScript cho AJAX/editor không làm thay đổi việc backend và nghiệp vụ được viết bằng C#; PDF không yêu cầu mọi file trong repo đều là C#.
+Mã nguồn không có file PowerShell/Python. JavaScript cho AJAX/editor chỉ xử lý tương tác trình duyệt; backend, nghiệp vụ, validation và bảo mật tiếp tục được viết bằng C#.
 
 ### Yêu cầu tài liệu và cách nộp
 
