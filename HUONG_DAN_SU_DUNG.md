@@ -10,11 +10,11 @@ Hướng dẫn nhanh bên dưới dành cho **Windows 10/11** với SQL Server L
 
 | Cần cài | Cách kiểm tra |
 |---|---|
-| [.NET SDK 10](https://dotnet.microsoft.com/en-us/download/dotnet/10.0), chọn SDK cho Windows đúng kiến trúc máy | Mở PowerShell, chạy `dotnet --list-sdks`; cần có dòng `10.0.xxx` |
+| [.NET SDK 10](https://dotnet.microsoft.com/en-us/download/dotnet/10.0), chọn SDK cho Windows đúng kiến trúc máy | Mở Terminal, chạy `dotnet --list-sdks`; cần có dòng `10.0.xxx` |
 | [SQL Server Express LocalDB](https://learn.microsoft.com/en-us/sql/database-engine/configure-windows/sql-server-express-localdb) | Chạy `sqllocaldb info` |
 | Git, nếu dùng cách clone | Chạy `git --version`; không cần Git nếu tải ZIP |
 
-**Chọn SDK, không chỉ cài Runtime.** SDK đã có công cụ build và runtime. Bạn có thể dùng Visual Studio hỗ trợ .NET 10, VS Code hoặc chỉ PowerShell; SQL Server Management Studio không bắt buộc để chạy web. Sau khi cài đặt, đóng và mở lại PowerShell.
+**Chọn SDK, không chỉ cài Runtime.** SDK đã có công cụ build và runtime. Bạn có thể dùng Visual Studio hỗ trợ .NET 10, VS Code hoặc chỉ Terminal; SQL Server Management Studio không bắt buộc để chạy web. Sau khi cài đặt, đóng và mở lại Terminal.
 
 LocalDB chỉ chạy trên Windows. Nếu dùng macOS/Linux hoặc SQL Server riêng, cần một SQL Server có thể truy cập và thay connection string như mục 7; bộ test đi kèm mặc định dùng LocalDB trên Windows.
 
@@ -25,24 +25,23 @@ LocalDB chỉ chạy trên Windows. Nếu dùng macOS/Linux hoặc SQL Server ri
 1. Mở [repository](https://github.com/Khoazxjee/BTLweb_1).
 2. Chọn **Code → Download ZIP**.
 3. Giải nén bằng **Extract All** vào một thư mục bạn có quyền ghi, ví dụ `D:\BTLweb_1-main`.
-4. Mở thư mục chứa `AuroraHotel.sln`, `README.md`, `src` và `scripts`. Không chạy trực tiếp bên trong file ZIP.
-5. Bấm vào thanh địa chỉ File Explorer, nhập `powershell`, nhấn Enter để mở PowerShell tại thư mục đó.
+4. Mở thư mục chứa `AuroraHotel.sln`, `README.md`, `src` và `docs`. Không chạy trực tiếp bên trong file ZIP.
+5. Bấm vào thanh địa chỉ File Explorer, nhập `cmd`, nhấn Enter để mở Terminal tại thư mục đó.
 
 ### Cách B — dùng Git
 
-Mở PowerShell tại thư mục muốn lưu dự án rồi chạy:
+Mở Terminal tại thư mục muốn lưu dự án rồi chạy:
 
-```powershell
+```text
 git clone https://github.com/Khoazxjee/BTLweb_1.git
 cd BTLweb_1
 ```
 
 ## 3. Chạy website lần đầu
 
-Trong PowerShell, tại thư mục chứa `AuroraHotel.sln`, chạy:
+Trong Terminal, tại thư mục chứa `AuroraHotel.sln`, chạy:
 
-```powershell
-dotnet tool restore
+```text
 dotnet restore AuroraHotel.sln
 dotnet run --project src/AuroraHotel
 ```
@@ -51,17 +50,11 @@ Chạy lần lượt, chờ mỗi lệnh thành công rồi chạy lệnh tiếp
 
 **[http://localhost:5080](http://localhost:5080)**
 
-Bạn cũng có thể dùng script có sẵn thay cho ba lệnh trên:
-
-```powershell
-powershell -ExecutionPolicy Bypass -File .\scripts\run.ps1
-```
-
-Tham số `Bypass` chỉ áp dụng cho tiến trình PowerShell chạy script đó, không thay đổi chính sách của cả máy.
+Bạn cũng có thể mở `AuroraHotel.sln` trong Visual Studio hỗ trợ .NET 10, đặt `AuroraHotel` làm Startup Project, chọn profile `AuroraHotel` rồi nhấn **Ctrl + F5** để chạy.
 
 Ứng dụng dùng profile **Development**, tự tạo database `AuroraHotel_Development`, áp dụng migration và nạp dữ liệu minh họa vào database mới. Không cần tải file `.mdf`, import SQL hoặc tự tạo bảng trước. Font, ảnh minh họa và thư viện giao diện được lưu trong dự án.
 
-**Giữ cửa sổ PowerShell đang chạy.** Muốn dừng web, nhấn **Ctrl + C** trong cửa sổ này. Những lần sau, mở PowerShell tại thư mục dự án và chạy lại `dotnet run --project src/AuroraHotel`. Dữ liệu đã nhập được giữ trong SQL Server.
+**Giữ cửa sổ Terminal đang chạy.** Muốn dừng web, nhấn **Ctrl + C** trong cửa sổ này. Những lần sau, mở Terminal tại thư mục dự án và chạy lại `dotnet run --project src/AuroraHotel`. Dữ liệu đã nhập được giữ trong SQL Server.
 
 ## 4. Lấy tài khoản đăng nhập
 
@@ -73,7 +66,7 @@ src/AuroraHotel/App_Data/demo-accounts.txt
 
 Có thể mở bằng lệnh:
 
-```powershell
+```text
 notepad .\src\AuroraHotel\App_Data\demo-accounts.txt
 ```
 
@@ -106,33 +99,33 @@ Ngoài luồng trên, có thể thử quản lý loại phòng/phòng/dịch v�
 
 | Hiện tượng | Cách xử lý |
 |---|---|
-| `dotnet` không được nhận diện | Cài .NET **SDK 10**, rồi mở lại PowerShell |
+| `dotnet` không được nhận diện | Cài .NET **SDK 10**, rồi mở lại Terminal |
 | Không tìm thấy SDK phù hợp / lỗi `NETSDK1045` | Kiểm tra `dotnet --list-sdks`; dự án dùng `net10.0`, không chạy với chỉ SDK 8 hoặc 9 |
-| Không tìm thấy `sqllocaldb` / lỗi kết nối SQL | Cài LocalDB, mở lại PowerShell, chạy `sqllocaldb info` và làm theo các lệnh bên dưới |
+| Không tìm thấy `sqllocaldb` / lỗi kết nối SQL | Cài LocalDB, mở lại Terminal, chạy `sqllocaldb info` và làm theo các lệnh bên dưới |
 | `Unable to load the service index` khi restore | Kiểm tra Internet, proxy hoặc kết nối đến NuGet, rồi chạy lại restore |
 | Không tìm thấy project/solution | Chuyển vào đúng thư mục chứa `AuroraHotel.sln`; với ZIP có thể cần mở thêm thư mục `BTLweb_1-main` bên trong |
-| `Address already in use` ở cổng 5080 | Có một bản web khác đang chạy. Mở bản đang chạy hoặc dừng đúng cửa sổ PowerShell cũ bằng Ctrl + C trước khi chạy lại |
-| Không mở được localhost | Kiểm tra PowerShell có dòng `Now listening on` và không có lỗi; dùng **http**, không phải https, ở chế độ local |
-| Không có file tài khoản demo | Xem lỗi trong PowerShell; file chỉ được tạo khi seed thành công ở Development |
+| `Address already in use` ở cổng 5080 | Có một bản web khác đang chạy. Mở bản đang chạy hoặc dừng đúng cửa sổ Terminal cũ bằng Ctrl + C trước khi chạy lại |
+| Không mở được localhost | Kiểm tra Terminal có dòng `Now listening on` và không có lỗi; dùng **http**, không phải https, ở chế độ local |
+| Không có file tài khoản demo | Xem lỗi trong Terminal; file chỉ được tạo khi seed thành công ở Development |
 | Đăng nhập sai nhiều lần | Identity có thể khóa tạm 10 phút; dùng mật khẩu từ đúng lần khởi tạo database trên máy đó |
 | Đơn demo không nằm trong danh sách khách đến hôm nay | Ngày mẫu được tạo theo lần khởi tạo đầu; tạo đơn mới cho hôm nay để thử, hoặc xem toàn bộ ở **Đặt phòng** |
 | Chưa thấy font/giao diện mới | Nhấn **Ctrl + F5** để tải lại CSS và tài nguyên |
 
 Kiểm tra LocalDB:
 
-```powershell
+```text
 sqllocaldb info
 ```
 
 Nếu danh sách **chưa có** `MSSQLLocalDB`, tạo instance:
 
-```powershell
+```text
 sqllocaldb create MSSQLLocalDB
 ```
 
 Khởi động instance rồi chạy lại website:
 
-```powershell
+```text
 sqllocaldb start MSSQLLocalDB
 dotnet run --project src/AuroraHotel
 ```
@@ -159,7 +152,7 @@ File `appsettings.Local.json` đã được `.gitignore` loại khỏi Git. Khô
 
 Khi không còn tiến trình web dùng bản build cần thay thế, có thể chạy:
 
-```powershell
+```text
 dotnet build AuroraHotel.sln -c Release
 dotnet test AuroraHotel.sln -c Release
 ```
@@ -168,7 +161,7 @@ Bộ kiểm thử cần LocalDB và tạo database riêng với tên ngẫu nhi�
 
 Nếu đã clone bằng Git, dừng web trước khi cập nhật:
 
-```powershell
+```text
 git pull --ff-only
 dotnet restore AuroraHotel.sln
 dotnet run --project src/AuroraHotel

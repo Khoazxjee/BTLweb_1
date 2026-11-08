@@ -1,14 +1,16 @@
 # Kiểm thử phiên bản C# / Razor
 
-Môi trường kiểm tra: Windows, .NET SDK 10.0.400, ASP.NET Core/EF Core 10.0.11, SQL Server LocalDB. Ngày kiểm tra: 07/11/2026.
+Môi trường kiểm tra: Windows, .NET SDK 10.0.400, ASP.NET Core/EF Core 10.0.11, SQL Server LocalDB. Ngày kiểm tra lại sau khi bỏ các script hỗ trợ: 08/11/2026.
 
 ## Chạy kiểm thử
 
-```powershell
+```text
 dotnet test AuroraHotel.sln -c Release --logger "trx;LogFileName=hotel-tests.trx" --results-directory TestResults
 ```
 
 Bộ kiểm thử có **25 trường hợp**. Kết quả cuối được ghi tại `TestResults/hotel-tests.trx`. Database kiểm thử có tên `AuroraHotel_Tests_GUID` hoặc `AuroraHotel_HostingTests_GUID`, được tạo riêng và dọn khi kết thúc; không xóa database phát triển.
+
+GitHub Actions chạy trực tiếp các lệnh `dotnet` để restore, build, test và publish. Instance LocalDB mặc định tự khởi động khi ứng dụng kết nối, theo [tài liệu Microsoft](https://learn.microsoft.com/en-us/sql/database-engine/configure-windows/sql-server-express-localdb). Workflow tải thư mục publish lên artifact `AuroraHotel-hosting` để tải về dưới dạng ZIP.
 
 ## Phạm vi tự động
 

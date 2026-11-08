@@ -13,7 +13,7 @@ Nguồn kiểm tra ngày 14/10/2026: [gói Free/Premium](https://help.monsterasp
 ## 1. Tài khoản và GitHub
 
 1. Chủ dự án đăng ký tại https://www.monsterasp.net/ và xác thực email; tự hoàn tất mật khẩu, CAPTCHA và điều khoản nếu có.
-2. Trong Control Panel tạo một **Free website** và **Free MSSQL database**. Chọn modern ASP.NET Core, .NET 10, IIS InProcess. Script publish mặc định `win-x86`, phù hợp pool **32-bit**; nếu pool 64-bit, dùng `-Runtime win-x64`.
+2. Trong Control Panel tạo một **Free website** và **Free MSSQL database**. Chọn modern ASP.NET Core, .NET 10, IIS InProcess. Lệnh publish bên dưới dùng `win-x86`, phù hợp pool **32-bit**; nếu pool 64-bit, đổi thành `-r win-x64`.
 3. Tạo repository GitHub và push source dự án. Đưa URL hosting thực tế vào mục Website/About của repository và README sau khi kiểm tra.
 4. `.gitignore` loại App_Data, ảnh người dùng upload, bản build, cấu hình SQL cục bộ và publish profile. Không tải nguyên thư mục máy lên GitHub qua kéo thả; bản source ZIP đã lọc là lựa chọn an toàn hơn.
 
@@ -23,27 +23,43 @@ Repository của dự án: [Khoazxjee/BTLweb_1](https://github.com/Khoazxjee/BTL
 
 Lấy **connection string** chính xác ở trang database trên hosting và cho phép remote access từ máy đang khởi tạo nếu bảng điều khiển yêu cầu. Chọn kết nối mã hóa TLS theo hướng dẫn nhà cung cấp. Database name do hosting cấp có thể khác `AuroraHotel_Development`; không thay bằng LocalDB.
 
-Chạy tại thư mục dự án:
+Trên máy cá nhân, mở `src/AuroraHotel/appsettings.Local.json` bằng trình soạn thảo. Nếu đã có cấu hình phát triển, lưu bản riêng để khôi phục sau bước này. Nhập cấu hình hosting theo mẫu sau, thay các chỗ giữ chỗ bằng thông tin thật:
 
-```powershell
-powershell -ExecutionPolicy Bypass -File scripts/initialize-hosted-demo.ps1
+```json
+{
+  "ConnectionStrings": {
+    "HotelDb": "CONNECTION_STRING_DATABASE_HOSTING"
+  },
+  "Bootstrap": {
+    "DatabaseName": "TEN_DATABASE_HOSTING",
+    "DemoPassword": "MAT_KHAU_ADMIN_MOI"
+  }
+}
 ```
 
-Script hỏi tên database xác nhận, connection string (ẩn khi nhập), mật khẩu Admin demo mới (ẩn khi nhập). Không đưa các giá trị bí mật vào câu lệnh, file source hoặc chat. Mật khẩu cần ít nhất 16 ký tự, có chữ hoa, chữ thường, số và ký hiệu.
+File cấu hình cục bộ này đã được loại khỏi Git và bản publish. Mật khẩu cần ít nhất 16 ký tự, có chữ hoa, chữ thường, số và ký hiệu. Không đưa thông tin thật vào file cấu hình được theo dõi bởi Git, câu lệnh hoặc chat.
 
-Lệnh dùng môi trường Production, áp dụng migration và tạo 4 tài khoản cùng 12 phòng/dịch vụ/đơn minh họa. Ngày demo theo ngày chạy. **Chỉ cho phép database chưa có tài khoản/phòng**, không reset dữ liệu khi chạy lại. Không mở web server hoặc endpoint setup; không lưu connection string. Toàn bộ thao tác seed trong một transaction có khóa SQL. Nếu mật khẩu không đủ mạnh hoặc tên database không khớp, từ chối trước khi kết nối/migrate.
+Chạy lệnh C# tại thư mục chứa solution:
+
+```text
+dotnet run --project src/AuroraHotel -c Release --no-launch-profile -- --environment Production --initialize-demo
+```
+
+Lệnh áp dụng migration và tạo 4 tài khoản cùng 12 phòng/dịch vụ/đơn minh họa. Ngày demo theo ngày chạy. **Chỉ cho phép database chưa có tài khoản/phòng**, không reset dữ liệu khi chạy lại. Không mở web server hoặc endpoint setup. Toàn bộ thao tác seed trong một transaction có khóa SQL. Nếu mật khẩu không đủ mạnh hoặc tên database không khớp, từ chối trước khi kết nối/migrate.
 
 Tài khoản: `admin@aurora.local`, `letan@aurora.local`, `minh@aurora.local`, `linh@aurora.local`. Admin dùng mật khẩu vừa nhập; ba tài khoản còn lại có mật khẩu ngẫu nhiên riêng, khác nhau. Lệnh lưu thông tin đăng nhập tại `src/AuroraHotel/App_Data/hosting-demo-accounts.txt` trên máy chạy, đã loại khỏi Git và publish. Giữ riêng file này; chỉ gửi đúng tài khoản cho người kiểm thử được giao. Người xem thông thường tự đăng ký Customer. Đây là dữ liệu minh họa, không nhập thông tin cá nhân thật.
 
-Khởi tạo hoàn tất có thể tắt remote access nếu hosting cho phép và không còn cần kết nối từ máy cá nhân. Việc sửa schema các lần sau thực hiện bằng migration riêng, không chạy lại lệnh tạo demo.
+Khởi tạo hoàn tất, xóa phần `Bootstrap` khỏi cấu hình cục bộ và khôi phục cấu hình phát triển trước khi chạy web local. Có thể tắt remote access nếu hosting cho phép và không còn cần kết nối từ máy cá nhân. Việc sửa schema các lần sau thực hiện bằng migration riêng, không chạy lại lệnh tạo demo.
 
 ## 3. Publish và cấu hình server
 
-```powershell
-powershell -ExecutionPolicy Bypass -File scripts/publish-hosting.ps1
+```text
+dotnet publish src/AuroraHotel -c Release -r win-x86 --self-contained false -p:EnvironmentName=Production -p:DebugType=None -p:DebugSymbols=false -o artifacts/hosting
 ```
 
-Kết quả nằm trong `artifacts/AuroraHotel-hosting-win-x86-<thời gian>.zip`. Đây là **bản đã biên dịch để chạy**, khác `AuroraHotel-source.zip`. Bản publish không có mật khẩu, dữ liệu local hay `appsettings.Development.json`.
+Kết quả nằm trong `artifacts/hosting`. Trong File Explorer, chọn toàn bộ nội dung bên trong thư mục này và nén thành ZIP. Đây là **bản đã biên dịch để chạy**, khác ZIP mã nguồn dùng để nộp bài. Cấu hình project loại `App_Data`, ảnh upload, `appsettings.Local.json` và `appsettings.Development.json` khỏi bản publish; chỉ dùng thư mục đầu ra mới hoặc trống để tránh lẫn file cũ.
+
+Cũng có thể tải artifact **AuroraHotel-hosting** từ lần chạy GitHub Actions thành công; artifact này chứa sẵn nội dung publish và được tải xuống dưới dạng ZIP.
 
 Trong hosting, đặt Environment variables:
 

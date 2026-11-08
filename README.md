@@ -6,9 +6,9 @@ Toàn bộ nghiệp vụ và xử lý biểu mẫu viết bằng **C#**. Razor t
 
 ## Chạy dự án
 
-Cần **.NET 10 SDK** và **SQL Server LocalDB** trên Windows. Mở PowerShell tại thư mục chứa solution:
+Cần **.NET 10 SDK** và **SQL Server LocalDB** trên Windows. Mở Terminal tại thư mục chứa solution:
 
-```powershell
+```text
 dotnet restore AuroraHotel.sln
 dotnet run --project src/AuroraHotel
 ```
@@ -18,6 +18,8 @@ Mở **http://localhost:5080**. Có thể mở `AuroraHotel.sln` trong Visual St
 Development tự áp dụng migration và tạo dữ liệu minh họa một lần. Database mặc định là `AuroraHotel_Development`; không cần xóa database sau khi cập nhật mã nguồn.
 
 Hướng dẫn chi tiết: [HUONG_DAN_SU_DUNG.md](HUONG_DAN_SU_DUNG.md).
+
+Đối chiếu đề bài giảng viên: [docs/REQUIREMENTS.md](docs/REQUIREMENTS.md#đối-chiếu-đề-bài-giảng-viên--08112026). Phiên bản hiện tại còn thiếu AJAX trên giao diện, editor cho textarea và sơ đồ sitemap; xem bảng đối chiếu trước khi chuẩn bị bài nộp.
 
 ## Tài khoản demo
 
@@ -75,8 +77,9 @@ src/AuroraHotel/
     └── lib/                # Bootstrap CSS và giấy phép
 tests/AuroraHotel.Tests/     # Kiểm thử nghiệp vụ, HTTP, hosting
 docs/                       # Kiến trúc, chức năng, demo, kiểm thử
-scripts/                    # Lệnh hỗ trợ chạy và đóng gói
 ```
+
+Chạy, kiểm thử và publish bằng các lệnh `dotnet` bên dưới hoặc Visual Studio. Sơ đồ báo cáo có sẵn trong `docs/diagrams.drawio`, mở và chỉnh sửa trực tiếp bằng draw.io.
 
 Cách đọc code: **Controller → ViewModel → Service → DbContext/Entity → Razor View**. Không có lớp `HotelOperations` gom toàn bộ nghiệp vụ như bản trước.
 
@@ -96,7 +99,7 @@ Thông tin thương hiệu, địa chỉ, điện thoại và múi giờ nằm t
 
 ## Build và kiểm thử
 
-```powershell
+```text
 dotnet build AuroraHotel.sln -c Release
 dotnet test AuroraHotel.sln -c Release
 ```
@@ -109,7 +112,7 @@ Xem [kiến trúc](docs/ARCHITECTURE.md), [chức năng](docs/REQUIREMENTS.md), 
 
 Cần hosting hỗ trợ **ASP.NET Core .NET 10 + SQL Server**. Production không tự seed hoặc migrate. Cấu hình connection string bằng biến môi trường, dùng HTTPS và không đưa mật khẩu vào repository.
 
-```powershell
+```text
 dotnet publish src/AuroraHotel -c Release -o artifacts/publish
 ```
 

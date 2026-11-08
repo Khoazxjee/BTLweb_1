@@ -1,5 +1,5 @@
 Aurora Hotel - Release / SQL Server LocalDB
-Ngay kiem tra: 07/11/2026 (UTC+7)
+Ngay kiem tra: 08/11/2026 (UTC+7)
 Total: 25; Passed: 25; Failed: 0; Skipped: 0
 Build Release: 0 errors, 0 warnings
 
