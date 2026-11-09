@@ -84,6 +84,13 @@ Trang đăng nhập: **[http://localhost:5080/Account/Login](http://localhost:50
 ├── Database/                    # Script CSDL SQL Server dự phòng
 │   ├── schema.sql               # Script tạo cấu trúc bảng
 │   └── seed-demo.sql            # Script nạp dữ liệu mẫu
+├── docs/                        # Tài liệu đặc tả, sơ đồ thiết kế & ảnh chụp minh họa
+│   ├── diagrams.drawio          # File vẽ sơ đồ Use Case, ERD CSDL & Sitemap
+│   ├── sitemap.svg              # Sơ đồ điều hướng website
+│   ├── ARCHITECTURE.md          # Tài liệu thiết kế kiến trúc hệ thống
+│   ├── REQUIREMENTS.md          # Đặc tả yêu cầu nghiệp vụ
+│   ├── DEMO.md                  # Hướng dẫn kịch bản demo
+│   └── screenshots/             # Ảnh chụp các màn hình giao diện
 └── src/
     └── AuroraHotel/             # Mã nguồn chính của ứng dụng
         ├── Controllers/         # Controller công khai (Rooms, Bookings, Account) & REST API

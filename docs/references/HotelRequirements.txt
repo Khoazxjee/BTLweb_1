@@ -1,0 +1,331 @@
+﻿PROMPT XÂY DỰNG WEBSITE QUẢN LÝ KHÁCH SẠN
+
+Bạn là lập trình viên full-stack có kinh nghiệm với C#, ASP.NET MVC, SQL Server và thiết kế giao diện web. Hãy giúp nhóm tôi xây dựng một WEBSITE quản lý khách sạn hoàn chỉnh cho bài tập lớn môn Lập trình Web, dựa trên đặc tả dưới đây.
+
+Hãy thực hiện cả giao diện, backend, cơ sở dữ liệu và tích hợp các chức năng thành một luồng chạy được. Tôi cần mã nguồn có thể chạy và kiểm tra, không chỉ bản thiết kế hoặc các màn hình dùng dữ liệu giả cố định.
+
+1. BỐI CẢNH VÀ MỤC TIÊU
+
+- Đây là website sử dụng trên trình duyệt, phục vụ một khách sạn.
+- Tham khảo nghiệp vụ Oracle OPERA PMS: đặt phòng, hồ sơ khách, lễ tân, tình trạng phòng, dịch vụ, bảng kê chi phí và thanh toán.
+- OPERA PMS là nguồn tham khảo nghiệp vụ. Xây dựng thương hiệu và giao diện riêng; không yêu cầu cài OPERA, sao chép giao diện hoặc kết nối API Oracle.
+- Website có cả khu vực khách hàng tự đặt phòng và khu vực quản trị/lễ tân. Hai khu vực sử dụng chung backend và cơ sở dữ liệu.
+- Nhóm gồm 3 người, trình độ tương đương, dự kiến hoàn thành phiên bản đầu trong 7 ngày.
+- Tập trung vào một khách sạn, một phòng cho mỗi đơn đặt và một lần thanh toán đủ cho mỗi lần lưu trú.
+- Trong phiên bản này, thanh toán là nhân viên ghi nhận tiền mặt/chuyển khoản đã nhận. Không tự thêm cổng thanh toán trực tuyến, quản lý nhiều chi nhánh, OTA, kế toán tổng hợp hoặc tính giá động.
+- Có thể dùng tên tạm "Aurora Hotel" để thiết kế. Đặt tên, địa chỉ và thông tin liên hệ trong cấu hình để nhóm thay đổi dễ dàng. Dữ liệu minh họa phải là dữ liệu giả.
+
+2. CÔNG NGHỆ VÀ CẤU TRÚC DỰ ÁN
+
+- Dùng C# và ASP.NET MVC theo đúng phiên bản nhóm học. Nếu đã có repository, đọc solution/project và tiếp tục đúng nền tảng, phiên bản, cấu trúc hiện có.
+- Nếu chưa có project và chưa biết phiên bản, hỏi tôi một câu để xác định ASP.NET MVC 5 hay ASP.NET Core MVC trước khi khởi tạo. Không tự chuyển sang React/Next.js, Node.js, PHP hoặc công nghệ khác.
+- Tuyệt đối không trộn cấu hình MVC 5 với ASP.NET Core MVC trong cùng project.
+- Dùng SQL Server và Entity Framework phù hợp nền tảng đã chọn: EF6 cho MVC 5 hoặc EF Core cho ASP.NET Core MVC.
+- Dùng Razor Views, Bootstrap, CSS tùy chỉnh và JavaScript/jQuery khi cần. Chọn các thư viện tương thích với project.
+- Dùng Identity hoặc cơ chế xác thực an toàn tương thích dự án; không tự lưu mật khẩu dạng văn bản.
+- Tổ chức Models, ViewModels, Controllers, Views và Services rõ ràng. Dùng Areas hoặc cách tổ chức tương đương để tách khu vực khách và nhân viên.
+- Quy tắc tìm phòng, xác nhận đơn, tính tiền và checkout đặt trong service dùng chung. Controller xử lý request và trả kết quả; không chép cùng một nghiệp vụ vào nhiều controller.
+- Giữ kiến trúc vừa sức nhóm sinh viên, dễ đọc và dễ ghép trong một repository.
+
+3. ĐỊNH HƯỚNG GIAO DIỆN
+
+Giao diện tổng thể:
+- Hiện đại, thanh lịch, phù hợp khách sạn; bố cục rõ ràng, khoảng trắng hợp lý, chữ dễ đọc.
+- Gợi ý bảng màu: xanh navy #172C49, vàng nhấn #B89156, nền kem #F8F6F1 và trắng. Màu chữ phải đủ tương phản.
+- Dùng một hệ thống font, nút, biểu mẫu, bảng, badge trạng thái và thông báo thống nhất.
+- Tiếng Việt có dấu; ngày hiển thị dd/MM/yyyy; giá hiển thị VND nhất quán.
+- Responsive cho điện thoại, máy tính bảng và desktop. Bảng dài có cuộn ngang; menu thu gọn phù hợp trên màn hình nhỏ.
+- Form có label rõ ràng, lỗi gần trường nhập, trạng thái đang xử lý và thông báo thành công/thất bại.
+- Có trạng thái không có dữ liệu, không tìm thấy phòng và lỗi tải dữ liệu; không để màn hình trống khó hiểu.
+- Các nút phải có hành vi thật. Chức năng ngoài phạm vi không đưa vào menu như thể đã hoạt động.
+- Hỗ trợ thao tác bàn phím, trạng thái focus và mô tả ảnh; không chỉ dựa vào màu để truyền đạt trạng thái.
+
+Khu vực khách hàng:
+- Header có logo/tên khách sạn, liên kết trang chủ, danh sách phòng, đơn của tôi và tài khoản.
+- Trang chủ có ảnh giới thiệu phù hợp, ô tìm phòng nổi bật, phòng nổi bật, tiện nghi và thông tin liên hệ ở footer.
+- Thẻ phòng có ảnh, loại phòng, sức chứa, tiện nghi chính, giá mỗi đêm và nút xem chi tiết.
+- Luồng đặt phòng ngắn, rõ ngày ở, số đêm, số khách và giá dự kiến trước khi gửi.
+
+Khu vực quản trị/lễ tân:
+- Có sidebar và thanh tiêu đề; chỉ hiện các mục phù hợp quyền.
+- Ưu tiên thao tác nhanh trên bảng đặt phòng, danh sách khách và bảng tình trạng phòng.
+- Trạng thái phòng phải thể hiện riêng: có khách/trống, sạch/bẩn và đang hoạt động/ngừng sử dụng.
+- Dashboard dùng các số liệu thật từ database, có khoảng thời gian báo cáo rõ ràng. Chỉ dùng biểu đồ nếu giúp hiểu dữ liệu.
+
+4. VAI TRÒ VÀ QUYỀN
+
+Khách chưa đăng nhập:
+- Xem trang chủ, tìm phòng, xem chi tiết, đăng ký và đăng nhập.
+- Khi gửi yêu cầu đặt phòng, cần đăng nhập. Giữ lựa chọn hợp lệ bằng session để tiếp tục sau đăng nhập.
+
+Customer:
+- Tạo yêu cầu đặt phòng, xem và hủy đơn của chính mình khi đủ điều kiện.
+- Xem/cập nhật hồ sơ liên hệ của chính mình.
+- Không truy cập đơn, hồ sơ, folio hoặc dữ liệu riêng của khách khác.
+
+Receptionist:
+- Xem hồ sơ khách phục vụ nghiệp vụ; tạo, sửa, xác nhận, từ chối hoặc hủy đơn khi trạng thái cho phép.
+- Thực hiện check-in, ghi dịch vụ, xem folio, ghi nhận thanh toán, checkout và in bảng kê/hóa đơn nội bộ.
+- Xem bảng tình trạng phòng và cập nhật sạch/bẩn.
+- Không quản lý vai trò người dùng hoặc sửa danh mục phòng/dịch vụ dành cho Admin.
+
+Admin:
+- Có quyền vận hành của Receptionist.
+- Quản lý tài khoản, phân quyền, loại phòng, phòng, danh mục dịch vụ, ngừng sử dụng phòng và báo cáo tổng hợp.
+
+Kiểm tra quyền tại controller/action/API và quyền sở hữu từng bản ghi. Ẩn nút trên giao diện chỉ là cách hiển thị, không thay thế kiểm tra phía server. Đăng ký công khai chỉ được tạo Customer.
+
+5. CÁC TRANG VÀ PHÂN CÔNG HIỆN TẠI
+
+Mỗi người thực hiện cả giao diện, xử lý backend, dữ liệu và kiểm tra cho phần được giao. Tên người phụ trách dưới đây là phân công mới nhất.
+
+A. HÙNG - TÀI KHOẢN VÀ QUẢN LÝ PHÒNG
+
+1) Đăng ký, đăng nhập, đăng xuất:
+   - Form đăng ký/đăng nhập, xác thực dữ liệu và thông báo lỗi rõ ràng.
+   - Customer đăng ký thành công có hồ sơ khách tương ứng.
+   - Chuyển đến khu vực phù hợp vai trò sau đăng nhập; chỉ chấp nhận URL quay lại nội bộ an toàn.
+
+2) Quản lý tài khoản:
+   - Admin xem danh sách, tìm kiếm, phân trang, khóa/mở tài khoản và gán vai trò phù hợp.
+   - Ngăn tự nâng quyền, tự khóa tài khoản quản trị đang sử dụng hoặc làm mất quản trị viên hoạt động cuối cùng.
+
+3) Quản lý loại phòng:
+   - Thêm, xem, sửa, xóa loại phòng với tên, sức chứa và mô tả.
+   - Không xóa loại phòng đang được phòng tham chiếu; trả thông báo dễ hiểu.
+
+4) Quản lý phòng:
+   - Thêm, xem, sửa, xóa phòng; số phòng, loại phòng, giá mỗi đêm, tiện nghi, ảnh và mô tả.
+   - Upload ảnh và dùng trình soạn thảo cho mô tả.
+   - Tìm kiếm, lọc và phân trang.
+   - Không xóa dữ liệu phòng đã có lịch sử đặt/lưu trú; sử dụng trạng thái ngừng sử dụng khi phù hợp.
+
+5) Tình trạng phòng:
+   - Room Board dạng thẻ hoặc bảng, có lọc theo loại phòng và trạng thái.
+   - Hiển thị có khách/trống, Clean/Dirty và Active/OutOfOrder.
+   - Receptionist/Admin được cập nhật Clean/Dirty; Admin quản lý OutOfOrder theo điều kiện nghiệp vụ.
+
+B. KHOA - KHÁCH HÀNG VÀ ĐẶT PHÒNG
+
+1) Trang chủ:
+   - Giới thiệu khách sạn, ô tìm phòng theo ngày và số khách, phòng nổi bật và thông tin liên hệ.
+   - Phòng hiển thị lấy từ dữ liệu quản trị.
+
+2) Danh sách phòng:
+   - Tìm theo ngày nhận/trả và số khách; lọc loại phòng, khoảng giá; sắp xếp và phân trang.
+   - Dùng AJAX và API khả dụng để cập nhật kết quả.
+   - Giữ tiêu chí tìm kiếm khi chuyển trang hoặc quay lại danh sách.
+
+3) Chi tiết phòng:
+   - Ảnh, mô tả đã xử lý an toàn, tiện nghi, sức chứa và giá mỗi đêm.
+   - Hiển thị ngày ở, số đêm, tổng dự kiến và nút đặt phòng.
+
+4) Đặt phòng:
+   - Nhập/kiểm tra thông tin khách, ngày ở, số khách và ghi chú.
+   - Server đọc lại giá và điều kiện phòng; không tin giá/tổng tiền gửi từ trình duyệt.
+   - Tạo mã đặt phòng và đơn Pending. Trang kết quả ghi rõ "Đang chờ xác nhận", chưa giữ chỗ.
+
+5) Đơn đặt của tôi:
+   - Danh sách/chi tiết đơn, mã đơn, phòng, thời gian, giá và trạng thái.
+   - Hủy đơn khi hợp lệ và yêu cầu xác nhận trước thao tác hủy.
+
+6) Hồ sơ khách:
+   - Xem/sửa họ tên, email liên hệ, số điện thoại và xem lịch sử đặt phòng của mình.
+   - Việc đổi email liên hệ không tự thay đổi danh tính đăng nhập hoặc liên kết tài khoản.
+
+7) Quản lý đặt phòng cho lễ tân:
+   - Danh sách, tìm kiếm, lọc ngày/trạng thái và phân trang.
+   - Tạo đơn cho khách trực tiếp, xem chi tiết, sửa, xác nhận hoặc từ chối đơn theo trạng thái.
+   - Tạo/chọn GuestProfile cho khách chưa có tài khoản.
+   - Khi xác nhận hoặc đổi lịch/phòng, kiểm tra trùng lịch bằng cùng service với các luồng đặt khác.
+
+C. TRƯỞNG - LỄ TÂN, DỊCH VỤ VÀ THANH TOÁN
+
+1) Trang lễ tân:
+   - Các tab khách sắp đến, đang ở và sắp trả phòng.
+   - Hiển thị dữ liệu từ đơn đặt chung; thực hiện check-in/check-out đúng điều kiện.
+   - Có liên kết sang hồ sơ khách, dịch vụ và folio của lần lưu trú.
+
+2) Quản lý dịch vụ:
+   - Admin thêm, xem, sửa, xóa dịch vụ, đơn vị tính và đơn giá.
+   - Có tìm kiếm, phân trang và REST API CRUD.
+   - Dịch vụ đã được sử dụng chỉ ngừng cung cấp; không xóa lịch sử.
+
+3) Dịch vụ sử dụng:
+   - Chọn lần lưu trú, dịch vụ và số lượng; ghi vào folio.
+   - Chỉ ghi/sửa/xóa khoản dịch vụ khi đang lưu trú và folio còn được phép chỉnh sửa.
+   - Hiển thị đơn giá tại thời điểm sử dụng và thành tiền.
+
+4) Bảng kê chi phí (folio):
+   - Thông tin khách, phòng, ngày ở, số đêm, dòng tiền phòng và các dòng dịch vụ.
+   - Tổng tiền, đã thanh toán và còn phải thu tính thống nhất phía server.
+   - Mỗi lần lưu trú dùng một folio; mở lại trang không tạo thêm folio hoặc phí phòng trùng.
+
+5) Thanh toán/hóa đơn:
+   - Hiển thị bảng kê để lễ tân kiểm tra trước khi ghi nhận thanh toán đủ.
+   - Ghi phương thức tiền mặt/chuyển khoản, số tiền, thời điểm và nhân viên thu.
+   - Chống ghi nhận trùng khi nhấn nút nhiều lần hoặc gửi lại request.
+   - Có trang xem/in với CSS phù hợp khi in. Đây là chứng từ nội bộ cho đồ án; không thêm tích hợp hóa đơn điện tử.
+
+6) Tổng quan/thống kê:
+   - Số đơn theo trạng thái, phòng đang có khách, phòng cần dọn và tổng tiền đã thu.
+   - Tổng tiền đã thu lấy từ Payments theo thời điểm thu; không tính đơn chưa thanh toán thành tiền đã thu.
+   - Admin xem báo cáo tổng hợp; Receptionist dùng thông tin vận hành cần thiết trên trang lễ tân.
+
+6. DỮ LIỆU DÙNG CHUNG
+
+Đề xuất các thực thể dưới đây. Có thể điều chỉnh tên cho phù hợp project nhưng không tạo hai bộ bảng cho cùng một nghiệp vụ:
+
+- Users/Roles: dùng cơ chế Identity hoặc cơ chế xác thực thống nhất.
+- RoomTypes: Id, Name, Capacity, Description.
+- Rooms: Id, RoomNumber, RoomTypeId, NightlyRate, ImagePath, Description, Amenities, HousekeepingStatus, OperationalStatus.
+- RoomImages: tùy chọn nếu hỗ trợ nhiều ảnh.
+- GuestProfiles: Id, UserId tùy chọn, FullName, Phone, Email, Notes.
+- Reservations: Id, ConfirmationCode, GuestProfileId, RoomId, ArrivalDate, DepartureDate, GuestCount, NightlyRateSnapshot, Status, Source, CreatedByUserId, CreatedAt, CheckInAt, CheckOutAt.
+- Services: Id, Name, Unit, UnitPrice, IsActive.
+- Folios: Id, ReservationId, Status, CreatedAt, ClosedAt.
+- FolioItems: Id, FolioId, Kind (Room/Service), ServiceId tùy chọn, DescriptionSnapshot, Quantity, UnitPriceSnapshot.
+- Payments: Id, FolioId, Amount, Method, PaidAt, ReceivedByUserId.
+
+Ràng buộc dữ liệu:
+- Một loại phòng có nhiều phòng; một khách có nhiều đơn; mỗi đơn chọn một phòng.
+- Một Customer gắn với một GuestProfile. Khách do lễ tân tạo có thể chưa có UserId.
+- Không tự gắn hồ sơ/tài khoản chỉ dựa trên email trùng nhau.
+- RoomNumber và ConfirmationCode là duy nhất. Folios.ReservationId duy nhất.
+- Phiên bản một lần thanh toán đủ: Payments.FolioId duy nhất.
+- Tiền dùng decimal với độ chính xác phù hợp VND; ngày đặt phòng là ngày nghiệp vụ, thời điểm ghi nhận được lưu/hiển thị thống nhất múi giờ.
+- Có khóa ngoại, ràng buộc dữ liệu và cơ chế kiểm soát truy cập đồng thời cần thiết.
+- Giá dự kiến khi gửi đơn và giá chốt khi xác nhận phải phân biệt rõ. Nếu dùng NightlyRateSnapshot từ lúc Pending, coi đó là giá dự kiến; cập nhật lại và cố định khi Confirmed.
+- Chỉnh giá phòng/dịch vụ trong danh mục không thay đổi giá đã chốt hoặc các khoản phí lịch sử.
+
+7. QUY TẮC NGHIỆP VỤ BẮT BUỘC
+
+Đặt phòng và chống trùng:
+- ArrivalDate < DepartureDate; số đêm lớn hơn 0; số khách không vượt sức chứa.
+- Khi tạo/đổi lịch đặt mới, không nhận ngày trong quá khứ theo ngày nghiệp vụ của khách sạn.
+- Trạng thái chính: Pending -> Confirmed -> CheckedIn -> CheckedOut.
+- Rejected dùng cho đơn Pending bị từ chối. Cancelled dùng cho đơn được hủy hợp lệ trước lưu trú.
+- Pending chưa giữ chỗ. Confirmed và CheckedIn giữ chỗ theo khoảng ngày.
+- Hai kỳ ở chồng nhau khi newArrival < existingDeparture VÀ newDeparture > existingArrival. Ngày trả của đơn trước có thể trùng ngày nhận của đơn sau.
+- Khi xác nhận, đổi phòng hoặc đổi lịch, đọc lại dữ liệu và kiểm tra khả dụng phía server.
+- Bảo vệ cả tình huống hai request đồng thời: kiểm tra và lưu trong cơ chế transaction/khóa phù hợp SQL Server. Không chỉ kiểm tra trên giao diện hoặc kiểm tra trước rồi lưu riêng rẽ.
+- Kết quả tìm phòng chỉ phản ánh thời điểm tìm. Nếu phòng vừa được người khác xác nhận, trả thông báo rõ và yêu cầu chọn lại.
+- Customer được hủy Pending hoặc Confirmed trước ngày nhận; không hủy CheckedIn/CheckedOut. Các thao tác nhân viên cũng phải theo chuyển trạng thái hợp lệ.
+
+Tình trạng phòng và nhận phòng:
+- Clean/Dirty là trạng thái dọn phòng; Active/OutOfOrder là trạng thái khai thác.
+- Có khách/trống suy ra từ lần lưu trú đang CheckedIn, không duy trì một cờ riêng dễ lệch dữ liệu.
+- Dirty không tự loại phòng khỏi mọi tìm kiếm tương lai.
+- OutOfOrder loại phòng khỏi đặt mới. Không cho chuyển OutOfOrder khi đang có khách hoặc còn đơn Confirmed chưa xử lý.
+- Check-in yêu cầu đơn Confirmed, đến ngày nhận phù hợp, phòng Active, Clean và chưa có khách đang ở.
+- Phiên bản đầu không hỗ trợ nhận phòng sớm/trễ so với ngày đã chốt; thông báo nhân viên điều chỉnh lịch hợp lệ trước khi check-in.
+- Check-in/check-out phải chống thực hiện trùng và chống hai lần lưu trú nhận cùng một phòng.
+
+Folio, thanh toán và trả phòng:
+- Tiền phòng = số đêm đã chốt x giá phòng mỗi đêm đã chốt.
+- Tiền dịch vụ = tổng số lượng x đơn giá tại thời điểm ghi nhận.
+- Tổng phải thu = tiền phòng + tiền dịch vụ; còn nợ = tổng phải thu - tổng đã thanh toán.
+- Chỉ tính phí phòng một lần. Mọi trang lấy tổng tiền từ cùng service/cùng dữ liệu.
+- Trong phiên bản đầu không tự thêm thuế, phụ thu, đặt cọc, khuyến mãi hoặc hoàn tiền.
+- Chỉ ghi nhận một lần thanh toán đủ mỗi folio; không cho số tiền âm, thu thiếu, thu vượt hoặc thu trùng.
+- Sau khi đã ghi nhận thanh toán đủ, khóa chỉnh sửa các khoản phí để giữ nhất quán với phạm vi một lần thanh toán.
+- Checkout chỉ được hoàn tất khi folio hợp lệ, đủ phí và số dư bằng 0.
+- Checkout cập nhật nhất quán: Reservation = CheckedOut, Folio = Closed, phòng hết khách và HousekeepingStatus = Dirty.
+- Giao dịch liên quan nhiều bảng phải dùng transaction để tránh trạng thái cập nhật một nửa.
+
+8. API VÀ CÁC YÊU CẦU KỸ THUẬT CỦA ĐỒ ÁN
+
+Phải thể hiện được:
+- ASP.NET MVC và ít nhất hai nhóm quyền; website này dùng ba vai trò.
+- Bootstrap/thư viện frontend; responsive.
+- CRUD, tìm kiếm, Filtering, Paging và AJAX.
+- Session giữ lựa chọn đặt phòng trước đăng nhập; cookie phục vụ xác thực đúng cơ chế framework.
+- ViewModel, DataAnnotations, kiểm tra ModelState và kiểm tra nghiệp vụ phía server.
+- RESTful API/service, upload ảnh, textarea editor.
+- Xử lý bảo mật, quy ước quốc tế hóa và kiểm thử thực tế.
+
+API gợi ý:
+- GET /api/rooms/availability: nhận ngày nhận/trả, số khách, loại phòng, khoảng giá và phân trang; trả kết quả JSON với tổng số bản ghi phù hợp.
+- GET /api/services: danh sách dịch vụ theo quyền người dùng.
+- GET /api/services/{id}, POST /api/services, PUT /api/services/{id}, DELETE /api/services/{id}: CRUD theo quyền Admin, bảo toàn lịch sử sử dụng.
+- Có thể dùng MVC POST actions cho đặt phòng, xác nhận, check-in và thanh toán; không cần biến toàn bộ hệ thống thành SPA.
+- API và MVC phải gọi cùng service nghiệp vụ. Các thao tác thay đổi dữ liệu không dùng GET.
+- Trả mã HTTP và lỗi phù hợp; không trả stack trace, mật khẩu hoặc dữ liệu riêng không cần thiết cho client.
+
+Bảo mật và dữ liệu nhập:
+- Kiểm tra quyền theo vai trò và quyền sở hữu bản ghi, kể cả khi sửa trực tiếp URL/ID hoặc gọi API.
+- Chống CSRF cho request thay đổi dữ liệu dùng cookie đăng nhập, bao gồm AJAX theo cơ chế của framework đã chọn.
+- Dùng truy vấn tham số/ORM; dùng ViewModel để tránh overposting.
+- Encode nội dung hiển thị; lọc HTML phía server từ trình soạn thảo theo danh sách cho phép.
+- Upload ảnh kiểm tra định dạng/nội dung, giới hạn dung lượng, tên file ngẫu nhiên và vị trí lưu không cho thực thi. Giới hạn minh họa: JPEG/PNG/WebP tối đa 5 MB.
+- Không commit mật khẩu, khóa bí mật hoặc thông tin kết nối thật vào GitHub; có cấu hình mẫu và hướng dẫn thiết lập cục bộ.
+- Giao diện tiếng Việt, định dạng ngày/tiền rõ ràng; tách nhãn để dễ mở rộng ngôn ngữ. Nếu làm nút chuyển ngôn ngữ thì phải hoạt động thật; nếu chưa triển khai, mô tả phương án trong tài liệu.
+
+9. LÀM VIỆC CHUNG TRÊN GITHUB
+
+- Một repository, một solution/project thống nhất và một bộ schema dữ liệu.
+- Hùng phụ trách tài khoản, phòng/loại phòng, tình trạng phòng; phối hợp khởi tạo nền tảng và schema.
+- Khoa phụ trách giao diện khách, hồ sơ khách, tìm kiếm, đặt phòng và service khả dụng.
+- Trưởng phụ trách lễ tân, dịch vụ, folio, thanh toán và thống kê.
+- Mỗi chức năng có nhánh riêng, commit theo tài khoản thật của người làm; không giả danh thành viên khác.
+- Nhánh gợi ý: feat/auth, feat/rooms, feat/housekeeping, feat/room-search, feat/bookings, feat/front-desk, feat/services, feat/folios-payments.
+- Mở PR, có một người khác review rồi mới merge main. Main phải build và chạy được.
+- Review: Hùng kiểm tra phần của Khoa; Khoa kiểm tra phần của Trưởng; Trưởng kiểm tra phần của Hùng.
+- Thống nhất model, khóa ngoại, enum trạng thái, service dùng chung và layout trước khi làm song song. Không tự thay hợp đồng dữ liệu đang được phần khác sử dụng.
+- Bàn giao từng phần cùng hướng dẫn chạy và cách kiểm tra, không chờ đến cuối tuần mới ghép.
+
+10. DỮ LIỆU MẪU VÀ TIÊU CHÍ NGHIỆM THU
+
+Seed dữ liệu phát triển:
+- Một Admin, một Receptionist, hai Customer có hồ sơ riêng.
+- Ít nhất hai loại phòng, ba phòng với trạng thái Clean/Dirty/OutOfOrder, một số dịch vụ và các đơn mẫu ở trạng thái phù hợp.
+- Dữ liệu test ngày tháng phải được tạo có chủ đích để demo check-in/check-out chạy được, không phụ thuộc vào ngày hardcode đã qua.
+- Tài khoản demo chỉ dùng trong môi trường phát triển, có hướng dẫn tạo và đăng nhập.
+
+Luồng demo bắt buộc:
+1) Admin thêm phòng, ảnh và mô tả; khách nhìn thấy đúng dữ liệu đó.
+2) Customer chọn kỳ ở 2 đêm, gửi đơn Pending và nhận thông báo chờ xác nhận.
+3) Receptionist xác nhận đơn với giá 800.000 VND/đêm.
+4) Xác nhận đơn khác trùng phòng/khoảng ngày bị chặn, kể cả khi xử lý đồng thời.
+5) Đến ngày nhận, lễ tân check-in phòng Clean/Active.
+6) Thêm dịch vụ giá 100.000 VND, số lượng 2.
+7) Folio hiển thị tiền phòng 1.600.000, dịch vụ 200.000, tổng 1.800.000 VND.
+8) Ghi nhận thanh toán 1.800.000 VND; gửi lại request không tạo thêm thanh toán.
+9) Checkout hoàn tất, folio đóng, phòng chuyển Dirty; xem/in chứng từ.
+10) Nhân viên cập nhật Clean; dashboard tổng tiền đã thu tăng đúng 1.800.000 VND trong khoảng báo cáo tương ứng.
+
+Kiểm tra thêm:
+- Ngày ở sai, số khách vượt sức chứa và phòng OutOfOrder.
+- Khách A không xem/sửa/hủy được đơn hoặc hồ sơ của khách B.
+- Customer không gọi được API quản trị.
+- Không check-in phòng Dirty hoặc phòng đang có khách; không checkout khi còn nợ.
+- Không mở nhiều folio hoặc tạo lặp phí phòng cho cùng đơn.
+- Đổi giá danh mục không làm đổi các khoản đã chốt.
+- Lọc/phân trang giữ đúng điều kiện; ảnh lỗi, form lỗi và trạng thái không có dữ liệu hiển thị rõ.
+- Chạy thử giao diện trên điện thoại và desktop.
+- Có kiểm thử tự động cho nghiệp vụ quan trọng và checklist kiểm tra luồng giao diện. Báo rõ kiểm thử nào đã chạy, kết quả và phần chưa kiểm chứng.
+
+11. CÁCH THỰC HIỆN VÀ KẾT QUẢ CẦN BÀN GIAO
+
+Trước khi code:
+- Đọc repo/tài liệu sẵn có, xác định nền tảng và phần đã hoàn thành; không xóa hoặc làm lại phần đang hoạt động nếu không cần thiết.
+- Tóm tắt phạm vi, sơ đồ trang, quyền và schema dự kiến. Chỉ hỏi thông tin thực sự còn thiếu để triển khai đúng; không hỏi lại những gì đặc tả đã quy định.
+
+Thực hiện theo thứ tự:
+1) Project nền, kết nối database, xác thực/quyền, layout chung và schema.
+2) Các trang của Hùng, dữ liệu phòng và hồ sơ dùng chung.
+3) Các trang của Khoa và luồng Pending -> Confirmed.
+4) Các trang của Trưởng và luồng Confirmed -> CheckedIn -> thanh toán -> CheckedOut.
+5) Ghép toàn bộ, kiểm tra quyền/nghiệp vụ, chỉnh responsive và chuẩn bị dữ liệu demo.
+
+Nếu có môi trường sửa code, hãy tạo/sửa các file thực tế, chạy build và các kiểm tra phù hợp; không dừng sau một bản kế hoạch. Nếu chỉ trả lời bằng văn bản, cung cấp mã theo đường dẫn file, đầy đủ phần cần thiết và hướng dẫn tạo/chạy. Làm từng giai đoạn có thể kiểm tra, không tuyên bố hoàn thành toàn bộ khi còn chức năng chưa chạy.
+
+Bàn giao:
+- Mã nguồn website hoàn chỉnh theo nền tảng đã xác định.
+- Migration và SQL script dựng dữ liệu phù hợp dự án; seed dữ liệu minh họa.
+- README hướng dẫn cài đặt, cấu hình, tạo database, chạy ứng dụng và sử dụng tài khoản demo.
+- Sơ đồ cơ sở dữ liệu, bảng quyền, danh sách trang/API và vị trí thể hiện các yêu cầu kỹ thuật của môn học.
+- Checklist/kết quả kiểm thử và kịch bản demo từ đặt phòng đến trả phòng.
+- Ghi rõ phần còn thiếu hoặc chưa kiểm tra. Không dùng TODO ở luồng chính rồi báo là đã hoàn thành.
+
+Hãy bắt đầu bằng việc kiểm tra thông tin dự án hiện có, xác định đúng phiên bản ASP.NET MVC và triển khai theo đặc tả này.
