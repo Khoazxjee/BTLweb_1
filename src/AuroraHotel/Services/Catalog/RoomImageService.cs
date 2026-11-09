@@ -1,48 +1,67 @@
-using SkiaSharp;
-
 namespace AuroraHotel.Services;
 
-public class RoomImageService(IWebHostEnvironment environment)
+/// <summary>
+/// Service xử lý tải lên hình ảnh cho phòng khách sạn.
+/// Lưu trữ ảnh vào thư mục wwwroot/uploads của ứng dụng.
+/// </summary>
+public class RoomImageService
 {
+    private readonly IWebHostEnvironment _environment;
+
+    public RoomImageService(IWebHostEnvironment environment)
+    {
+        _environment = environment;
+    }
+
+    // Hàm upload ảnh phòng
     public async Task<string?> Upload(IFormFile? file)
     {
+        // Kiểm tra nếu không có file hoặc file rỗng thì bỏ qua
         if (file == null || file.Length == 0)
-            return null;
-        if (file.Length > 5 * 1024 * 1024)
-            throw new BusinessException("Ảnh không được lớn hơn 5 MB.");
-        var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
-        if (!new[]
         {
-            ".jpg",
-            ".jpeg",
-            ".png",
-            ".webp"
-        }.Contains(extension))
-            throw new BusinessException("Chỉ nhận ảnh JPEG, PNG hoặc WebP.");
+            return null;
+        }
+
+        // Giới hạn kích thước file tối đa 5 MB
+        if (file.Length > 5 * 1024 * 1024)
+        {
+            throw new BusinessException("Ảnh không được lớn hơn 5 MB.");
+        }
+
+        // Lấy phần mở rộng (đuôi file) và kiểm tra định dạng hợp lệ
+        var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
+        var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".webp" };
+        if (!allowedExtensions.Contains(extension))
+        {
+            throw new BusinessException("Chỉ nhận ảnh định dạng JPEG, PNG hoặc WebP.");
+        }
+
         try
         {
-            await using var stream = file.OpenReadStream();
-            using var codec = SKCodec.Create(stream);
-            if (codec == null || codec.EncodedFormat is not (SKEncodedImageFormat.Jpeg or SKEncodedImageFormat.Png or SKEncodedImageFormat.Webp))
-                throw new BusinessException("Nội dung tệp không phải JPEG, PNG hoặc WebP hợp lệ.");
-            var info = codec.Info;
-            if (info.Width > 8000 || info.Height > 8000 || (long)info.Width * info.Height > 32000000)
-                throw new BusinessException("Ảnh quá lớn; tối đa 8.000 px mỗi chiều và 32 megapixel.");
-            using var bitmap = SKBitmap.Decode(codec);
-            if (bitmap == null)
-                throw new BusinessException("Tệp ảnh bị hỏng.");
-            using var image = SKImage.FromBitmap(bitmap);
-            var name = Guid.NewGuid().ToString("N") + ".webp";
-            var folder = Path.Combine(environment.WebRootPath, "uploads");
-            Directory.CreateDirectory(folder);
-            // Decode then re-encode: user content and filenames never become executable files.
-            using var data = image.Encode(SKEncodedImageFormat.Webp, 85);
-            await File.WriteAllBytesAsync(Path.Combine(folder, name), data.ToArray());
-            return "/uploads/" + name;
+            // Tạo tên file ngẫu nhiên bằng Guid để tránh trùng lặp tên file
+            var fileName = Guid.NewGuid().ToString("N") + extension;
+
+            // Đường dẫn thư mục lưu ảnh: wwwroot/uploads
+            var uploadsFolder = Path.Combine(_environment.WebRootPath, "uploads");
+            if (!Directory.Exists(uploadsFolder))
+            {
+                Directory.CreateDirectory(uploadsFolder);
+            }
+
+            var filePath = Path.Combine(uploadsFolder, fileName);
+
+            // Lưu file vào thư mục
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await file.CopyToAsync(stream);
+            }
+
+            // Trả về đường dẫn tương đối để lưu vào database
+            return "/uploads/" + fileName;
         }
-        catch (ArgumentException)
+        catch (Exception ex)
         {
-            throw new BusinessException("Không đọc được ảnh. Vui lòng chọn tệp ảnh hợp lệ.");
+            throw new BusinessException("Lỗi khi lưu ảnh: " + ex.Message);
         }
     }
 }
