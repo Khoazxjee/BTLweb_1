@@ -1,0 +1,1089 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bảo vệ Đồ án Lập trình Web — Quản lý Khách sạn Aurora Hotel</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <style>
+        :root {
+            --bg-dark: #070c14;
+            --bg-slide: #0e1726;
+            --card-bg: rgba(23, 37, 60, 0.85);
+            --card-border: rgba(212, 175, 55, 0.25);
+            --gold: #d4af37;
+            --gold-light: #f3e5ab;
+            --gold-gradient: linear-gradient(135deg, #d4af37 0%, #f9d976 100%);
+            --cyan: #00d2d3;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-green: #10b981;
+            --accent-blue: #3b82f6;
+            --font-heading: 'Playfair Display', serif;
+            --font-body: 'Be Vietnam Pro', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: var(--font-body);
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Top Bar */
+        .top-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 52px;
+            background: rgba(7, 12, 20, 0.9);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            z-index: 100;
+        }
+
+        .project-badge {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--gold);
+            letter-spacing: 0.5px;
+        }
+
+        .badge-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--gold);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--gold);
+        }
+
+        .quick-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn-action {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #cbd5e1;
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-action:hover {
+            background: rgba(212, 175, 55, 0.15);
+            border-color: var(--gold);
+            color: #fff;
+        }
+
+        /* Slide Deck Container - 16:9 */
+        .slide-deck {
+            position: relative;
+            width: 95vw;
+            height: calc(95vw * 9 / 16);
+            max-height: 85vh;
+            max-width: calc(85vh * 16 / 9);
+            background: var(--bg-slide);
+            border-radius: 14px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(212, 175, 55, 0.15);
+            overflow: hidden;
+            margin-top: 15px;
+        }
+
+        .slide {
+            position: absolute;
+            inset: 0;
+            padding: 40px 50px;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.35s ease, transform 0.35s ease;
+            transform: scale(0.98);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            overflow: hidden;
+        }
+
+        .slide.active {
+            opacity: 1;
+            visibility: visible;
+            transform: scale(1);
+        }
+
+        /* Slide Header */
+        .slide-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding-bottom: 12px;
+            margin-bottom: 20px;
+        }
+
+        .slide-category {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--gold);
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .slide-title {
+            font-family: var(--font-heading);
+            font-size: 28px;
+            font-weight: 700;
+            color: #ffffff;
+            letter-spacing: -0.5px;
+        }
+
+        .slide-tag {
+            background: rgba(212, 175, 55, 0.12);
+            color: var(--gold-light);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        /* Slide Body Layouts */
+        .slide-body {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 1.1fr 1.3fr;
+            gap: 28px;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .slide-body.full-width {
+            grid-template-columns: 1fr;
+        }
+
+        .slide-body.equal-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        /* Cards & Info Points */
+        .info-col {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            justify-content: center;
+        }
+
+        .feature-card {
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            border-left: 3px solid var(--gold);
+            border-radius: 8px;
+            padding: 14px 18px;
+            backdrop-filter: blur(5px);
+            transition: transform 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateX(4px);
+            border-left-color: var(--cyan);
+        }
+
+        .card-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-desc {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        .badge-pill {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.08);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            color: var(--gold-light);
+            font-family: monospace;
+        }
+
+        /* Image Framing */
+        .media-col {
+            position: relative;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .screenshot-frame {
+            position: relative;
+            width: 100%;
+            max-height: 95%;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.1);
+            background: #000;
+        }
+
+        .screenshot-frame img {
+            width: 100%;
+            height: auto;
+            max-height: 380px;
+            object-fit: contain;
+            display: block;
+            border-radius: 8px;
+            transition: transform 0.3s ease;
+        }
+
+        .screenshot-frame:hover img {
+            transform: scale(1.02);
+        }
+
+        .caption-tag {
+            position: absolute;
+            bottom: 8px;
+            right: 8px;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(4px);
+            color: var(--gold-light);
+            font-size: 11px;
+            padding: 4px 10px;
+            border-radius: 4px;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+        }
+
+        /* Cover Slide */
+        .slide-cover {
+            text-align: center;
+            justify-content: center;
+            align-items: center;
+            background: radial-gradient(circle at center, rgba(27, 45, 75, 0.6) 0%, var(--bg-slide) 100%);
+            position: relative;
+        }
+
+        .cover-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 16px;
+            border-radius: 30px;
+            background: rgba(212, 175, 55, 0.12);
+            border: 1px solid rgba(212, 175, 55, 0.35);
+            color: var(--gold-light);
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 20px;
+        }
+
+        .cover-title {
+            font-family: var(--font-heading);
+            font-size: 44px;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, #ffffff 30%, var(--gold-light) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .cover-sub {
+            font-size: 18px;
+            color: var(--text-muted);
+            max-width: 700px;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        .cover-meta {
+            display: flex;
+            gap: 30px;
+            background: rgba(14, 23, 38, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 14px 28px;
+            border-radius: 50px;
+            font-size: 14px;
+            color: #cbd5e1;
+        }
+
+        .meta-item strong {
+            color: var(--gold);
+            font-weight: 600;
+        }
+
+        /* Bottom Navigation */
+        .nav-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 56px;
+            background: rgba(7, 12, 20, 0.95);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+            z-index: 100;
+        }
+
+        .nav-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #fff;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .nav-btn:hover {
+            background: var(--gold);
+            color: #070c14;
+            border-color: var(--gold);
+            transform: scale(1.05);
+        }
+
+        .slide-counter {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+            min-width: 65px;
+            text-align: center;
+        }
+
+        .slide-counter span#current {
+            color: var(--gold);
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .progress-track {
+            flex: 1;
+            max-width: 350px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 0 20px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--gold-gradient);
+            width: 8.33%;
+            transition: width 0.3s ease;
+        }
+
+        .keyboard-hint {
+            font-size: 12px;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .kbd {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 10px;
+            color: #e2e8f0;
+        }
+
+        /* 3-Column Grid for Metrics / End */
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            width: 100%;
+        }
+
+        .metric-box {
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            padding: 22px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .metric-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--gold-gradient);
+        }
+
+        .metric-num {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--gold);
+            margin-bottom: 6px;
+            font-family: var(--font-heading);
+        }
+
+        .metric-label {
+            font-size: 13px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        /* Print Style */
+        @media print {
+            body {
+                background: #fff !important;
+                color: #000 !important;
+                overflow: visible !important;
+                height: auto !important;
+            }
+            .top-bar, .nav-bar {
+                display: none !important;
+            }
+            .slide-deck {
+                width: 100% !important;
+                height: auto !important;
+                max-height: none !important;
+                box-shadow: none !important;
+                border: none !important;
+            }
+            .slide {
+                position: relative !important;
+                page-break-after: always !important;
+                opacity: 1 !important;
+                visibility: visible !important;
+                transform: none !important;
+                background: #fff !important;
+                color: #111 !important;
+                height: 100vh !important;
+                padding: 40px !important;
+            }
+            .slide-title {
+                color: #0f172a !important;
+            }
+            .feature-card {
+                background: #f8fafc !important;
+                border: 1px solid #e2e8f0 !important;
+                border-left: 3px solid #d4af37 !important;
+            }
+            .card-title {
+                color: #0f172a !important;
+            }
+            .card-desc {
+                color: #475569 !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Top Action Bar -->
+    <header class="top-bar">
+        <div class="project-badge">
+            <span class="badge-dot"></span>
+            AURORA HOTEL — BÁO CÁO BẢO VỆ BÀI TẬP LỚN LẬP TRÌNH WEB
+        </div>
+        <div class="quick-actions">
+            <button class="btn-action" onclick="toggleFullScreen()" title="Toàn màn hình">
+                <span>⛶</span> Toàn màn hình (F11)
+            </button>
+            <button class="btn-action" onclick="window.print()" title="Xuất file PDF hoặc In ấn">
+                <span>🖶</span> In / Lưu PDF (Ctrl+P)
+            </button>
+        </div>
+    </header>
+
+    <!-- Slide Deck 16:9 -->
+    <main class="slide-deck" id="slideDeck">
+
+        <!-- SLIDE 1: Trang bìa -->
+        <section class="slide slide-cover active" data-slide="1">
+            <div class="cover-badge">Báo cáo Bài tập lớn Lập trình Web</div>
+            <h1 class="cover-title">HỆ THỐNG QUẢN LÝ & ĐẶT PHÒNG<br>KHÁCH SẠN AURORA HOTEL</h1>
+            <p class="cover-sub">
+                Ứng dụng kiến trúc ASP.NET Core MVC (.NET 10), cơ sở dữ liệu SQL Server LocalDB, Entity Framework Core và giao diện Bootstrap 5 tích hợp tìm kiếm phòng AJAX thời gian thực.
+            </p>
+            <div class="cover-meta">
+                <div class="meta-item">Nền tảng: <strong>ASP.NET Core MVC 10</strong></div>
+                <div class="meta-item">Cơ sở dữ liệu: <strong>SQL Server / EF Core</strong></div>
+                <div class="meta-item">Mã nguồn: <strong>Khoazxjee/BTLweb_1</strong></div>
+            </div>
+        </section>
+
+        <!-- SLIDE 2: Đặt vấn đề & Mục tiêu -->
+        <section class="slide" data-slide="2">
+            <div class="slide-header">
+                <div>
+                    <div class="slide-category">01. Tổng quan đề tài</div>
+                    <h2 class="slide-title">Đặt vấn đề & Mục tiêu hệ thống</h2>
+                </div>
+                <span class="slide-tag">Nghiệp vụ thực tế</span>
+            </div>
+            <div class="slide-body">
+                <div class="info-col">
+                    <div class="feature-card">
+                        <div class="card-title">⚠️ Thách thức quản lý khách sạn truyền thống</div>
+                        <div class="card-desc">Ghi chép sổ sách thủ công dễ gây thất thoát, nhầm lẫn số dư phòng, xung đột trùng lịch (double-booking) khi khách cùng đặt một phòng tại một thời điểm.</div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="card-title">🎯 Mục tiêu chuyển đổi số của Aurora Hotel</div>
+                        <div class="card-desc">Xây dựng hệ thống web khép kín: Khách hàng tự tìm và đặt phòng trực tuyến $\rightarrow$ Lễ tân duyệt đơn và check-in $\rightarrow$ Tự động sinh bảng kê chi phí và hóa đơn thanh toán.</div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="card-title">💡 Giải pháp kỹ thuật áp dụng</div>
+                        <div class="card-desc">Áp dụng Database Transactions để chốt phòng an toàn, kiến trúc MVC phân tầng rành mạch và tự động khởi tạo cơ sở dữ liệu mẫu ngay trong lần chạy đầu tiên.</div>
+                    </div>
+                </div>
+                <div class="media-col">
+                    <div class="screenshot-frame">
+                        <img src="screenshots/home-desktop.jpg" onerror="this.src='https://raw.githubusercontent.com/Khoazxjee/BTLweb_1/main/docs/screenshots/home-desktop.jpg'" alt="Trang chủ Aurora Hotel">
+                        <div class="caption-tag">Trang chủ Khách sạn Aurora Hotel</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 3: Kiến trúc hệ thống MVC -->
+        <section class="slide" data-slide="3">
+            <div class="slide-header">
+                <div>
+                    <div class="slide-category">02. Thiết kế kiến trúc</div>
+                    <h2 class="slide-title">Mô hình phân tầng ASP.NET Core MVC</h2>
+                </div>
+                <span class="slide-tag">Architecture</span>
+            </div>
+            <div class="slide-body">
+                <div class="info-col">
+                    <div class="feature-card">
+                        <div class="card-title">🌐 Tầng hiển thị (Presentation Layer)</div>
+                        <div class="card-desc">Razor Views (.cshtml), Layout dùng chung, Bootstrap 5 UI, AJAX tìm kiếm phòng không tải lại trang và trình soạn thảo Quill.js Rich Text Editor.</div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="card-title">⚙️ Tầng nghiệp vụ (Business Logic Services)</div>
+                        <div class="card-desc">Tách biệt các Service độc lập: <span class="badge-pill">ReservationService</span> (xử lý đặt phòng), <span class="badge-pill">FrontDeskService</span> (Check-in/Out & Bảng kê), <span class="badge-pill">ReportService</span> (Báo cáo doanh thu).</div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="card-title">🗄️ Tầng dữ liệu (Data Access Layer)</div>
+                        <div class="card-desc">Entity Framework Core 10 (Code-First) quản lý các Entities, tự động áp dụng Migrations và nạp sẵn 12 phòng, loại phòng cùng dữ liệu demo.</div>
+                    </div>
+                </div>
+                <div class="media-col">
+                    <div class="screenshot-frame" style="background: #111e33; padding: 15px;">
+                        <img src="sitemap.svg" onerror="this.src='https://raw.githubusercontent.com/Khoazxjee/BTLweb_1/main/docs/sitemap.svg'" alt="Sơ đồ Kiến trúc & Phân quyền Sitemap">
+                        <div class="caption-tag">Sơ đồ Sitemap điều hướng & Phân quyền</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 4: Phân quyền & Xác thực -->
+        <section class="slide" data-slide="4">
+            <div class="slide-header">
+                <div>
+                    <div class="slide-category">03. Bảo mật & Xác thực</div>
+                    <h2 class="slide-title">Xác thực & Phân quyền 3 Vai trò (RBAC)</h2>
+                </div>
+                <span class="slide-tag">Identity Security</span>
+            </div>
+            <div class="slide-body">
+                <div class="info-col">
+                    <div class="feature-card">
+                        <div class="card-title">👤 Khách hàng (Customer)</div>
+                        <div class="card-desc">Tài khoản demo: <span class="badge-pill">minh@aurora.local</span> / <span class="badge-pill">Admin@123</span>. Có quyền tìm phòng, gửi đơn đặt, theo dõi lịch sử và hủy các đơn đang ở trạng thái Chờ xác nhận.</div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="card-title">🛎️ Lễ tân (Receptionist)</div>
+                        <div class="card-desc">Tài khoản demo: <span class="badge-pill">letan@aurora.local</span> / <span class="badge-pill">Admin@123</span>. Quyền truy cập khu vực <span class="badge-pill">/Staff</span>: duyệt đơn, làm thủ tục nhận phòng (Check-in), tính tiền dịch vụ và trả phòng (Check-out).</div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="card-title">👑 Quản trị viên (Admin)</div>
+                        <div class="card-desc">Tài khoản demo: <span class="badge-pill">admin@aurora.local</span> / <span class="badge-pill">Admin@123</span>. Toàn quyền quản trị hệ thống, thêm/sửa/xóa phòng, theo dõi Dashboard doanh thu và xuất file báo cáo CSV.</div>
+                    </div>
+                </div>
+                <div class="media-col">
+                    <div class="screenshot-frame">
+                        <img src="screenshots/ui-review/login-desktop.png" onerror="this.src='https://raw.githubusercontent.com/Khoazxjee/BTLweb_1/main/docs/screenshots/ui-review/login-desktop.png'" alt="Giao diện đăng nhập hệ thống">
+                        <div class="caption-tag">Trang Đăng nhập & Xác thực Identity</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 5: Tìm kiếm phòng thông minh AJAX -->
+        <section class="slide" data-slide="5">
+            <div class="slide-header">
+                <div>
+                    <div class="slide-category">04. Trải nghiệm Khách hàng</div>
+                    <h2 class="slide-title">Tìm kiếm & Lọc phòng trống bằng AJAX</h2>
+                </div>
+                <span class="slide-tag">Client Experience</span>
+            </div>
+            <div class="slide-body">
+                <div class="info-col">
+                    <div class="feature-card">
+                        <div class="card-title">⚡ Lọc dữ liệu động không tải lại trang</div>
+                        <div class="card-desc">Khi người dùng chọn ngày nhận phòng, ngày trả phòng và số khách, hệ thống gửi request ngầm qua AJAX và tự động render lại danh sách phòng hợp lệ ngay tức thì.</div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="card-title">🛡️ Thuật toán kiểm tra lịch trống chính xác</div>
+                        <div class="card-desc">Loại trừ tất cả các phòng đang có đơn đặt Confirmed hoặc CheckedIn trùng khoảng thời gian, loại trừ phòng đang sửa chữa (OutOfOrder) hoặc chưa dọn dẹp.</div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="card-title">📱 Hỗ trợ phân trang & Lịch sử duyệt (History API)</div>
+                        <div class="card-desc">Tích hợp HTML5 History API giúp khách có thể sử dụng nút Back/Forward của trình duyệt mà không làm mất bộ lọc tìm kiếm.</div>
+                    </div>
+                </div>
+                <div class="media-col">
+                    <div class="screenshot-frame">
+                        <img src="screenshots/home-desktop.jpg" onerror="this.src='https://raw.githubusercontent.com/Khoazxjee/BTLweb_1/main/docs/screenshots/home-desktop.jpg'" alt="Tìm phòng AJAX">
+                        <div class="caption-tag">Bộ lọc tìm phòng theo ngày và số khách</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 6: Responsive Mobile & Chi tiết phòng -->
+        <section class="slide" data-slide="6">
+            <div class="slide-header">
+                <div>
+                    <div class="slide-category">05. Giao diện đa thiết bị</div>
+                    <h2 class="slide-title">Thiết kế Responsive Mobile & Đặt phòng</h2>
+                </div>
+                <span class="slide-tag">Responsive UI</span>
+            </div>
+            <div class="slide-body">
+                <div class="info-col">
+                    <div class="feature-card">
+                        <div class="card-title">📱 Tương thích hoàn hảo mọi kích thước màn hình</div>
+                        <div class="card-desc">Giao diện xây dựng trên hệ thống lưới Bootstrap 5 kết hợp tùy biến CSS responsive, hiển thị trực quan từ màn hình Desktop lớn đến điện thoại thông minh.</div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="card-title">📝 Quy trình gửi yêu cầu đặt phòng minh bạch</div>
+                        <div class="card-desc">Khách hàng kiểm tra giá theo số đêm, nhập thông tin liên hệ và gửi yêu cầu. Trạng thái khởi tạo là <span class="badge-pill">Pending (Chờ xác nhận)</span> để lễ tân thẩm định.</div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="card-title">🔒 Bảo vệ dữ liệu cá nhân của khách</div>
+                        <div class="card-desc">Khách hàng chỉ xem và quản lý được các đơn đặt phòng thuộc về chính tài khoản của mình, chặn truy cập chéo đơn của khách khác qua URL.</div>
+                    </div>
+                </div>
+                <div class="media-col">
+                    <div class="screenshot-frame" style="text-align: center;">
+                        <img src="screenshots/home-mobile.jpg" onerror="this.src='https://raw.githubusercontent.com/Khoazxjee/BTLweb_1/main/docs/screenshots/home-mobile.jpg'" style="max-height: 380px; width: auto; margin: 0 auto;" alt="Giao diện trên thiết bị di động">
+                        <div class="caption-tag">Giao diện trên điện thoại di động</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 7: Quản trị danh mục & Quill Editor -->
+        <section class="slide" data-slide="7">
+            <div class="slide-header">
+                <div>
+                    <div class="slide-category">06. Quản trị hệ thống</div>
+                    <h2 class="slide-title">Quản lý phòng & Trình soạn thảo Quill.js</h2>
+                </div>
+                <span class="slide-tag">Content Management</span>
+            </div>
+            <div class="slide-body">
+                <div class="info-col">
+                    <div class="feature-card">
+                        <div class="card-title">🛏️ Quản lý Loại phòng & Phòng nghỉ</div>
+                        <div class="card-desc">Cho phép Admin thêm mới, chỉnh sửa thông tin số phòng, tầng, diện tích, sức chứa tối đa và giá niêm yết theo từng loại phòng.</div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="card-title">✏️ Trình soạn thảo mô tả phong phú (Rich Text)</div>
+                        <div class="card-desc">Tích hợp thư viện Quill.js giúp người quản trị dễ dàng định dạng chữ in đậm, nghiêng, gạch đầu dòng danh sách tiện ích phòng một cách chuyên nghiệp.</div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="card-title">🖼️ Tải lên & Lưu trữ hình ảnh phòng</div>
+                        <div class="card-desc">Hình ảnh minh họa phòng nghỉ được lưu trữ trực tiếp vào thư mục tĩnh <span class="badge-pill">wwwroot/uploads</span> và liên kết dữ liệu trong database.</div>
+                    </div>
+                </div>
+                <div class="media-col">
+                    <div class="screenshot-frame">
+                        <img src="screenshots/ui-review/editor-desktop.png" onerror="this.src='https://raw.githubusercontent.com/Khoazxjee/BTLweb_1/main/docs/screenshots/ui-review/editor-desktop.png'" alt="Trình soạn thảo mô tả phòng Quill Editor">
+                        <div class="caption-tag">Trình soạn thảo mô tả phòng Quill.js</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 8: Nghiệp vụ Lễ tân & Bảng kê Folio -->
+        <section class="slide" data-slide="8">
+            <div class="slide-header">
+                <div>
+                    <div class="slide-category">07. Nghiệp vụ Khách sạn</div>
+                    <h2 class="slide-title">Lễ tân: Check-in, Bảng kê Folio & Dịch vụ</h2>
+                </div>
+                <span class="slide-tag">Front Desk Operations</span>
+            </div>
+            <div class="slide-body">
+                <div class="info-col">
+                    <div class="feature-card">
+                        <div class="card-title">📋 Duyệt đơn & Khởi tạo Bảng kê (Folio)</div>
+                        <div class="card-desc">Lễ tân xác nhận đơn đặt $\rightarrow$ khi khách đến, bấm Check-in: hệ thống tự động sinh 1 Bảng kê chi phí (Folio) và khóa chặt giá phòng theo thỏa thuận.</div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="card-title">☕ Ghi nhận dịch vụ phòng phát sinh linh hoạt</div>
+                        <div class="card-desc">Dễ dàng thêm các dịch vụ phát sinh trong thời gian lưu trú (Bữa sáng nhà hàng, Giặt ủi, Nước uống minibar) vào bảng kê chỉ bằng vài cú nhấp chuột.</div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="card-title">🧹 Cập nhật trạng thái buồng phòng thời gian thực</div>
+                        <div class="card-desc">Quản lý sơ đồ trạng thái phòng: <span class="badge-pill">Sạch (Clean)</span> $\rightarrow$ <span class="badge-pill">Có khách (Occupied)</span> $\rightarrow$ <span class="badge-pill">Cần dọn (Dirty)</span>.</div>
+                    </div>
+                </div>
+                <div class="media-col">
+                    <div class="screenshot-frame">
+                        <img src="screenshots/folio-completed.jpg" onerror="this.src='https://raw.githubusercontent.com/Khoazxjee/BTLweb_1/main/docs/screenshots/folio-completed.jpg'" alt="Bảng kê thanh toán Folio">
+                        <div class="caption-tag">Bảng kê chi phí phòng & Dịch vụ (Folio)</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 9: Thanh toán & Xuất hóa đơn -->
+        <section class="slide" data-slide="9">
+            <div class="slide-header">
+                <div>
+                    <div class="slide-category">08. Quyết toán & Thanh toán</div>
+                    <h2 class="slide-title">Quyết toán Check-out & In hóa đơn chứng từ</h2>
+                </div>
+                <span class="slide-tag">Billing & Invoice</span>
+            </div>
+            <div class="slide-body">
+                <div class="info-col">
+                    <div class="feature-card">
+                        <div class="card-title">💳 Hỗ trợ đa dạng phương thức thanh toán</div>
+                        <div class="card-desc">Ghi nhận thanh toán linh hoạt qua Tiền mặt (Cash) hoặc Chuyển khoản ngân hàng (Bank Transfer) với thời gian và nhân viên thu tiền rõ ràng.</div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="card-title">🔒 Kiểm soát số dư chặt chẽ (Zero Balance Rule)</div>
+                        <div class="card-desc">Hệ thống kiên quyết ngăn chặn thao tác Check-out nếu bảng kê còn nợ tiền. Chỉ khi số dư còn lại bằng 0đ mới cho phép hoàn tất trả phòng.</div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="card-title">🖨️ Xuất và in hóa đơn nội bộ chuẩn PDF</div>
+                        <div class="card-desc">Trang hóa đơn được định dạng chuẩn in ấn (CSS `@media print`), cho phép lưu thành file PDF hoặc in trực tiếp cho khách mang về.</div>
+                    </div>
+                </div>
+                <div class="media-col">
+                    <div class="screenshot-frame">
+                        <img src="screenshots/folio-completed.jpg" onerror="this.src='https://raw.githubusercontent.com/Khoazxjee/BTLweb_1/main/docs/screenshots/folio-completed.jpg'" alt="Chi tiết hóa đơn thanh toán">
+                        <div class="caption-tag">Chứng từ quyết toán đã thanh toán đủ 1.800.000đ</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 10: Dashboard Doanh thu & Chart.js -->
+        <section class="slide" data-slide="10">
+            <div class="slide-header">
+                <div>
+                    <div class="slide-category">09. Phân tích số liệu</div>
+                    <h2 class="slide-title">Dashboard Thống kê & Xuất báo cáo CSV</h2>
+                </div>
+                <span class="slide-tag">Analytics</span>
+            </div>
+            <div class="slide-body">
+                <div class="info-col">
+                    <div class="feature-card">
+                        <div class="card-title">📊 Trực quan hóa doanh thu theo ngày & tháng</div>
+                        <div class="card-desc">Biểu đồ trực quan theo dõi biến động doanh thu phòng và dịch vụ, giúp ban quản lý nắm bắt hiệu quả kinh doanh của khách sạn.</div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="card-title">📥 Xuất dữ liệu thống kê ra file CSV (Excel)</div>
+                        <div class="card-desc">Admin có thể lọc theo khoảng ngày bất kỳ và bấm "Tải CSV" để tải toàn bộ bảng kê chi tiết phục vụ công tác kế toán và kiểm toán.</div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="card-title">📈 Giám sát công suất buồng phòng</div>
+                        <div class="card-desc">Thống kê tỷ lệ lấp đầy phòng, tỷ lệ phòng cần dọn dẹp để bộ phận buồng phòng chủ động sắp xếp nhân sự dọn dẹp.</div>
+                    </div>
+                </div>
+                <div class="media-col">
+                    <div class="screenshot-frame" style="background: #0f172a; padding: 15px;">
+                        <canvas id="revenueChart" style="max-height: 320px; width: 100%;"></canvas>
+                        <div class="caption-tag">Biểu đồ Doanh thu (Chart.js tương tác trực tiếp)</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 11: Kịch bản Demo thực tế -->
+        <section class="slide" data-slide="11">
+            <div class="slide-header">
+                <div>
+                    <div class="slide-category">10. Kịch bản kiểm thử</div>
+                    <h2 class="slide-title">Kịch bản thử nghiệm quy trình toàn trình</h2>
+                </div>
+                <span class="slide-tag">End-to-End Demo</span>
+            </div>
+            <div class="slide-body full-width">
+                <div class="grid-3" style="margin-top: 10px;">
+                    <div class="metric-box">
+                        <div class="metric-num">BƯỚC 1 - 2</div>
+                        <div class="card-title" style="justify-content: center; margin-bottom: 8px;">Đặt phòng & Duyệt đơn</div>
+                        <div class="card-desc">Khách đăng nhập <span class="badge-pill">minh@aurora.local</span>, tìm phòng trống từ hôm nay $\rightarrow$ gửi đơn. Lễ tân đăng nhập <span class="badge-pill">letan@aurora.local</span> duyệt đơn chuyển sang <strong>Confirmed</strong>.</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-num">BƯỚC 3 - 4</div>
+                        <div class="card-title" style="justify-content: center; margin-bottom: 8px;">Nhận phòng & Thêm dịch vụ</div>
+                        <div class="card-desc">Khách đến, lễ tân Check-in $\rightarrow$ mở bảng kê Folio. Khách gọi thêm 2 suất ăn sáng (200.000đ). Tổng tiền phải thanh toán tự động cập nhật là <strong>1.800.000đ</strong>.</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-num">BƯỚC 5 - 6</div>
+                        <div class="card-title" style="justify-content: center; margin-bottom: 8px;">Thanh toán & Check-out</div>
+                        <div class="card-desc">Khách trả tiền mặt đủ 1.800.000đ $\rightarrow$ Lễ tân Check-out $\rightarrow$ In hóa đơn. Phòng chuyển sang "Cần dọn". Dashboard của Admin ngay lập tức ghi nhận <strong>+1.800.000đ</strong>.</div>
+                    </div>
+                </div>
+                <div style="background: rgba(212, 175, 55, 0.08); border: 1px dashed var(--gold); border-radius: 8px; padding: 12px 20px; text-align: center; margin-top: 20px;">
+                    💡 <strong>Tài khoản đăng nhập demo đồng bộ:</strong> Tất cả tài khoản (`admin@aurora.local`, `letan@aurora.local`, `minh@aurora.local`) đều dùng mật khẩu chung: <code style="color: var(--gold); font-size: 14px;">Admin@123</code>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 12: Đánh giá & Kết luận -->
+        <section class="slide slide-cover" data-slide="12">
+            <div class="cover-badge">Tổng kết bài tập lớn</div>
+            <h2 class="cover-title" style="font-size: 38px;">KẾT QUẢ ĐẠT ĐƯỢC & HƯỚNG MỞ RỘNG</h2>
+            <div class="grid-3" style="max-width: 900px; margin: 20px auto;">
+                <div class="metric-box">
+                    <div class="metric-num">100%</div>
+                    <div class="metric-label">Hoàn thành đầy đủ các yêu cầu nghiệp vụ quản lý khách sạn theo chuẩn đề tài</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-num">0 Lỗi</div>
+                    <div class="metric-label">Biên dịch sạch sẽ (Clean Build), database tự động migrate và seed sẵn dữ liệu</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-num">Sẵn sàng</div>
+                    <div class="metric-label">Mã nguồn đồng bộ trên GitHub, tài liệu báo cáo Word & sơ đồ Draw.io đầy đủ</div>
+                </div>
+            </div>
+            <p style="color: var(--text-muted); font-size: 15px; margin-top: 15px;">
+                Cảm ơn Thầy/Cô trong Hội đồng chấm điểm đã theo dõi! Xin mời Thầy/Cô đặt câu hỏi phản biện.
+            </p>
+            <div style="margin-top: 15px;">
+                <span class="badge-pill" style="font-size: 13px; padding: 6px 16px;">GitHub: https://github.com/Khoazxjee/BTLweb_1</span>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Bottom Controls -->
+    <footer class="nav-bar">
+        <div class="keyboard-hint">
+            <span>Dùng phím:</span>
+            <span class="kbd">←</span>
+            <span class="kbd">→</span>
+            <span>hoặc</span>
+            <span class="kbd">Space</span>
+            <span>để chuyển slide</span>
+        </div>
+
+        <div class="nav-controls">
+            <button class="nav-btn" onclick="prevSlide()" title="Slide trước (←)">❮</button>
+            <div class="progress-track">
+                <div class="progress-fill" id="progressBar"></div>
+            </div>
+            <div class="slide-counter">
+                <span id="current">1</span> / <span id="total">12</span>
+            </div>
+            <button class="nav-btn" onclick="nextSlide()" title="Slide kế tiếp (→)">❯</button>
+        </div>
+    </footer>
+
+    <!-- Presentation Engine -->
+    <script>
+        let currentSlide = 1;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        document.getElementById('total').textContent = totalSlides;
+
+        function showSlide(index) {
+            if (index < 1) index = 1;
+            if (index > totalSlides) index = totalSlides;
+            currentSlide = index;
+
+            slides.forEach((s, idx) => {
+                s.classList.toggle('active', idx === currentSlide - 1);
+            });
+
+            document.getElementById('current').textContent = currentSlide;
+            document.getElementById('progressBar').style.width = (currentSlide / totalSlides * 100) + '%';
+
+            // Render chart if on slide 10
+            if (currentSlide === 10 && !window.chartRendered) {
+                renderRevenueChart();
+            }
+        }
+
+        function nextSlide() {
+            if (currentSlide < totalSlides) {
+                showSlide(currentSlide + 1);
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 1) {
+                showSlide(currentSlide - 1);
+            }
+        }
+
+        // Keyboard listeners
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+                e.preventDefault();
+                nextSlide();
+            } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+                e.preventDefault();
+                prevSlide();
+            } else if (e.key === 'Home') {
+                e.preventDefault();
+                showSlide(1);
+            } else if (e.key === 'End') {
+                e.preventDefault();
+                showSlide(totalSlides);
+            } else if (e.key === 'f' || e.key === 'F') {
+                toggleFullScreen();
+            }
+        });
+
+        // Click on background advances
+        document.getElementById('slideDeck').addEventListener('click', (e) => {
+            // Ignore if clicking on interactive elements
+            if (!e.target.closest('button, canvas, input, a')) {
+                nextSlide();
+            }
+        });
+
+        // Full Screen Toggle
+        function toggleFullScreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(() => {});
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen().catch(() => {});
+                }
+            }
+        }
+
+        // Live Chart on Slide 10
+        function renderRevenueChart() {
+            window.chartRendered = true;
+            const ctx = document.getElementById('revenueChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['01/11', '02/11', '03/11', '04/11', '05/11', '06/11', '07/11', '08/11', '09/11'],
+                    datasets: [
+                        {
+                            label: 'Tiền phòng (VND)',
+                            data: [800000, 1600000, 2400000, 1600000, 3200000, 2400000, 4000000, 3200000, 4200000],
+                            borderColor: '#d4af37',
+                            backgroundColor: 'rgba(212, 175, 55, 0.15)',
+                            fill: true,
+                            tension: 0.35,
+                            borderWidth: 3
+                        },
+                        {
+                            label: 'Dịch vụ ăn uống & Minibar (VND)',
+                            data: [150000, 300000, 450000, 200000, 600000, 400000, 800000, 500000, 750000],
+                            borderColor: '#00d2d3',
+                            backgroundColor: 'transparent',
+                            borderDash: [5, 5],
+                            tension: 0.35,
+                            borderWidth: 2
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: { color: '#cbd5e1', font: { family: 'Be Vietnam Pro', size: 12 } }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                            ticks: { color: '#94a3b8' }
+                        },
+                        y: {
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                            ticks: {
+                                color: '#94a3b8',
+                                callback: function(value) {
+                                    return (value / 1000000) + ' Tr';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Initialize First Slide
+        showSlide(1);
+    </script>
+</body>
+</html>
